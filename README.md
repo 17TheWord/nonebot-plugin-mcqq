@@ -29,7 +29,7 @@
 ## 安装：
 ### NoneBot
 - 下载 `nonebot-plugin-guild-patch`、`nonebot_plugin_msgqq` 到 `plugins` 文件夹
-- 下载 `msg_qq_config.py` 到 `src` 目录下 
+- 下载 `msg_qq_config.py` 到 `src` 目录
   - 或复制以下参考内容自行在 `src` 文件夹内新建 `msg_qq_config.py` 文件
 
 ```python
