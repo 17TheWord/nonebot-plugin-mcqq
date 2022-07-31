@@ -7,21 +7,30 @@
 # 使用说明
 
 ## 环境：
-- Python 3.10.5
-  - websockets 10.3
-- nb-cli 0.6.7
-  - nonebot-adapter-onebot 2.1.1
-  - nonebot2 2.0.0b4
-  - [nonebot-plugin-guild-patch](https://github.com/mnixry/nonebot-plugin-guild-patch)
-- OpenJDK 17
-- Minecraft 1.18.1
-- Spigot 1.18.1
+- `Python 3.10.5`
+  - `websockets 10.3`
+
+
+- `nb-cli 0.6.7`
+  - `nonebot-adapter-onebot 2.1.1`
+  - `nonebot2 2.0.0b4`
+  - `nonebot-plugin-guild-patch`
+
+
+- `OpenJDK 17`
+
+
+- `Minecraft 1.18.1`
+
+
+- `Spigot 1.18.1`
 
 
 ## 安装：
 ### NoneBot
-- 下载 nonebot-plugin-guild-patch、nonebot_plugin_msgqq 到 plugins 文件夹
-- 下载 msg_qq_config.py 到 src 目录下 或复制以下参考内容自行在src文件夹内新建 msg_qq_config.py 文件
+- 下载 `nonebot-plugin-guild-patch`、`nonebot_plugin_msgqq` 到 `plugins` 文件夹
+- 下载 `msg_qq_config.py` 到 `src` 目录下 
+  - 或复制以下参考内容自行在 `src` 文件夹内新建 `msg_qq_config.py` 文件
 
 ```python
 # 在此填入 WebSocket 地址
@@ -70,7 +79,7 @@ group_list = {
 
 ### Minecraft Server
 
-- 将 Msg_QQ.jar 放入 Minecraft 服务器 plugins 文件夹
+- 将 `Msg_QQ.jar` 放入 `Minecraft` 服务器 `plugins` 文件夹
 - 启动服务器后插件将自动生成配置文件并写入默认信息
 - 参考如下
 
