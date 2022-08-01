@@ -6,7 +6,7 @@
 
 # 使用说明
 
-## 环境：
+## 环境
 - `Python 3.10.5`
   - `websockets 10.3`
 
@@ -25,8 +25,16 @@
 
 - `Spigot 1.18.1`
 
+## 特殊信息支持
 
-## 安装：
+- 群聊
+  - [x] @ 消息
+  - [ ] 回复消息
+- 频道
+  - [ ] @ 消息
+  - [ ] 回复消息
+
+## 安装
 ### NoneBot
 - 下载 `nonebot-plugin-guild-patch`、`nonebot_plugin_msgqq` 到 `plugins` 文件夹
 - 下载 `msg_qq_config.py` 到 `src` 目录
