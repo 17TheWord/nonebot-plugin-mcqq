@@ -57,8 +57,9 @@ async def on_connect(url: str, bot):
         await on_connect(url=url, bot=bot)
 
 
+# todo 17 改成 MessageSegment 格式解析
 async def send_msg_to_mc(event, bot):
-    get_msg = str(event.raw_message) # 源消息
+    get_msg = str(event.raw_message).replace("\r\n", " ")  # 源消息
 
     # 匹配 @ CQ 码
     # 匹配 回复 信息
@@ -73,32 +74,33 @@ async def send_msg_to_mc(event, bot):
             cq_qq_list = re.findall(r"\[CQ:at,qq=(.+?)]", get_msg)
 
             for per_user_id in cq_qq_list:
-                get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]",
-                                          "@" + await get_member_nickname(bot=bot, event=event,user_id=per_user_id)
+                get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]", "@" + await get_member_nickname(
+                    bot=bot, event=event, user_id=per_user_id
+                )
                                           )
-        final_msg = get_msg
 
     # 匹配 @ 信息
     elif "[CQ:at,qq=" in get_msg:
         cq_qq_list = re.findall(r"\[CQ:at,qq=(.+?)]", get_msg)
 
         for per_user_id in cq_qq_list:
-            get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]",
-                                      "@" + await get_member_nickname(bot=bot, event=event,
-                                                                      user_id=per_user_id))
-
-        final_msg = get_msg
+            get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]", "@" + await get_member_nickname(
+                bot=bot, event=event,
+                user_id=per_user_id
+            )
+                                      )
     # 其他消息
-    else:
-        # 拼接信息类型
-        final_msg = re.sub(r'\[CQ.*]', "", get_msg)
-        msg_type_list = re.findall(r'CQ:(.+?),', get_msg)
+    for i in event.message:
+        print(i.text)
+    # 拼接信息类型
+    final_msg = re.sub(r'\[CQ.*]', "", get_msg)
+    msg_type_list = re.findall(r'CQ:(.+?),', get_msg)
 
-        temp_str = ""
-        for msg_type in msg_type_list:
-            if msg_type in cq_type:
-                temp_str += f"[{cq_type[msg_type]}]"
-        final_msg += temp_str
+    temp_str = ""
+    for msg_type in msg_type_list:
+        if msg_type in cq_type:
+            temp_str += f"[{cq_type[msg_type]}]"
+    final_msg += temp_str
     # 发送消息和日志
     await websocket.send(f"{event.sender.nickname} 说：{final_msg}")
     nonebot.logger.success(f"[Msq_QQ]丨发送到 MC 服务器：{event.sender.nickname} 说：{final_msg}")
@@ -106,10 +108,10 @@ async def send_msg_to_mc(event, bot):
 
 # 获取群成员昵称
 async def get_member_nickname(bot, event, user_id):
+    # 判断从 群 或者 频道 获取成员信息
     if isinstance(event, GroupMessageEvent):
-        api_name = "get_group_member_info"
-        member_info = await bot.call_api(api=api_name, group_id=event.group_id, user_id=user_id)
+        member_info = await bot.get_group_member_info(group_id=event.group_id, user_id=user_id)
     elif isinstance(event, GuildMessageEvent):
-        api_name = "get_guild_member_profile"
-        member_info = await bot.call_api(api=api_name, guild_id=event.guild_id, user_id=str(user_id))
+        await bot.get_guild_member_profile(guild_id=event.guild_id, user_id=str(user_id))
+    # 返回成员昵称
     return member_info['nickname']
