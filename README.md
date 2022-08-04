@@ -29,7 +29,7 @@
 
 - 群聊
   - [x] @ 消息
-  - [ ] 回复消息
+  - [x] 回复消息
 - 频道
   - [ ] @ 消息
   - [ ] 回复消息
@@ -121,3 +121,9 @@ join_quit: true
 ```
 
 如果一切顺利的话，到这里你的消息互通已经搭建完成了。
+
+## 特别感谢
+- [@SK-415](https://github.com/SK-415) ：感谢SK佬给予许多优秀的建议和耐心的解答。
+- [@zhz-红石头](https://github.com/zhzhongshi) ：感谢红石头在代码上的帮助
+- [NoneBot2](https://github.com/nonebot/nonebot2)： 插件使用的开发框架。
+- [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)： 稳定完善的 CQHTTP 实现。
