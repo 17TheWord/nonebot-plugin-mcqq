@@ -4,6 +4,11 @@
 
 支持QQ群、QQ频道
 
+# 文档
+
+- [正在不断更新的文档](https://doc.scareye.com/msg_qq/)
+
+
 # 使用说明
 
 ## 环境
