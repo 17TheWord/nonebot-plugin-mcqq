@@ -1,4 +1,4 @@
-# nonebot-plugin-msgqq
+# nonebot-plugin-mcqq
 
 基于 `NoneBot` 的与 `Minecraft Server` 互通消息插件
 
@@ -6,7 +6,7 @@
 
 # 文档
 
-- [正在不断更新的文档](https://doc.scareye.com/msg_qq/)
+- [正在不断更新的文档](https://doc.scareye.com/mc_qq/)
 
 
 # 使用说明
@@ -53,20 +53,20 @@
 
 - pip安装
 
-  1. 下载 **/** 新建 `msg_qq_config.py` 配置文件到 `src` 目录下
-     - 否则会报错 `ImportError: cannot import name 'group_list' from 'src.msg_qq_config' (unknown location)`
+  1. 下载 **/** 新建 `mc_qq_config.py` 配置文件到 `src` 目录下
+     - 否则会报错 `ImportError: cannot import name 'group_list' from 'src.mc_qq_config' (unknown location)`
 
   2. 安装频道视频补丁 `pip install nonebot-plugin-guild-patch`
 
-  3. 安装插件 `pip install nonebot-plugin-msgqq`
+  3. 安装插件 `pip install nonebot-plugin-mcqq`
 
   4. 在 `nonebot2` 项目中设置 `load_plugin()`
-     `nonebot.load_plugin('nonebot_plugin_msgqq')`
+     `nonebot.load_plugin('nonebot_plugin_mcqq')`
 
 - 手动安装
   - 下载频道适配补丁 `pip install nonebot-plugin-guild-patch`
-  - 下载 **/** 新建 `msg_qq_config.py` 配置文件到 `src` 目录下
-  - 下载 `nonebot_plugin_msgqq` 到 `plugins` 文件夹
+  - 下载 **/** 新建 `mc_qq_config.py` 配置文件到 `src` 目录下
+  - 下载 `nonebot_plugin_mcqq` 到 `plugins` 文件夹
 
 ```python
 # 在此填入 WebSocket 地址
@@ -98,10 +98,10 @@ group_list = {
 ```
 📦 test_bot
 ├── 📂 plugins
-│   ├── 📂 nonebot_plugin_msgqq      # msgqq 插件
+│   ├── 📂 nonebot_plugin_mcqq      # mcqq 插件
 │   └── 📂 nonebot_plugin_guild_patch        # 频道适配插件
 ├── 📂 src                 # 或是 test_bot
-│   └── 📜 msg_qq_config.py
+│   └── 📜 mc_qq_config.py
 ├── 📜 .env                # 可选的
 ├── 📜 .env.dev            # 可选的
 ├── 📜 .env.prod           # 可选的
@@ -115,14 +115,14 @@ group_list = {
 
 ### Minecraft Server
 
-- 将 `Msg_QQ.jar` 放入 `Minecraft` 服务器 `plugins` 文件夹
+- 将 `MC_QQ.jar` 放入 `Minecraft` 服务器 `plugins` 文件夹
 - 启动服务器后插件将自动生成配置文件并写入默认信息
 - 参考如下
 
 ```yaml
 # 是否启用插件
 # 默认为 true
-enable_msg_qq: true
+enable_mc_qq: true
 
 # 请在冒号后填写 WebSocket 服务的地址端口号。
 # 只填写数字即可。
