@@ -45,10 +45,23 @@
   - 未支持的消息已被替换，如： `[图片]`、 `[视频]` 等等
 
 ## 安装
-### NoneBot
-- 下载 `nonebot-plugin-guild-patch`、`nonebot_plugin_msgqq` 到 `plugins` 文件夹
-- 下载 `msg_qq_config.py` 到 `src` 目录
-  - 或复制以下参考内容自行在 `src` 文件夹内新建 `msg_qq_config.py` 文件
+
+- pip安装
+
+  1. 下载 **/** 新建 `msg_qq_config.py` 配置文件到 `src` 目录下
+     - 否则会报错 `ImportError: cannot import name 'group_list' from 'src.msg_qq_config' (unknown location)`
+
+  2. 安装频道视频补丁 `pip install nonebot-plugin-guild-patch`
+
+  3. 安装插件 `pip install nonebot-plugin-msgqq`
+
+  4. 在 `nonebot2` 项目中设置 `load_plugin()`
+     `nonebot.load_plugin('nonebot_plugin_msgqq')`
+
+- 手动安装
+  - 下载频道适配补丁 `pip install nonebot-plugin-guild-patch`
+  - 下载 **/** 新建 `msg_qq_config.py` 配置文件到 `src` 目录下
+  - 下载 `nonebot_plugin_msgqq` 到 `plugins` 文件夹
 
 ```python
 # 在此填入 WebSocket 地址
