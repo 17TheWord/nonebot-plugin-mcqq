@@ -54,10 +54,11 @@
 - pip安装
 
   - 下载 **/** 新建 `mc_qq_config.py` 配置文件到 `src` 目录下
-     - 否则会报错 `ImportError: cannot import name 'group_list' from 'src.mc_qq_config' (unknown location)`
+     - 否则会报错  
+    `ImportError: cannot import name 'group_list' from 'src.mc_qq_config' (unknown location)`
 
-  ~~安装频道适配补丁 `pip install nonebot-plugin-guild-patch`~~
-  - 频道适配补丁已写入插件依赖中，无需手动安装 
+  - ~~安装频道适配补丁 `pip install nonebot-plugin-guild-patch`~~  
+  频道适配补丁已写入插件依赖中，无需手动安装 
 
   - 安装插件 `pip install nonebot-plugin-mcqq`
 
