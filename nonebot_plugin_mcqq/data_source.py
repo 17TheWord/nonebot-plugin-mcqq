@@ -6,7 +6,7 @@ from nonebot_plugin_guild_patch import GuildMessageEvent
 
 # 配置 MCRcon 连接信息
 # TODO 从 .env.* 配置文件获取连接信息
-mcr = MCRcon("127.0.0.1", "1314521123", 25575)
+mcr = MCRcon("127.0.0.1", "xxxxxx", 25575)
 
 
 # 发送消息到 Minecraft
