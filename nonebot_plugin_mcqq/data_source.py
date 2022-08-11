@@ -1,112 +1,74 @@
-import re
-
 import nonebot
-import websockets
+from mcrcon import MCRcon
+
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
-from src.msg_qq_config import group_list
-
-# 要替换的 CQ 码
-cq_type = {
-    "face": "表情",
-    "record": "语音",
-    "video": "短视频",
-    "rps": "猜拳",
-    "dice": "骰子",
-    "anonymous": "匿名消息",
-    "share": "链接分享",
-    "contact": "推荐好友/群",
-    "location": "位置",
-    "music": "音乐",
-    "image": "图片",
-    "reply": "回复",
-    "redbag": "红包",
-    "poke": "戳一戳",
-    "gift": "礼物",
-    "forward": "合并转发",
-    "xml": "XML",
-    "json": "JSON",
-    "cardimage": "大图",
-}
+# 配置 MCRcon 连接信息
+# TODO 从 .env.* 配置文件获取连接信息
+mcr = MCRcon("127.0.0.1", "1314521123", 25575)
 
 
-# 连接
-async def on_connect(url: str, bot):
-    # 全局变量 websocket
-    global websocket
-
-    # 建立链接
-    try:
-        async with websockets.connect(url) as websocket:
-            nonebot.logger.success("[Msq_QQ]丨已成功连接到 Msq_QQ WebSocket 服务器！")
-            while True:
-                # 后台日志
-                # 接收消息赋值
-                recv_msg = await websocket.recv()
-                if group_list['group_list']:
-                    for per_group in group_list['group_list']:
-                        await bot.call_api("send_group_msg", group_id=per_group, message=recv_msg)
-                if group_list['guild_list']:
-                    for per_guild in group_list['guild_list']:
-                        await bot.call_api("send_guild_channel_msg", guild_id=per_guild['guild_id'],
-                                           channel_id=per_guild['channel_id'], message=recv_msg)
-                nonebot.logger.success("[Msg_QQ]丨发送消息：" + recv_msg)
-    except (OSError, websockets.exceptions.ConnectionClosedError, websockets.exceptions.ConnectionClosedOK) as e:
-        nonebot.logger.error("[Msq_QQ]：无法连接到 WebSocket 服务器，正在重新连接。")
-        await on_connect(url=url, bot=bot)
-
-
-# todo 17 改成 MessageSegment 格式解析
-async def send_msg_to_mc(event, bot):
-    get_msg = str(event.raw_message).replace("\r\n", " ")  # 源消息
-
-    # 匹配 @ CQ 码
-    # 匹配 回复 信息
-    if "[CQ:reply,id=" in get_msg:
-        # 提取被回复的消息ID
-        message_id = re.findall(r"\[CQ:reply,id=(.+?)]", get_msg)
-        # 替换 回复 CQ码
-        get_msg = get_msg.replace(f"[CQ:reply,id={message_id[0]}]", "回复 ")
-
-        # 替换 回复 中的 @ CQ码
-        if "[CQ:at,qq=" in get_msg:
-            cq_qq_list = re.findall(r"\[CQ:at,qq=(.+?)]", get_msg)
-
-            for per_user_id in cq_qq_list:
-                get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]", "@" + await get_member_nickname(
-                    bot=bot, event=event, user_id=per_user_id
-                )
-                                          )
-
-    # 匹配 @ 信息
-    elif "[CQ:at,qq=" in get_msg:
-        cq_qq_list = re.findall(r"\[CQ:at,qq=(.+?)]", get_msg)
-
-        for per_user_id in cq_qq_list:
-            get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]", "@" + await get_member_nickname(
-                bot=bot, event=event,
-                user_id=per_user_id
-            )
-                                      )
-    # 其他消息
-    for i in event.message:
-        print(i.text)
-    # 拼接信息类型
-    final_msg = re.sub(r'\[CQ.*]', "", get_msg)
-    msg_type_list = re.findall(r'CQ:(.+?),', get_msg)
-
-    temp_str = ""
-    for msg_type in msg_type_list:
-        if msg_type in cq_type:
-            temp_str += f"[{cq_type[msg_type]}]"
-    final_msg += temp_str
-    # 发送消息和日志
-    await websocket.send(f"{event.sender.nickname} 说：{final_msg}")
-    nonebot.logger.success(f"[Msq_QQ]丨发送到 MC 服务器：{event.sender.nickname} 说：{final_msg}")
+# 发送消息到 Minecraft
+async def send_msg_to_mc(bot, event):
+    # 命令信息起始
+    command_msg = '/tellraw @a ["",'
+    # 插件名与发言人昵称
+    command_msg += '{"text": "[MC_QQ] ' + event.sender.nickname + '说：","color": "white"},'
+    # 文本信息
+    text_msg = ''
+    for msg in event.message:
+        # 文本
+        if msg.type == "text":
+            command_msg += '{"text": "' + msg.data['text'].replace("\r\n", " ") + ' ","color": "white"},'
+            text_msg += msg.data['text'].replace("\r\n", " ")
+        # 图片
+        elif msg.type == "image":
+            command_msg += '{"text": "[图片] ","color": "yellow","clickEvent": {"action": "open_url","value": "' + \
+                           msg.data[
+                               'url'] + '"},"hoverEvent": {"action": "show_text","contents": [{"text": "查看图片","color": "dark_purple"}]}},'
+            text_msg += '[图片] '
+        # 表情
+        elif msg.type == "face":
+            command_msg += '{"text": "[表情]","color": "white"},'
+            text_msg += '[表情] '
+        # 语音
+        elif msg.type == "record":
+            command_msg += '{"text": "[语音]","color": "white"},'
+            text_msg += '[语音] '
+        # 视频
+        elif msg.type == "video":
+            command_msg += '{"text": "[视频] ","color": "yellow","clickEvent": {"action": "open_url","value": "' + \
+                           msg.data[
+                               'url'] + '"},"hoverEvent": {"action": "show_text","contents": [{"text": "查看视频","color": "dark_purple"}]}},'
+            text_msg += '[视频] '
+        # @
+        elif msg.type == "at":
+            # 获取 群/频道 昵称
+            member_nickname = await get_member_nickname(bot, event, msg.data['qq'])
+            command_msg += '{"text": "@' + member_nickname + ' ","color": "aqua"},'
+            text_msg += '@' + member_nickname + ' '
+        # share
+        elif msg.type == "share":
+            command_msg += '{"text": "[分享：' + msg.data[
+                'title'] + '] ","color": "yellow","clickEvent": {"action": "open_url","value": "' + msg.data[
+                               'url'] + '"},"hoverEvent": {"action": "show_text","contents": [{"text": "查看图片","color": "dark_purple"}]}},'
+            text_msg += '[分享：' + msg.data['title'] + '] '
+        # forward
+        elif msg.type == "forward":
+            # 获取合并转发 await bot.get_forward_msg(message_id=event.message_id)
+            command_msg += '{"text": "[合并转发] ","color": "white"},'
+            text_msg += '[合并转发] '
+        else:
+            command_msg += '{"text": "[ ' + msg.type + '] ","color": "white"},'
+            text_msg += '[' + msg.type + '] '
+    command_msg += ']'
+    command_msg = command_msg.replace("},]", "}]")
+    mcr.command(command_msg)
+    nonebot.logger.success("[MC_QQ]丨发送消息：" + text_msg)
 
 
-# 获取群成员昵称
+# 获取昵称
 async def get_member_nickname(bot, event, user_id):
     # 判断从 群 或者 频道 获取成员信息
     if isinstance(event, GroupMessageEvent):
