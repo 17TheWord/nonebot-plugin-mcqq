@@ -12,7 +12,7 @@ mcr = MCRcon("127.0.0.1", "xxxxxx", 25575)
 # 发送消息到 Minecraft
 async def send_msg_to_mc(bot, event):
     # 命令信息起始
-    command_msg = '/tellraw @a ["",'
+    command_msg = 'tellraw @a ["",'
     # 插件名与发言人昵称
     command_msg += '{"text": "[MC_QQ] ' + event.sender.nickname + '说：","color": "white"},'
     # 文本信息
