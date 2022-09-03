@@ -3,7 +3,7 @@ from nonebot import on_message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 
 from nonebot_plugin_guild_patch import GuildMessageEvent
-from .data_source import send_msg_to_mc, on_mcrcon_connect, on_connect, mcr
+from .data_source import send_msg_to_mc, on_mcrcon_connect, on_connect, mcr, group_list
 
 mc_qq_mcrcon = on_message(priority=5)
 
@@ -29,4 +29,10 @@ async def do_something():
 # 收到 群/频 道消息时
 @mc_qq_mcrcon.handle()
 async def handle_first_receive(bot: Bot, event: GuildMessageEvent | GroupMessageEvent):
-    await send_msg_to_mc(bot, event)
+    if isinstance(event, GroupMessageEvent):
+        if event.group_id in group_list['group_list']:
+            await send_msg_to_mc(bot=bot, event=event)
+    elif isinstance(event, GuildMessageEvent):
+        for per_channel in group_list['guild_list']:
+            if event.guild_id == per_channel['guild_id'] and event.channel_id == per_channel['channel_id']:
+                await send_msg_to_mc(bot=bot, event=event)
