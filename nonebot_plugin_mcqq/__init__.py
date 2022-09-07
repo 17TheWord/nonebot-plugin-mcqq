@@ -3,7 +3,8 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot import get_driver
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
-from .data_source import send_msg_to_mc, group_list, on_connect
+from .data_source import send_msg_to_mc, on_connect
+from src.mc_qq_config import group_list
 
 mc_qq = on_message(priority=5)
 driver = get_driver()

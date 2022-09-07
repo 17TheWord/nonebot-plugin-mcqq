@@ -8,7 +8,7 @@ from nonebot_plugin_guild_patch import GuildMessageEvent
 from src.mc_qq_config import group_list, mc_ip, ws_port
 
 # 要替换的 CQ 码
-cq_type = {
+msg_type = {
     "face": "表情",
     "record": "语音",
     "video": "短视频",
@@ -59,46 +59,16 @@ async def on_connect(bot):
 
 # todo 17 改成 MessageSegment 格式解析
 async def send_msg_to_mc(event, bot):
-    get_msg = str(event.raw_message).replace("\r\n", " ")  # 源消息
-
-    # 匹配 @ CQ 码
-    # 匹配 回复 信息
-    if "[CQ:reply,id=" in get_msg:
-        # 提取被回复的消息ID
-        message_id = re.findall(r"\[CQ:reply,id=(.+?)]", get_msg)
-        # 替换 回复 CQ码
-        get_msg = get_msg.replace(f"[CQ:reply,id={message_id[0]}]", "回复 ")
-
-        # 替换 回复 中的 @ CQ码
-        if "[CQ:at,qq=" in get_msg:
-            cq_qq_list = re.findall(r"\[CQ:at,qq=(.+?)]", get_msg)
-
-            for per_user_id in cq_qq_list:
-                get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]", "@" + await get_member_nickname(
-                    bot=bot, event=event, user_id=per_user_id
-                )
-                                          )
-
-    # 匹配 @ 信息
-    elif "[CQ:at,qq=" in get_msg:
-        cq_qq_list = re.findall(r"\[CQ:at,qq=(.+?)]", get_msg)
-
-        for per_user_id in cq_qq_list:
-            get_msg = get_msg.replace(f"[CQ:at,qq={per_user_id}]", "@" + await get_member_nickname(
-                bot=bot, event=event,
-                user_id=per_user_id
-            )
-                                      )
-    # 拼接信息类型
-    final_msg = re.sub(r'\[CQ.*]', "", get_msg)
-    msg_type_list = re.findall(r'CQ:(.+?),', get_msg)
-
-    temp_str = ""
-    for msg_type in msg_type_list:
-        if msg_type in cq_type:
-            temp_str += f"[{cq_type[msg_type]}]"
-    final_msg += temp_str
-    # 发送消息和日志
+    # 初始化源消息
+    final_msg = ""
+    for msg in event.message:
+        print(msg)
+        if msg.type == "text":
+            final_msg += f"{msg.data['text']} "
+        elif msg.type == "at":
+            final_msg += f"@{await get_member_nickname(bot, event, msg.data['qq'])} "
+        else:
+            final_msg += f"[{msg_type.get(msg.type, msg.type)}] "
     await websocket.send(f"{event.sender.nickname} 说：{final_msg}")
     nonebot.logger.success(f"[MC_QQ]丨发送到 MC 服务器：{event.sender.nickname} 说：{final_msg}")
 
