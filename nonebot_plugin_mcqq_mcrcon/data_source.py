@@ -31,7 +31,7 @@ async def on_connect(bot):
                 if group_list['group_list']:
                     for per_group in group_list['group_list']:
                         await bot.call_api("send_group_msg", group_id=per_group, message=get_msg)
-                if group_list['group_list']:
+                if group_list['guild_list']:
                     for per_guild in group_list['guild_list']:
                         await bot.call_api("send_guild_channel_msg", guild_id=per_guild['guild_id'],
                                            channel_id=per_guild['channel_id'], message=get_msg)
@@ -106,9 +106,8 @@ async def send_msg_to_mc(bot, event):
     command_msg = command_msg.replace("},]", "}]")
     try:
         mcr.command(command_msg)
-    except (mcrcon.MCRconException, ConnectionResetError):
+    except (mcrcon.MCRconException, ConnectionResetError, ConnectionAbortedError):
         nonebot.logger.error("[MC_QQ_Rcon]丨无法发送消息，MCRcon 未连接。")
-    except ConnectionAbortedError:
         await on_mcrcon_connect()
         mcr.command(command_msg)
     nonebot.logger.success("[MC_QQ]丨发送消息：" + text_msg)
