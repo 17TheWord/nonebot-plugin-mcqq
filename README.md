@@ -32,3 +32,7 @@
 - [@zhz-红石头](https://github.com/zhzhongshi) ：感谢红石头在代码上的帮助
 - [NoneBot2](https://github.com/nonebot/nonebot2)： 插件使用的开发框架。
 - [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)： 稳定完善的 CQHTTP 实现。
+
+# 二创
+
+[mcqq服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server) 采用本地读取log信息的方法的Minecraft Server互通消息的插件
