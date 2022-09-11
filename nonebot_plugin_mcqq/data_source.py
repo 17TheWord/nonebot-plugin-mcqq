@@ -1,11 +1,7 @@
-import re
-
 import nonebot
 import websockets
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
-from nonebot_plugin_guild_patch import GuildMessageEvent
 
-from src.mc_qq_config import group_list, mc_ip, ws_port
+from .utils import *
 
 # 要替换的 CQ 码
 msg_type = {
@@ -35,50 +31,24 @@ msg_type = {
 async def on_connect(bot):
     # 全局变量 websocket
     global websocket
-    url = f"ws://{mc_ip}:{ws_port}"
+    url = f"ws://{get_mc_qq_ip(bot=bot)}:{get_mc_qq_ws_port(bot=bot)}"
     # 建立链接
     try:
         async with websockets.connect(url) as websocket:
             nonebot.logger.success("[MC_QQ]丨已成功连接到 MC_QQ WebSocket 服务器！")
             while True:
-                # 后台日志
                 # 接收消息赋值
                 recv_msg = await websocket.recv()
-                if group_list['group_list']:
-                    for per_group in group_list['group_list']:
-                        await bot.call_api("send_group_msg", group_id=per_group, message=recv_msg)
-                if group_list['guild_list']:
-                    for per_guild in group_list['guild_list']:
-                        await bot.call_api("send_guild_channel_msg", guild_id=per_guild['guild_id'],
-                                           channel_id=per_guild['channel_id'], message=recv_msg)
+                # 发送消息
+                await send_msg_to_qq(bot=bot, recv_msg=recv_msg)
+                # 后台日志
                 nonebot.logger.success("[MC_QQ]丨发送消息：" + recv_msg)
     except (OSError, websockets.exceptions.ConnectionClosedError, websockets.exceptions.ConnectionClosedOK):
         nonebot.logger.error("[MC_QQ]：无法连接到 WebSocket 服务器，正在重新连接。")
         await on_connect(bot=bot)
 
 
-# todo 17 改成 MessageSegment 格式解析
-async def send_msg_to_mc(event, bot):
-    # 初始化源消息
-    final_msg = ""
-    for msg in event.message:
-        print(msg)
-        if msg.type == "text":
-            final_msg += f"{msg.data['text']} "
-        elif msg.type == "at":
-            final_msg += f"@{await get_member_nickname(bot, event, msg.data['qq'])} "
-        else:
-            final_msg += f"[{msg_type.get(msg.type, msg.type)}] "
-    await websocket.send(f"{event.sender.nickname} 说：{final_msg}")
-    nonebot.logger.success(f"[MC_QQ]丨发送到 MC 服务器：{event.sender.nickname} 说：{final_msg}")
-
-
-# 获取群成员昵称
-async def get_member_nickname(bot, event, user_id):
-    # 判断从 群 或者 频道 获取成员信息
-    if isinstance(event, GroupMessageEvent):
-        member_info = await bot.get_group_member_info(group_id=event.group_id, user_id=user_id)
-    elif isinstance(event, GuildMessageEvent):
-        await bot.get_guild_member_profile(guild_id=event.guild_id, user_id=str(user_id))
-    # 返回成员昵称
-    return member_info['nickname']
+async def send_msg_to_mc(bot: Bot, event):
+    text_msg, msgJson = await msg_process(bot=bot, event=event)
+    await websocket.send(msgJson)
+    nonebot.logger.success(f"[MC_QQ]丨来自MC的消息：" + text_msg)

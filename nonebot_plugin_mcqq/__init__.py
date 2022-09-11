@@ -4,7 +4,7 @@ from nonebot import get_driver
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
 from .data_source import send_msg_to_mc, on_connect
-from src.mc_qq_config import group_list
+from .utils import get_mc_qq_group_list, get_mc_qq_guild_list
 
 mc_qq = on_message(priority=5)
 driver = get_driver()
@@ -12,7 +12,7 @@ driver = get_driver()
 
 # bot连接时
 @driver.on_bot_connect
-async def on_open(bot: Bot):
+async def on_start(bot: Bot):
     # 循环尝试连接
     while True:
         await on_connect(bot=bot)
@@ -22,11 +22,11 @@ async def on_open(bot: Bot):
 
 # 收到 群/频 道消息时
 @mc_qq.handle()
-async def handle_first_receive(event: GroupMessageEvent | GuildMessageEvent, bot: Bot):
+async def handle_first_receive(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
     if isinstance(event, GroupMessageEvent):
-        if event.group_id in group_list['group_list']:
-            await send_msg_to_mc(event=event, bot=bot)
+        if event.group_id in get_mc_qq_group_list(bot=bot):
+            await send_msg_to_mc(bot=bot, event=event)
     elif isinstance(event, GuildMessageEvent):
-        for per_channel in group_list['guild_list']:
-            if event.guild_id == per_channel['guild_id'] and event.channel_id == per_channel['channel_id']:
-                await send_msg_to_mc(event=event, bot=bot)
+        for per_channel in get_mc_qq_guild_list(bot=bot):
+            if event.guild_id == per_channel[0] and event.channel_id == per_channel[1]:
+                await send_msg_to_mc(bot=bot, event=event)
