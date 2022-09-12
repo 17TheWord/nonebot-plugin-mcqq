@@ -1,18 +1,18 @@
-import json
-
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
 
 # 发送消息到 QQ
-async def send_msg_to_qq(bot: Bot, recv_msg):
+async def send_msg_to_qq(bot, recv_msg):
+    group_list = get_mc_qq_group_list(bot=bot)
+    guild_list = get_mc_qq_guild_list(bot=bot)
     # 发送群消息
-    if get_mc_qq_group_list(bot=bot):
-        for per_group in get_mc_qq_group_list(bot=bot):
+    if group_list:
+        for per_group in group_list:
             await bot.call_api("send_group_msg", group_id=per_group, message=recv_msg)
     # 发送频道消息
-    if get_mc_qq_guild_list(bot=bot):
-        for per_guild in get_mc_qq_guild_list(bot=bot):
+    if guild_list:
+        for per_guild in guild_list:
             await bot.call_api("send_guild_channel_msg", guild_id=per_guild[0],
                                channel_id=per_guild[1], message=recv_msg)
 
@@ -33,7 +33,7 @@ async def msg_process(bot: Bot, event):
     # 命令信息起始
     command_msg = 'tellraw @a ["",'
     # 插件名与发言人昵称
-    command_msg += '{"text":"[MC_QQ] ","color":"yellow"},{"text":"' + event.sender.nickname + ' ","color":"aqua"},{"text":"说","color":"white"}'
+    command_msg += '{"text":"[MC_QQ] ","color":"yellow"},{"text":"' + event.sender.nickname + ' ","color":"aqua"},{"text":" 说：","color":"yellow"},'
     # 文本信息
     text_msg = ''
     for msg in event.message:
@@ -95,7 +95,7 @@ def get_mc_qq_group_list(bot: Bot):
 
 
 # 获取频道列表
-def get_mc_qq_guild_list(bot: Bot):
+def get_mc_qq_guild_list(bot: Bot) -> list:
     try:
         return list(bot.config.mc_qq_guild_list)
     except AttributeError:
