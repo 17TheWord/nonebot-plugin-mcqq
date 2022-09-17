@@ -6,21 +6,12 @@ body:
   - type: dropdown
     id: version
     attributes:
-      label: 版本
-      description: 版本选择
+      label: 插件版本
       options:
         - nonebot-plugin-mcqq
         - nonebot-plugin-mcqq-mcrcon
         - MC_QQ
         - Minecraft_Server
-    validations:
-      required: true
-  - type: input
-    id: version_number
-    attributes:
-      label: 版本号
-      description: mcqq 或 mcqq-mcrcon
-      placeholder: mcqq、
     validations:
       required: true
   - type: textarea
@@ -30,11 +21,3 @@ body:
       value: "请详细描述你的建议"
     validations:
       required: true
-  - type: textarea
-    id: logs
-    attributes:
-      label: 日志
-      description: 请将日志粘贴此处
-      render: shell
-    validations:
-      required: false
