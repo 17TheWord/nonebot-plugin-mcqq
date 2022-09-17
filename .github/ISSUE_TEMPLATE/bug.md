@@ -1,8 +1,0 @@
----
-name: "【错误反馈】"
-about: 在使用过程中遇到问题
-title: "【错误反馈】"
-labels: bug
-assignees: ''
-
----
