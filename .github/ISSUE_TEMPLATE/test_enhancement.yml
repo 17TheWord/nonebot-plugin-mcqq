@@ -3,6 +3,11 @@ description: 改进现有功能或提出新功能
 title: "测试【功能建议】"
 labels: ["enhancement"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 请补全标题并认真填写下方内容
+
   - type: dropdown
     id: version
     attributes:
@@ -14,10 +19,26 @@ body:
         - Minecraft_Server
     validations:
       required: true
-  - type: textarea
-    id: suggest
+
+  - type: input
+    id: version_number
     attributes:
-      label: 内容
-      value: "请详细描述你的建议"
+      label: 插件版本号
+      description: 填写当前使用的版本号
+      placeholder: V1.0.0
     validations:
       required: true
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: 功能建议
+      description: 想要改进或者添加的功能
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra_info
+    attributes:
+      label: 额外信息（可选）
+      description: 如：为什么需要这个功能？在什么场景下适用？
