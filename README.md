@@ -1,4 +1,6 @@
-# nonebot-plugin-mcqq
+[![nonebot-plugin-mcqq](https://socialify.git.ci/17TheWord/nonebot-plugin-mcqq/image?description=1&font=Inter&forks=1&issues=1&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2F17TheWord&owner=1&pattern=Plus&stargazers=1&theme=Dark)](https://doc.scareye.com/mc_qq/)
+
+# NoneBot-Plugin-MCQQ
 
 基于 `NoneBot` 的与 `Minecraft Server` 互通消息插件
 
