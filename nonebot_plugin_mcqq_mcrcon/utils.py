@@ -23,7 +23,7 @@ async def get_member_nickname(bot: Bot, event, user_id):
     if isinstance(event, GroupMessageEvent):
         member_info = await bot.get_group_member_info(group_id=event.group_id, user_id=user_id)
     elif isinstance(event, GuildMessageEvent):
-        await bot.get_guild_member_profile(guild_id=event.guild_id, user_id=str(user_id))
+        member_info = await bot.get_guild_member_profile(guild_id=event.guild_id, user_id=str(user_id))
     # 返回成员昵称
     return member_info['nickname']
 
