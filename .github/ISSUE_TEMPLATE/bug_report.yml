@@ -1,6 +1,6 @@
 name: 【错误反馈】
 description: 在使用过程中遇到了错误
-title: '【错误反馈】'
+title: '【错误反馈】简单描述碰到的问题'
 labels: [ "bug" ]
 
 body:
@@ -14,6 +14,14 @@ body:
     attributes:
       label: 运行环境
       description: 如 Windows Server 2012、CentOS 8.2 等
+    validations:
+      required: true
+
+  - type: input
+    id: python_version
+    attributes:
+      label: Python版本
+      description: 如 Python3.9、Python3.10 等
     validations:
       required: true
 
