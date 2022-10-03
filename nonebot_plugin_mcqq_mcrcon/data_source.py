@@ -23,7 +23,7 @@ async def on_connect(bot):
                 recv_msg = await websocket.recv()
                 # 发送消息到 QQ
                 await send_msg_to_qq(bot, recv_msg)
-                nonebot.logger.success("[MC_QQ]丨发送消息：" + recv_msg)
+                nonebot.logger.success("[MC_QQ]丨发送消息到QQ：" + recv_msg)
     except (OSError, websockets.exceptions.ConnectionClosedError, websockets.exceptions.ConnectionClosedOK):
         nonebot.logger.error("[MC_QQ]丨无法连接到 MC_QQ WebSocket 服务器，正在重新连接。")
         await on_connect(bot=bot)
@@ -53,5 +53,5 @@ async def send_msg_to_mc(bot: Bot, event):
     except (mcrcon.MCRconException, ConnectionResetError, ConnectionAbortedError):
         nonebot.logger.error("[MC_QQ_Rcon]丨无法发送消息，MCRcon 未连接。")
         on_mcrcon_connect(bot=bot)
-        mcr.command(command_msg)
-    nonebot.logger.success("[MC_QQ]丨发送消息：" + text_msg)
+        await send_msg_to_mc(bot, event)
+        nonebot.logger.success("[MC_QQ]丨来自QQ的消息：" + text_msg)

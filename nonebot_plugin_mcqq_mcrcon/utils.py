@@ -4,17 +4,23 @@ from nonebot_plugin_guild_patch import GuildMessageEvent
 
 # 发送消息到 QQ
 async def send_msg_to_qq(bot, recv_msg):
-    group_list = get_mc_qq_group_list(bot=bot)
-    guild_list = get_mc_qq_guild_list(bot=bot)
     # 发送群消息
-    if group_list:
-        for per_group in group_list:
-            await bot.call_api("send_group_msg", group_id=per_group, message=recv_msg)
+    if get_mc_qq_group_list(bot=bot):
+        for per_group in get_mc_qq_group_list(bot=bot):
+            await bot.call_api(
+                "send_group_msg",
+                group_id=per_group,
+                message=recv_msg
+            )
     # 发送频道消息
-    if guild_list:
-        for per_guild in guild_list:
-            await bot.call_api("send_guild_channel_msg", guild_id=per_guild[0],
-                               channel_id=per_guild[1], message=recv_msg)
+    if get_mc_qq_guild_list(bot=bot):
+        for per_guild in get_mc_qq_guild_list(bot=bot):
+            await bot.call_api(
+                "send_guild_channel_msg",
+                guild_id=per_guild[0],
+                channel_id=per_guild[1],
+                message=recv_msg
+            )
 
 
 # 获取昵称

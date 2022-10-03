@@ -1,8 +1,7 @@
 from nonebot import get_driver
 from nonebot import on_message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 
-from nonebot_plugin_guild_patch import GuildMessageEvent
 from .data_source import send_msg_to_mc, on_mcrcon_connect, on_connect, dis_mcrcon_connect
 from .utils import get_mc_qq_group_list, get_mc_qq_guild_list
 
@@ -29,7 +28,7 @@ async def on_stop():
 
 # 收到 群/频 道消息时
 @mc_qq_mcrcon.handle()
-async def handle_first_receive(bot: Bot, event: GuildMessageEvent | GroupMessageEvent):
+async def handle_first_receive(bot: Bot, event: MessageEvent):
     if event.message_type == "group":
         if event.group_id in get_mc_qq_group_list(bot=bot):
             await send_msg_to_mc(bot=bot, event=event)
