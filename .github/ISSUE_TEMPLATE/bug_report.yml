@@ -1,0 +1,61 @@
+name: 【错误反馈】
+description: 在使用过程中遇到了错误
+title: '【错误反馈】简单描述碰到的问题'
+labels: [ "bug" ]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 请补全标题并认真填写下方内容
+
+  - type: input
+    id: system_version
+    attributes:
+      label: 运行环境
+      description: 如 Windows Server 2012、CentOS 8.2 等
+    validations:
+      required: true
+
+  - type: input
+    id: python_version
+    attributes:
+      label: Python版本
+      description: 如 Python3.9、Python3.10 等
+    validations:
+      required: true
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: 插件版本
+      options:
+        - nonebot-plugin-mcqq
+        - nonebot-plugin-mcqq-mcrcon
+        - MC_QQ
+        - Minecraft_Server
+    validations:
+      required: true
+
+  - type: input
+    id: version_number
+    attributes:
+      label: 插件版本号
+      description: 填写当前使用的版本号
+      placeholder: V1.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug_info
+    attributes:
+      label: 错误描述
+      description: 描述你遇到的问题，需要怎么复现？期望的结果是什么？
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: 报错日志（如果有）
+      render: bash
