@@ -1,5 +1,4 @@
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
-from nonebot_plugin_guild_patch import GuildMessageEvent
+from nonebot.adapters.onebot.v11 import Bot
 
 
 # 发送消息到 QQ
@@ -26,12 +25,23 @@ async def send_msg_to_qq(bot, recv_msg):
 # 获取昵称
 async def get_member_nickname(bot: Bot, event, user_id):
     # 判断从 群 或者 频道 获取成员信息
-    if isinstance(event, GroupMessageEvent):
-        member_info = await bot.get_group_member_info(group_id=event.group_id, user_id=user_id)
-    elif isinstance(event, GuildMessageEvent):
-        member_info = await bot.get_guild_member_profile(guild_id=event.guild_id, user_id=user_id)
-    # 返回成员昵称
-    return member_info['nickname']
+    if event.message_type == "group":
+        member_info = await bot.call_api(
+            "get_group_member_info",
+            group_id=event.group_id,
+            user_id=user_id,
+            no_cache=True
+        )
+        # 返回群成员群名片
+        return member_info['card']
+    else:
+        member_info = await bot.call_api(
+            "get_guild_member_profile",
+            guild_id=event.guild_id,
+            user_id=user_id
+        )
+        # 返回频道成员昵称
+        return member_info['nickname']
 
 
 # 消息处理
@@ -39,7 +49,11 @@ async def msg_process(bot: Bot, event):
     # 命令信息起始
     command_msg = 'tellraw @a ["",'
     # 插件名与发言人昵称
-    command_msg += '{"text":"[MC_QQ] ","color":"yellow"},{"text":"' + event.sender.nickname + ' ","color":"aqua"},{"text":" 说：","color":"yellow"},'
+    command_msg += '{"text":"[MC_QQ] ","color":"yellow"},{"text":"' + \
+                   (
+                       # 获取昵称
+                       event.sender.card if event.message_type == "group" else event.sender.nickname
+                   ) + ' ","color":"aqua"},{"text":" 说：","color":"yellow"},'
     # 文本信息
     text_msg = ''
     for msg in event.message:
@@ -81,6 +95,7 @@ async def msg_process(bot: Bot, event):
             text_msg += '[分享：' + msg.data['title'] + '] '
         # forward
         elif msg.type == "forward":
+            # TODO 将合并转发消息拼接为字符串
             # 获取合并转发 await bot.get_forward_msg(message_id=event.message_id)
             command_msg += '{"text": "[合并转发] ","color": "white"},'
             text_msg += '[合并转发] '

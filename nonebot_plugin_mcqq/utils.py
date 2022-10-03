@@ -1,5 +1,4 @@
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
-from nonebot_plugin_guild_patch import GuildMessageEvent
+from nonebot.adapters.onebot.v11 import Bot
 
 
 # 发送消息到 QQ
@@ -7,29 +6,52 @@ async def send_msg_to_qq(bot: Bot, recv_msg):
     # 发送群消息
     if get_mc_qq_group_list(bot=bot):
         for per_group in get_mc_qq_group_list(bot=bot):
-            await bot.call_api("send_group_msg", group_id=per_group, message=recv_msg)
+            await bot.call_api(
+                "send_group_msg",
+                group_id=per_group,
+                message=recv_msg
+            )
     # 发送频道消息
     if get_mc_qq_guild_list(bot=bot):
         for per_guild in get_mc_qq_guild_list(bot=bot):
-            await bot.call_api("send_guild_channel_msg", guild_id=per_guild[0],
-                               channel_id=per_guild[1], message=recv_msg)
+            await bot.call_api(
+                "send_guild_channel_msg",
+                guild_id=per_guild[0],
+                channel_id=per_guild[1],
+                message=recv_msg
+            )
 
 
 # 获取昵称
 async def get_member_nickname(bot: Bot, event, user_id):
     # 判断从 群 或者 频道 获取成员信息
-    if isinstance(event, GroupMessageEvent):
-        member_info = await bot.get_group_member_info(group_id=event.group_id, user_id=user_id)
-    elif isinstance(event, GuildMessageEvent):
-        member_info  = await bot.get_guild_member_profile(guild_id=event.guild_id, user_id=user_id)
-    # 返回成员昵称
-    return member_info['nickname']
+    if event.message_type == "group":
+        member_info = await bot.call_api(
+            "get_group_member_info",
+            group_id=event.group_id,
+            user_id=user_id,
+            no_cache=True
+        )
+        # 返回群成员群名片
+        return member_info['card']
+    else:
+        member_info = await bot.call_api(
+            "get_guild_member_profile",
+            guild_id=event.guild_id,
+            user_id=user_id
+        )
+        # 返回频道成员昵称
+        return member_info['nickname']
 
 
 # 消息处理
 async def msg_process(bot: Bot, event):
     # 初始化源消息
-    msgJson = '{ "senderName": "' + event.sender.nickname + '", "message": ['
+    msgJson = '{ "senderName": "' + \
+              (
+                  # 获取昵称
+                  event.sender.card if event.message_type == "group" else event.sender.nickname
+              ) + '", "message": ['
     text_msg = event.sender.nickname + '说：'
     for msg in event.message:
         msgJson += '{"msgType":"' + msg.type + '","msgData": "'
@@ -58,6 +80,8 @@ async def msg_process(bot: Bot, event):
             msgData = msg.data['url']
         # forward
         elif msg.type == "forward":
+            # TODO 将合并转发消息拼接为字符串
+            # 获取合并转发 await bot.get_forward_msg(message_id=event.message_id)
             msgData = '[合并转发]'
         else:
             msgData = '[' + msg.type + ']'
