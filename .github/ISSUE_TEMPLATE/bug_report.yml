@@ -1,6 +1,6 @@
 name: 【错误反馈】
 description: 在使用过程中遇到了错误
-title: '【错误反馈】简单描述碰到的问题'
+title: '【错误反馈】（在此简单描述碰到的问题）'
 labels: [ "bug" ]
 
 body:
