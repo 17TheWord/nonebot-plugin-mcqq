@@ -10,7 +10,7 @@
 
 - [正在不断更新的文档](https://doc.scareye.com/mc_qq/)
 
-# 服务端支持
+# 支持的服务端列表
 
 - Spigot
 - MinecraftServer
