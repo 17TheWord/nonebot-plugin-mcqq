@@ -1,4 +1,4 @@
-[![nonebot-plugin-mcqq](https://socialify.git.ci/17TheWord/nonebot-plugin-mcqq/image?description=1&font=Inter&forks=1&issues=1&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2F17TheWord&owner=1&pattern=Plus&stargazers=1&theme=Dark)](https://doc.scareye.com/mc_qq/)
+[![nonebot-plugin-mcqq](https://socialify.git.ci/17TheWord/nonebot-plugin-mcqq/image?description=1&font=Inter&forks=1&issues=1&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2F17TheWord&owner=1&pattern=Plus&stargazers=1&theme=Dark)](https://17theword.github.io/mc_qq/)
 
 # NoneBot-Plugin-MCQQ
 
@@ -8,7 +8,7 @@
 
 # 文档
 
-- [正在不断更新的文档](https://doc.scareye.com/mc_qq/)
+- [正在不断更新的文档](https://17theword.github.io/mc_qq/)
 
 # 支持的服务端列表
 
