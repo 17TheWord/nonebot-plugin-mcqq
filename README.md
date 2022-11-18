@@ -15,17 +15,18 @@
 - Spigot
 - MinecraftServer
 - ForgeServer
+- Fabric 暂不支持，希望有位大佬提供一份Fabric服务端相关日志内容
 
 # 功能
 
 - 推送消息列表
   - 服务器 -> QQ
-    - 加入 / 离开 服务器消息
-    - 玩家聊天信息
-    - 玩家死亡信息（死亡信息为英文，计划使用百度翻译解决）
+    - [x]加入 / 离开 服务器消息
+    - [x]玩家聊天信息
+    - [x]玩家死亡信息（死亡信息为英文，计划使用翻译解决。`MOD` 服务端不适用。）
   - QQ -> 服务器
-    - 群员聊天文本
-    - 图片、视频等内容转换为 `[图片]`、`[视频]`
+    - [x]群员聊天文本
+    - [x]图片、视频等内容转换为 `[图片]`、`[视频]`
 
 - 特殊消息支持
   - 群聊
@@ -44,4 +45,4 @@
 
 # 二创
 
-[mcqq服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server) 采用本地读取log信息的方法的Minecraft Server互通消息的插件
+- [mcqq服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server) 采用本地读取log信息的方法的Minecraft Server互通消息的插件
