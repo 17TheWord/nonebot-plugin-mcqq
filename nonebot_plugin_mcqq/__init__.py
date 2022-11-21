@@ -3,9 +3,9 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from nonebot import get_driver
 
 from .data_source import send_msg_to_mc, on_connect
-from .utils import get_mc_qq_group_list, get_mc_qq_guild_list
+from .utils import msg_rule
 
-mc_qq = on_message(priority=5)
+mc_qq = on_message(priority=5, rule=msg_rule, block=False)
 driver = get_driver()
 
 
@@ -22,10 +22,4 @@ async def on_start(bot: Bot):
 # 收到 群/频 道消息时
 @mc_qq.handle()
 async def handle_first_receive(bot: Bot, event: MessageEvent):
-    if event.message_type == "group":
-        if event.group_id in get_mc_qq_group_list(bot=bot):
-            await send_msg_to_mc(bot=bot, event=event)
-    elif event.message_type == "guild":
-        for per_channel in get_mc_qq_guild_list(bot=bot):
-            if event.guild_id == per_channel[0] and event.channel_id == per_channel[1]:
-                await send_msg_to_mc(bot=bot, event=event)
+    await send_msg_to_mc(bot=bot, event=event)
