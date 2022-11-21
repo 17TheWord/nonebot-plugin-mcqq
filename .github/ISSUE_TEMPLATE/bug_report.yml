@@ -10,18 +10,10 @@ body:
         ## 请补全标题并认真填写下方内容
 
   - type: input
-    id: system_version
+    id: run_env
     attributes:
       label: 运行环境
-      description: 如 Windows Server 2012、CentOS 8.2 等
-    validations:
-      required: true
-
-  - type: input
-    id: python_version
-    attributes:
-      label: Python版本
-      description: 如 Python3.9、Python3.10 等
+      description: 如 Ubuntu 20.04 LTS、Python3.10、PaperSpigot-1.19.2 等
     validations:
       required: true
 
@@ -29,6 +21,7 @@ body:
     id: version
     attributes:
       label: 插件版本
+      multiple: true
       options:
         - nonebot-plugin-mcqq
         - nonebot-plugin-mcqq-mcrcon
@@ -42,7 +35,7 @@ body:
     attributes:
       label: 插件版本号
       description: 填写当前使用的版本号
-      placeholder: V1.0.0
+      placeholder: v0.1.4
     validations:
       required: true
 

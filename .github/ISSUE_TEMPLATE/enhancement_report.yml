@@ -1,7 +1,7 @@
 name: 【功能建议】
 description: 改进现有功能或提出新功能
 title: "【功能建议】（在此简单描述新的功能或建议）"
-labels: ["enhancement"]
+labels: [ "enhancement" ]
 body:
   - type: markdown
     attributes:
@@ -12,6 +12,7 @@ body:
     id: version
     attributes:
       label: 插件版本
+      multiple: true
       options:
         - nonebot-plugin-mcqq
         - nonebot-plugin-mcqq-mcrcon
@@ -25,7 +26,7 @@ body:
     attributes:
       label: 插件版本号
       description: 填写当前使用的版本号
-      placeholder: V1.0.0
+      placeholder: v1.0.0
     validations:
       required: true
 
