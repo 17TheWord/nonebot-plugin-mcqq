@@ -64,17 +64,13 @@ public class FileWatcher {
     public static void watcherLog(String filePath, String fileName, Consumer<String> consumer) throws IOException, InterruptedException {
         WatchService watchService = FileSystems.getDefault().newWatchService();
 
-        Paths.get(filePath).register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+        Paths.get(filePath).register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
         // 文件读取行数
         AtomicLong lastPointer = new AtomicLong(0L);
         do {
             WatchKey key = watchService.take();
             List<WatchEvent<?>> watchEvents = key.pollEvents();
-            watchEvents.stream().filter(
-                    i -> StandardWatchEventKinds.ENTRY_MODIFY == i.kind()
-                            && fileName.equals(((Path) i.context()).getFileName().toString())
-            ).forEach(i -> {
+            watchEvents.stream().filter(i -> StandardWatchEventKinds.ENTRY_MODIFY == i.kind() && fileName.equals(((Path) i.context()).getFileName().toString())).forEach(i -> {
                 if (i.count() > 1) {
                     // "重复事件"
                     return;
@@ -89,14 +85,36 @@ public class FileWatcher {
                 String msg = str.toString();
 
                 // 消息处理
+                /*
+                原版服务器聊天内容判定："[Async Chat Thread - "
+                原版服务端加入/离开判定："[Server thread/INFO]:"
+                Forge端聊天内容判定："[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <Yuuuo> ."
+                Forge端加入/离开判定："[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Yuuuo joined the game"
+                 */
                 if ((Boolean) configReader.config().get("enable_mc_qq") && msg.length() < 256) {
-                    if (msg.contains("[Async Chat Thread - ")) {
+                    // 判定前缀
+                    if (msg.contains("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <")) {
+                        String playerName = msg.substring(msg.indexOf("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <") + "[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <".length(), msg.indexOf(">"));
+                        String playerMsg = msg.substring(msg.indexOf(playerName + "> ") + (playerName + "> ").length());
+                        MC_QQ.websocket.sendMessage(playerName + configReader.config().get("say_way") + playerMsg);
+                    } else if (msg.contains("[Async Chat Thread - ")) {
                         String playerName = msg.substring(msg.indexOf("/INFO]: <") + 9, msg.indexOf(">"));
                         String playerMsg = msg.substring(msg.indexOf(playerName + "> ") + (playerName + "> ").length());
                         MC_QQ.websocket.sendMessage(playerName + configReader.config().get("say_way") + playerMsg);
                     }
+                    boolean join_left = msg.contains(" left the game") | msg.contains(" joined the game");
                     if ((Boolean) configReader.config().get("join_quit")) {
-                        if (msg.contains("[Server thread/INFO]: ") & (msg.contains(" left the game") | msg.contains(" joined the game"))) {
+                        if (msg.contains("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: ") & join_left) {
+                            String join_quit_msg = msg.substring(msg.indexOf("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: ") + "[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: ".length());
+                            if (join_quit_msg.contains(" left the game")) {
+                                join_quit_msg = join_quit_msg.replace("left the game", "离开了服务器");
+                            } else {
+                                join_quit_msg = join_quit_msg.replace("joined the game", "加入了服务器");
+                            }
+                            MC_QQ.websocket.sendMessage(join_quit_msg);
+                        }
+                    } else if ((Boolean) configReader.config().get("join_quit")) {
+                        if (msg.contains("[Server thread/INFO]: ") & join_left) {
                             String join_quit_msg = msg.substring(msg.indexOf("[Server thread/INFO]: ") + "[Server thread/INFO]: ".length());
                             if (join_quit_msg.contains(" left the game")) {
                                 join_quit_msg = join_quit_msg.replace("left the game", "离开了服务器");
