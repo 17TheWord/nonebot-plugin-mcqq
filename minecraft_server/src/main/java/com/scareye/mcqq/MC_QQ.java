@@ -8,10 +8,10 @@ public class MC_QQ {
 
 
     public static void main(String[] args) {
-        FileWatcher.FileListen(".\\logs\\", "latest.log");
         configReader = new ConfigReader();
+        FileWatcher.FileListen((String) configReader.config().get("log_local"), "latest.log");
         try {
-            websocket = new Ws((String) configReader.config().get("websocket_hostname"), (Integer) configReader.config().get("websocket_port"));
+            websocket = new Ws();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
