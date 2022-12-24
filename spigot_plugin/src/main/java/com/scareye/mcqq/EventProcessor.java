@@ -3,6 +3,7 @@ package com.scareye.mcqq;
 import com.alibaba.fastjson.JSONObject;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -24,8 +25,9 @@ import static com.scareye.mcqq.MC_QQ.*;
 class EventProcessor implements Listener {
     /**
      * 消息的处理
+     * @return
      */
-    static void onJsonMessage(String message) {
+    static BaseComponent onJsonMessage(String message) {
         JSONObject msgJson = JSONObject.parseObject(message);
         // 组合消息
         TextComponent component = new TextComponent("[MC_QQ] ");
@@ -141,6 +143,7 @@ class EventProcessor implements Listener {
                 say(String.valueOf(msgText));
             }
         }
+        return component;
     }
 
 

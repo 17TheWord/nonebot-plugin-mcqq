@@ -18,10 +18,8 @@ class Ws extends WebSocketServer {
     // 连接状态
     boolean ifOpen;
 
-    Ws() throws UnknownHostException {
-    }
 
-    Ws(String hostname, int port) throws UnknownHostException {
+    Ws() {
         super(new InetSocketAddress((String) configReader.config().get("websocket_hostname"), (Integer) configReader.config().get("websocket_port")));
     }
 
