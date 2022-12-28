@@ -1,8 +1,25 @@
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.internal.permission import Permission
+from nonebot_plugin_guild_patch import GuildMessageEvent
+
+
+async def _guild_admin(bot: Bot, event: GuildMessageEvent):
+    roles = set(
+        role["role_name"]
+        for role in (
+            await bot.get_guild_member_profile(
+                guild_id=event.guild_id, user_id=event.user_id
+            )
+        )["roles"]
+    )
+    return bool(roles & set(get_mc_qq_mcrcon_guild_admin_roles(bot)))
+
+
+GUILD_ADMIN: Permission = Permission(_guild_admin)
 
 
 # Rule
-async def msg_rule(bot: Bot, event: MessageEvent) -> bool:
+async def msg_rule(bot: Bot, event: GroupMessageEvent | GuildMessageEvent) -> bool:
     if event.message_type == "group":
         if event.group_id in get_mc_qq_group_list(bot):
             return True
@@ -13,7 +30,7 @@ async def msg_rule(bot: Bot, event: MessageEvent) -> bool:
 
 
 # 发送消息到 QQ
-async def send_msg_to_qq(bot, recv_msg):
+async def send_msg_to_qq(bot: Bot, recv_msg):
     # 发送群消息
     if get_mc_qq_group_list(bot=bot):
         for per_group in get_mc_qq_group_list(bot=bot):
@@ -34,7 +51,7 @@ async def send_msg_to_qq(bot, recv_msg):
 
 
 # 获取昵称
-async def get_member_nickname(bot: Bot, event, user_id):
+async def get_member_nickname(bot: Bot, event: GroupMessageEvent | GuildMessageEvent, user_id):
     # 判断从 群 或者 频道 获取成员信息
     if event.message_type == "group":
         if event.sender.card == "":
@@ -59,7 +76,7 @@ async def get_member_nickname(bot: Bot, event, user_id):
 
 
 # 消息处理
-async def msg_process(bot: Bot, event):
+async def msg_process(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
     # 获取昵称
     member_nickname = await get_member_nickname(bot, event, event.user_id)
     # 命令信息起始
@@ -136,6 +153,14 @@ def get_mc_qq_guild_list(bot: Bot) -> list:
         return list(bot.config.mc_qq_guild_list)
     except AttributeError:
         return []
+
+
+# 获取频道 MC_QQ 管理身份组
+def get_mc_qq_mcrcon_guild_admin_roles(bot: Bot) -> list:
+    try:
+        return list(bot.config.mc_qq_mcrcon_guild_admin_roles)
+    except AttributeError:
+        return ["频道主", "管理员"]
 
 
 # 获取 IP

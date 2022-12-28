@@ -45,7 +45,7 @@ def dis_mcrcon_connect():
 
 
 # 发送消息到 Minecraft
-async def send_msg_to_mc(bot: Bot, event):
+async def send_msg_to_mc(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
     global mcr
     text_msg, command_msg = await msg_process(bot=bot, event=event)
     try:
@@ -55,3 +55,15 @@ async def send_msg_to_mc(bot: Bot, event):
         on_mcrcon_connect(bot=bot)
         await send_msg_to_mc(bot, event)
         nonebot.logger.success("[MC_QQ]丨来自QQ的消息：" + text_msg)
+
+
+# 发送命令到 Minecraft
+async def send_command_to_mc(bot: Bot, event):
+    global mcr
+    try:
+        mcr.command(event.raw_message.strip("/mcc"))
+        nonebot.logger.success("[MC_QQ_Rcon]丨成功发送命令：" + event.raw_message.strip("/mcc"))
+    except (mcrcon.MCRconException, ConnectionResetError, ConnectionAbortedError):
+        nonebot.logger.error("[MC_QQ_Rcon]丨无法发送命令，MCRcon 未连接。")
+        on_mcrcon_connect(bot=bot)
+        await send_command_to_mc(bot, event)
