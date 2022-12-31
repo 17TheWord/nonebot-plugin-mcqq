@@ -68,101 +68,89 @@ public class Utils {
             String msgType = JSONObject.parseObject(String.valueOf(jsonArray)).getString("msgType");
             String msgData = JSONObject.parseObject(String.valueOf(jsonArray)).getString("msgData");
 
-            if (msgData.equals("/list")) {
-                Collection<? extends Player> onlinePlayerList = Bukkit.getServer().getOnlinePlayers();
-                StringBuilder playerList = new StringBuilder();
-                if (onlinePlayerList.isEmpty()) {
-                    playerList = new StringBuilder("当前没有玩家在线");
-                } else {
-                    for (Player player : onlinePlayerList) {
-                        playerList.append(player.getName()).append("\n");
-                    }
-                }
-                wsClient.sendMessage(playerList.toString());
-            } else {
-                TextComponent msgComponent = new TextComponent();
-                switch (msgType) {
-                    case "text":
-                        msgComponent.setText(msgData + " ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                    case "face":
-                        msgComponent.setText("[表情] ");
-                        msgComponent.setColor(ChatColor.GOLD);
-                        break;
-                    case "record":
-                        msgComponent.setText("[语音] ");
-                        msgComponent.setColor(ChatColor.LIGHT_PURPLE);
-                        break;
-                    case "video":
-                        msgComponent.setText("[视频] ");
-                        msgComponent.setColor(ChatColor.LIGHT_PURPLE);
-                        msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
-                        msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看视频")));
-                        break;
-                    case "rps":
-                        msgComponent.setText("[猜拳] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                    case "dice":
-                        msgComponent.setText("[骰子] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                    case "anonymous":
-                        msgComponent.setText("[匿名消息] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                    case "share":
-                        msgComponent.setText("[分享] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                    case "contact":
-                        msgComponent.setText("[推荐] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                    case "location":
-                        msgComponent.setText("[位置] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                    case "music":
-                        msgComponent.setText("[音乐] ");
-                        msgComponent.setColor(ChatColor.YELLOW);
-                        msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
-                        msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看音乐")));
-                        break;
-                    case "image":
-                        msgComponent.setText("[图片] ");
-                        msgComponent.setColor(ChatColor.AQUA);
-                        msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
-                        msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看图片")));
-                        break;
-                    case "redbag":
-                        msgComponent.setText("[红包] ");
-                        msgComponent.setColor(ChatColor.RED);
-                        break;
-                    case "poke":
-                        msgComponent.setText("[戳一戳] ");
-                        msgComponent.setColor(ChatColor.GOLD);
-                        break;
-                    case "gift":
-                        msgComponent.setText("[礼物] ");
-                        msgComponent.setColor(ChatColor.YELLOW);
-                        break;
-                    case "forward":
-                        msgComponent.setText("[合并转发] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                    case "at":
-                        msgComponent.setText(msgData + " ");
-                        msgComponent.setColor(ChatColor.GREEN);
-                        break;
-                    default:
-                        msgComponent.setText("[" + msgType + "] ");
-                        msgComponent.setColor(ChatColor.WHITE);
-                        break;
-                }
-                msgText.append(msgData);
-                component.addExtra(msgComponent);
+            TextComponent msgComponent = new TextComponent();
+            switch (msgType) {
+                case "text":
+                    msgComponent.setText(msgData + " ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
+                case "face":
+                    msgComponent.setText("[表情] ");
+                    msgComponent.setColor(ChatColor.GOLD);
+                    break;
+                case "record":
+                    msgComponent.setText("[语音] ");
+                    msgComponent.setColor(ChatColor.LIGHT_PURPLE);
+                    break;
+                case "video":
+                    msgComponent.setText("[视频] ");
+                    msgComponent.setColor(ChatColor.LIGHT_PURPLE);
+                    msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
+                    msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看视频")));
+                    break;
+                case "rps":
+                    msgComponent.setText("[猜拳] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
+                case "dice":
+                    msgComponent.setText("[骰子] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
+                case "anonymous":
+                    msgComponent.setText("[匿名消息] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
+                case "share":
+                    msgComponent.setText("[分享] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
+                case "contact":
+                    msgComponent.setText("[推荐] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
+                case "location":
+                    msgComponent.setText("[位置] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                case "music":
+                    msgComponent.setText("[音乐] ");
+                    msgComponent.setColor(ChatColor.YELLOW);
+                    msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
+                    msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看音乐")));
+                    break;
+                case "image":
+                    msgComponent.setText("[图片] ");
+                    msgComponent.setColor(ChatColor.AQUA);
+                    msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
+                    msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看图片")));
+                    break;
+                case "redbag":
+                    msgComponent.setText("[红包] ");
+                    msgComponent.setColor(ChatColor.RED);
+                    break;
+                case "poke":
+                    msgComponent.setText("[戳一戳] ");
+                    msgComponent.setColor(ChatColor.GOLD);
+                    break;
+                case "gift":
+                    msgComponent.setText("[礼物] ");
+                    msgComponent.setColor(ChatColor.YELLOW);
+                    break;
+                case "forward":
+                    msgComponent.setText("[合并转发] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
+                case "at":
+                    msgComponent.setText(msgData + " ");
+                    msgComponent.setColor(ChatColor.GREEN);
+                    break;
+                default:
+                    msgComponent.setText("[" + msgType + "] ");
+                    msgComponent.setColor(ChatColor.WHITE);
+                    break;
             }
+            msgText.append(msgData);
+            component.addExtra(msgComponent);
+
         }
         // 后台打印文本
         say(String.valueOf(msgText));
