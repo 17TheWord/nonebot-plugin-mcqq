@@ -1,41 +1,54 @@
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent
+import json
+
+from nonebot import get_driver, logger
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot_plugin_guild_patch import GuildMessageEvent
 
 
 # Rule
-async def msg_rule(bot: Bot, event: MessageEvent) -> bool:
-    if event.message_type == "group":
-        return event.group_id in get_mc_qq_group_list(bot)
-    elif event.message_type == "guild":
-        for per_channel in get_mc_qq_guild_list(bot=bot):
-            if event.guild_id == per_channel[0] and event.channel_id == per_channel[1]:
+async def msg_rule(event: GroupMessageEvent | GuildMessageEvent) -> bool:
+    for per_server in get_mc_qq_servers_list():
+        if event.message_type == "group":
+            if event.group_id in per_server[1]:
+                return True
+        elif event.message_type == "guild":
+            if [event.guild_id, event.channel_id] in per_server[2]:
                 return True
     return False
 
 
 # 发送消息到 QQ
 async def send_msg_to_qq(bot: Bot, recv_msg):
-    # 发送群消息
-    if get_mc_qq_group_list(bot=bot):
-        for per_group in get_mc_qq_group_list(bot=bot):
-            await bot.call_api(
-                "send_group_msg",
-                group_id=per_group,
-                message=recv_msg
-            )
-    # 发送频道消息
-    if get_mc_qq_guild_list(bot=bot):
-        for per_guild in get_mc_qq_guild_list(bot=bot):
-            await bot.call_api(
-                "send_guild_channel_msg",
-                guild_id=per_guild[0],
-                channel_id=per_guild[1],
-                message=recv_msg
-            )
+    json_msg = json.loads(recv_msg)
+    msg = json_msg['message']['data']
+    if get_mc_qq_display_server_name():
+        msg = f"[{json_msg['server_name']}] {json_msg['message']['data']}"
+    # 循环服务器列表并发送消息
+    if get_mc_qq_servers_list():
+        for per_server in get_mc_qq_servers_list():
+            if per_server[0] == json_msg['server_name']:
+                if per_server[1]:
+                    for per_group in per_server[1]:
+                        logger.success(
+                            f"[MC_QQ]丨from [{json_msg['server_name']}] to [群:{per_group}] \"{msg}\"")
+                        await bot.send_group_msg(
+                            group_id=per_group,
+                            message=msg
+                        )
+                if per_server[2]:
+                    for per_guild in per_server[2]:
+                        logger.success(
+                            f"[MC_QQ]丨from [{json_msg['server_name']}] to [频道:{per_guild[0]}/{per_guild[1]}] \"{msg}\"")
+                        await bot.send_guild_channel_msg(
+                            guild_id=per_guild[0],
+                            channel_id=per_guild[1],
+                            message=msg
+                        )
 
 
 # 获取昵称
 async def get_member_nickname(bot: Bot, event, user_id):
-    # 判断从 群 或者 频道 获取成员信息
+    # 判断从 群/频道 获取成员信息
     if event.message_type == "group":
         if event.sender.card == "":
             return event.sender.nickname
@@ -59,14 +72,28 @@ async def get_member_nickname(bot: Bot, event, user_id):
 
 
 # 消息处理
-async def msg_process(bot: Bot, event):
+async def msg_process(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
     # 获取昵称
     member_nickname = await get_member_nickname(bot, event, event.user_id)
+    temp_bool = get_mc_qq_send_group_name()
+    message_type = {}
+    if temp_bool:
+        if event.message_type == "group":
+            message_type['type'] = "group"
+            message_type['group_name'] = (await bot.get_group_info(group_id=event.group_id))['group_name']
+        elif event.message_type == "guild":
+            message_type['type'] = "guild"
+            message_type['guild_name'] = (await bot.get_guild_meta_by_guest(guild_id=event.guild_id))['guild_name']
+            for per_channel in (await bot.get_guild_channel_list(guild_id=event.guild_id, no_cache=True)):
+                if str(event.channel_id) == per_channel['channel_id']:
+                    message_type['channel_name'] = per_channel['channel_name']
+                    break
+    else:
+        message_type['type'] = "group"
+        message_type['group_name'] = ""
+
     # 初始化源消息
-    msgJson = '{ "senderName": "' + \
-              (
-                  member_nickname
-              ) + '", "message": ['
+    msgJson = '{"senderName": "' + member_nickname + '", message_type: ' + str(message_type) + ', "message": ['
     text_msg = event.sender.nickname + '说：'
     for msg in event.message:
         msgJson += '{"msgType":"' + msg.type + '","msgData": "'
@@ -106,49 +133,55 @@ async def msg_process(bot: Bot, event):
     return text_msg, msgJson
 
 
-# 获取群列表
-def get_mc_qq_group_list(bot: Bot):
-    try:
-        return list(bot.config.mc_qq_group_list)
-    except AttributeError:
-        return []
-
-
-# 获取频道列表
-def get_mc_qq_guild_list(bot: Bot):
-    try:
-        return bot.config.mc_qq_guild_list
-    except AttributeError:
-        return []
-
-
 # 获取 IP
-def get_mc_qq_ip(bot: Bot):
+def get_mc_qq_ip() -> str:
     try:
-        return str(bot.config.mc_qq_ip)
+        return str(get_driver().config.mc_qq_ip)
     except AttributeError:
-        return "127.0.0.1"
+        return "localhost"
 
 
 # 获取 WebSocket 端口
-def get_mc_qq_ws_port(bot: Bot):
+def get_mc_qq_ws_port() -> int:
     try:
-        return int(bot.config.mc_qq_ws_port)
+        return int(get_driver().config.mc_qq_ws_port)
     except AttributeError:
         return 8765
 
 
 # 获取 MCRcon 端口
-def get_mc_qq_mcrcon_port(bot: Bot):
+def get_mc_qq_mcrcon_port() -> int:
     try:
-        return int(bot.config.mc_qq_mcrcon_port)
+        return int(get_driver().config.mc_qq_mcrcon_port)
     except AttributeError:
         return 25575
 
 
 # 获取 MCRcon 密码
-def get_mc_qq_mcrcon_password(bot: Bot):
+def get_mc_qq_mcrcon_password() -> str:
     try:
-        return str(bot.config.mc_qq_mcrcon_password)
+        return str(get_driver().config.mc_qq_mcrcon_password)
     except AttributeError:
         return ""
+
+
+# 获取 服务器列表
+def get_mc_qq_servers_list() -> list:
+    try:
+        return list(get_driver().config.mc_qq_servers_list)
+    except AttributeError:
+        return []
+
+
+def get_mc_qq_display_server_name() -> bool:
+    try:
+        return bool(get_driver().config.mc_qq_display_server_name)
+    except AttributeError:
+        return False
+
+
+def get_mc_qq_send_group_name() -> bool:
+    try:
+        return bool(get_driver().config.mc_qq_send_group_name)
+    except AttributeError:
+        return False
