@@ -12,6 +12,7 @@ class ConfigReader {
 
     /**
      * 获取是否启用插件
+     *
      * @return Enable
      */
     static boolean getEnable() {
@@ -19,7 +20,17 @@ class ConfigReader {
     }
 
     /**
+     * 获取是否启用插件
+     *
+     * @return Enable
+     */
+    static String getServerName() {
+        return config.getString("server_name", "");
+    }
+
+    /**
      * 获取地址
+     *
      * @return Address
      */
     static String getAddress() {
@@ -28,6 +39,7 @@ class ConfigReader {
 
     /**
      * 获取端口
+     *
      * @return Port
      */
     static int getPort() {
@@ -36,6 +48,7 @@ class ConfigReader {
 
     /**
      * 获取聊天修饰
+     *
      * @return SayWay
      */
     static String getSayWay() {
@@ -44,6 +57,7 @@ class ConfigReader {
 
     /**
      * 获取是否启用 死亡事件 推送
+     *
      * @return SayWay
      */
     static Boolean getDeathMessage() {
@@ -52,10 +66,20 @@ class ConfigReader {
 
     /**
      * 获取是否启用 加入/退出 推送
+     *
      * @return JoinQuit
      */
     static boolean getJoinQuit() {
         return config.getBoolean("join_quit", true);
+    }
+
+    /**
+     * 获取是否启用 群名/频道名 前缀
+     *
+     * @return JoinQuit
+     */
+    static boolean getDisplayServerName() {
+        return config.getBoolean("display_servername", false);
     }
 
 }
