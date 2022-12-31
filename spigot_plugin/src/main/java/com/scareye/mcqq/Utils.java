@@ -136,7 +136,7 @@ public class Utils {
                     msgComponent.setColor(ChatColor.WHITE);
                     break;
                 case "at":
-                    msgComponent.setText(msgData + " ");
+                    msgComponent.setText(msgData.replace(" ", "") + " ");
                     msgComponent.setColor(ChatColor.GREEN);
                     break;
                 default:
