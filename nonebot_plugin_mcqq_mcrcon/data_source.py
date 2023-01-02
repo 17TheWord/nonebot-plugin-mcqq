@@ -18,6 +18,7 @@ from .utils import (
 )
 
 CLIENTS = []
+"""客户端列表"""
 
 
 async def ws_client(websocket):
@@ -42,7 +43,7 @@ async def ws_client(websocket):
             else:
                 await send_msg_to_qq(bot=get_bot(), recv_msg=message)
     except websockets.WebSocketException:
-        CLIENTS.remove([msg['server_name'], websocket])
+        CLIENTS.remove({"server_name": msg['server_name'], "ws_client": websocket, "mcrcon_connect": mcrcon_connect})
     if websocket.closed:
         mcrcon_connect.disconnect()
         logger.error(f"[MC_QQ_Rcon]丨[Server:{msg['server_name']}] 的 WebSocket、Rcon 连接已断开")
@@ -66,35 +67,40 @@ async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageE
     text_msg, command_msg = await msg_process(bot=bot, event=event)
     client = await get_client(event=event)
     if client and client['mcrcon_connect']:
-        client['mcrcon_connect'].command(command_msg)
-        logger.success(f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
+        try:
+            client['mcrcon_connect'].command(command_msg)
+            logger.success(f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
+        except mcrcon.MCRconException:
+            logger.error(f"[MC_QQ_Rcon]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
+            # 连接关闭则移除客户端
+            CLIENTS.remove(client)
 
 
 async def send_command_to_mc(event: Union[GroupMessageEvent, GuildMessageEvent]):
     """发送命令到 Minecraft"""
     client = await get_client(event=event)
     if client and client['mcrcon_connect']:
-        client['mcrcon_connect'].command(event.raw_message.strip("/mcc"))
-        logger.success(
-            f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\"")
+        try:
+            client['mcrcon_connect'].command(event.raw_message.strip("/mcc"))
+            logger.success(
+                f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\""
+            )
+        except mcrcon.MCRconException:
+            logger.error(f"[MC_QQ_Rcon]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
+            # 连接关闭则移除客户端
+            CLIENTS.remove(client)
 
 
 async def get_client(event: Union[GroupMessageEvent, GuildMessageEvent]):
     """获取 服务器名、ws客户端、Rcon连接"""
     for per_client in CLIENTS:
-        try:
-            for per_server in get_mc_qq_servers_list():
-                # 如果 服务器名 == ws客户端中记录的服务器名，且ws客户端存在
-                if per_server[0] == per_client['server_name'] and per_client['ws_client']:
-                    if event.message_type == "group":
-                        if event.group_id in per_server[1]:
-                            return per_client
-                    if event.message_type == "guild":
-                        if [event.guild_id, event.channel_id] in per_server[2]:
-                            return per_client
-        except mcrcon.MCRconException:
-            logger.error(f"[MC_QQ_Rcon]丨发送至 [Server:{per_client['server_name']}] 的过程中出现了错误")
-            # 连接关闭则移除客户端
-            CLIENTS.remove(per_client)
-            continue
+        for per_server in get_mc_qq_servers_list():
+            # 如果 服务器名 == ws客户端中记录的服务器名，且ws客户端存在
+            if per_server[0] == per_client['server_name'] and per_client['ws_client']:
+                if event.message_type == "group":
+                    if event.group_id in per_server[1]:
+                        return per_client
+                if event.message_type == "guild":
+                    if [event.guild_id, event.channel_id] in per_server[2]:
+                        return per_client
     return None
