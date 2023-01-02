@@ -1,3 +1,5 @@
+from typing import Union
+
 from nonebot import get_driver, on_command, on_message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP_OWNER, GROUP_ADMIN
 from nonebot.permission import SUPERUSER
@@ -36,7 +38,7 @@ async def on_stop():
 
 # 收到 群/频道 消息时
 @mc_qq_mcrcon.handle()
-async def handle_first_receive(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
+async def handle_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     await send_msg_to_mc(bot=bot, event=event)
 
 
@@ -44,6 +46,6 @@ async def handle_first_receive(bot: Bot, event: GroupMessageEvent | GuildMessage
 @mc_qq_mcrcon_command.handle()
 async def handle_first_receive(
         bot: Bot,
-        event: GroupMessageEvent | GuildMessageEvent,
+        event: Union[GroupMessageEvent, GuildMessageEvent],
 ):
     await send_command_to_mc(bot=bot, event=event)
