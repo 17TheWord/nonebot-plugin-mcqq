@@ -15,6 +15,9 @@ public final class MC_QQ extends JavaPlugin {
     // 静态变量 instance
     static JavaPlugin instance;
 
+    static int connectTime;
+    static boolean serverClose = true;
+
     @Override
     public void onLoad() {
         // 如果配置文件不存在，Bukkit 会保存默认的配置
@@ -26,12 +29,16 @@ public final class MC_QQ extends JavaPlugin {
         // 赋值插件实例
         instance = this;
 
+        serverClose = true;
+
+        connectTime = 0;
+
         // new Ws 对象，并将配置文件中 地址 与 端口 写入
         try {
             wsClient = new WSClient();
             // 启动 WebSocket
-            wsClient.connectBlocking();
-        } catch (URISyntaxException | InterruptedException e) {
+            wsClient.connect();
+        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
         // 注册事件
@@ -41,9 +48,10 @@ public final class MC_QQ extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        wsClient.close();
-        wsClient = null;
-        say("[MC_QQ]：已卸载");
+        serverClose = false;
+        if (wsClient.isOpen()) {
+            wsClient.close();
+        }
     }
 
     /**
@@ -52,6 +60,6 @@ public final class MC_QQ extends JavaPlugin {
      */
     static void say(String msg) {
         CommandSender sender = Bukkit.getConsoleSender();
-        sender.sendMessage(msg);
+        sender.sendMessage("[MC_QQ] " + msg);
     }
 }

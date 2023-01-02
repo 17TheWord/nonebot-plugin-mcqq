@@ -13,16 +13,16 @@ class ConfigReader {
     /**
      * 获取是否启用插件
      *
-     * @return Enable
+     * @return boolean Enable
      */
     static boolean getEnable() {
         return config.getBoolean("enable_mc_qq", true);
     }
 
     /**
-     * 获取是否启用插件
+     * 获取服务器名
      *
-     * @return Enable
+     * @return String serverName
      */
     static String getServerName() {
         return config.getString("server_name", "");
@@ -31,7 +31,7 @@ class ConfigReader {
     /**
      * 获取地址
      *
-     * @return Address
+     * @return String Address
      */
     static String getAddress() {
         return config.getString("websocket_hostname", "127.0.0.1");
@@ -40,7 +40,7 @@ class ConfigReader {
     /**
      * 获取端口
      *
-     * @return Port
+     * @return int Port
      */
     static int getPort() {
         return config.getInt("websocket_port", Integer.parseInt("8765"));
@@ -49,7 +49,7 @@ class ConfigReader {
     /**
      * 获取聊天修饰
      *
-     * @return SayWay
+     * @return String SayWay
      */
     static String getSayWay() {
         return config.getString("say_way", "说：");
@@ -58,28 +58,28 @@ class ConfigReader {
     /**
      * 获取是否启用 死亡事件 推送
      *
-     * @return SayWay
+     * @return boolean deathMessage
      */
-    static Boolean getDeathMessage() {
-        return config.getBoolean("death_message", true);
+    static boolean getDeathMessage() {
+        return getEnable() &&config.getBoolean("death_message", true);
     }
 
     /**
      * 获取是否启用 加入/退出 推送
      *
-     * @return JoinQuit
+     * @return boolean JoinQuit
      */
     static boolean getJoinQuit() {
-        return config.getBoolean("join_quit", true);
+        return getEnable() &&config.getBoolean("join_quit", true);
     }
 
     /**
      * 获取是否启用 群名/频道名 前缀
      *
-     * @return JoinQuit
+     * @return boolean JoinQuit
      */
     static boolean getDisplayServerName() {
-        return config.getBoolean("display_servername", false);
+        return getEnable() && config.getBoolean("display_servername", false);
     }
 
 }

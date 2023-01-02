@@ -17,7 +17,7 @@ class EventProcessor implements Listener {
      */
     @EventHandler
     void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (wsClient.isOpen() && ConfigReader.getEnable() && !event.isCancelled()) {
+        if (ConfigReader.getEnable() && !event.isCancelled()) {
             wsClient.sendMessage(processMessageToJson(event));
         }
     }
@@ -27,7 +27,7 @@ class EventProcessor implements Listener {
      */
     @EventHandler
     void onPlayerDeath(PlayerDeathEvent event) {
-        if (wsClient.isOpen() && ConfigReader.getEnable() && ConfigReader.getDeathMessage()) {
+        if (ConfigReader.getDeathMessage()) {
             wsClient.sendMessage(event.getDeathMessage());
         }
     }
@@ -37,7 +37,7 @@ class EventProcessor implements Listener {
      */
     @EventHandler
     void onPlayerJoin(PlayerJoinEvent event) {
-        if (wsClient.isOpen() && ConfigReader.getEnable() && ConfigReader.getJoinQuit()) {
+        if (ConfigReader.getJoinQuit()) {
             wsClient.sendMessage(processMessageToJson(event));
         }
     }
@@ -47,7 +47,7 @@ class EventProcessor implements Listener {
      */
     @EventHandler
     void onPlayerQuit(PlayerQuitEvent event) {
-        if (wsClient.isOpen() && ConfigReader.getEnable() && ConfigReader.getJoinQuit()) {
+        if (ConfigReader.getJoinQuit()) {
             wsClient.sendMessage(processMessageToJson(event));
         }
     }
