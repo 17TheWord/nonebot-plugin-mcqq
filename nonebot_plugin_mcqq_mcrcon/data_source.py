@@ -69,25 +69,18 @@ async def mcrcon_disconnect(mcrcon_connect: mcrcon.MCRcon):
 async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     text_msg, command_msg = await msg_process(bot=bot, event=event)
     client = await get_client(event=event)
-    try:
-        if client and client['mcrcon_connect']:
-            client['mcrcon_connect'].command(command_msg)
-            logger.success(f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
-    except mcrcon.MCRconException:
-        logger.error(f"[MC_QQ_Rcon]丨发送至 [Server:{client['server_name']}] 的消息 \"{text_msg}\" 失败，MCRcon 未连接。")
+    if client and client['mcrcon_connect']:
+        client['mcrcon_connect'].command(command_msg)
+        logger.success(f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
 
 
 # 发送命令到 Minecraft
 async def send_command_to_mc(event: Union[GroupMessageEvent, GuildMessageEvent]):
     client = await get_client(event=event)
-    try:
-        if client and client['mcrcon_connect']:
-            client['mcrcon_connect'].command(event.raw_message.strip("/mcc"))
-            logger.success(
-                f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\"")
-    except mcrcon.MCRconException:
-        logger.error(
-            f"[MC_QQ_Rcon]丨发送至 [Server:{client['server_name']}] 命令 \"{event.raw_message.strip('/mcc')}\" 失败，MCRcon 未连接。")
+    if client and client['mcrcon_connect']:
+        client['mcrcon_connect'].command(event.raw_message.strip("/mcc"))
+        logger.success(
+            f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\"")
 
 
 # 获取 服务器名、ws客户端、Rcon连接

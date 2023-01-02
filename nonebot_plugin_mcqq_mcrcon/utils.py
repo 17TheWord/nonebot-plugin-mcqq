@@ -85,7 +85,7 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
     member_nickname = await get_member_nickname(bot, event, event.user_id)
 
     # 初始化日志消息
-    text_msg = member_nickname + "说："
+    text_msg = member_nickname + " 说："
 
     command_msg = "tellraw @p "
 
