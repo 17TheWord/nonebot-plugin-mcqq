@@ -11,6 +11,7 @@ CLIENTS = []
 
 
 async def echo(websocket):
+    msg = {}
     try:
         async for message in websocket:
             msg = json.loads(message)
@@ -20,9 +21,8 @@ async def echo(websocket):
             # 发送消息到QQ
             else:
                 await send_msg_to_qq(bot=get_bot(), recv_msg=message)
-    except:
+    except websockets.WebSocketException:
         CLIENTS.remove([msg['server_name'], websocket])
-        logger.error(f"[MC_QQ]丨MC服务器 {msg['server_name']} 的 WebSocket 连接已断开")
     if websocket.closed:
         logger.error(f"[MC_QQ]丨MC服务器 {msg['server_name']} 的 WebSocket 连接已断开")
 
