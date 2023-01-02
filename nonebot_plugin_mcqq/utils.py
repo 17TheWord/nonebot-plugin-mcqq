@@ -130,7 +130,6 @@ async def msg_process(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
         per_msg['msgData'] = msgData
         messageList.append(per_msg)
     msgDict['message'] = messageList
-    print(msgDict)
     return text_msg, str(msgDict)
 
 
