@@ -13,11 +13,13 @@ driver = get_driver()
 # bot连接时
 @driver.on_bot_connect
 async def on_start():
+    # 启动 WebSocket 服务器
     await start_ws_server()
 
 
 @driver.on_bot_disconnect
 async def on_close():
+    # 关闭 WebSocket 服务器
     await stop_ws_server()
 
 

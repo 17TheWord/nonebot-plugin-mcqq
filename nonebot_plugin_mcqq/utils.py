@@ -47,7 +47,7 @@ async def send_msg_to_qq(bot: Bot, recv_msg):
 
 
 # 获取昵称
-async def get_member_nickname(bot: Bot, event, user_id):
+async def get_member_nickname(bot: Bot, event: GroupMessageEvent | GuildMessageEvent, user_id):
     # 判断从 群/频道 获取成员信息
     if event.message_type == "group":
         group_member_info = await bot.get_group_member_info(
@@ -148,22 +148,6 @@ def get_mc_qq_ws_port() -> int:
         return int(get_driver().config.mc_qq_ws_port)
     except AttributeError:
         return 8765
-
-
-# 获取 MCRcon 端口
-def get_mc_qq_mcrcon_port() -> int:
-    try:
-        return int(get_driver().config.mc_qq_mcrcon_port)
-    except AttributeError:
-        return 25575
-
-
-# 获取 MCRcon 密码
-def get_mc_qq_mcrcon_password() -> str:
-    try:
-        return str(get_driver().config.mc_qq_mcrcon_password)
-    except AttributeError:
-        return ""
 
 
 # 获取 服务器列表
