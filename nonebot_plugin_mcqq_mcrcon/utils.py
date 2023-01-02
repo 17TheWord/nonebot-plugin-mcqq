@@ -7,6 +7,7 @@ from nonebot_plugin_guild_patch import GuildMessageEvent
 
 
 async def _guild_admin(bot: Bot, event: GuildMessageEvent):
+    """检测是否为频道管理员"""
     roles = set(
         role["role_name"]
         for role in (
@@ -19,10 +20,11 @@ async def _guild_admin(bot: Bot, event: GuildMessageEvent):
 
 
 GUILD_ADMIN: Permission = Permission(_guild_admin)
+"""频道管理员权限"""
 
 
-# Rule
 async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
+    """Rule 消息规则"""
     for per_server in get_mc_qq_servers_list():
         if event.message_type == "group":
             if event.group_id in per_server[1]:
@@ -33,8 +35,8 @@ async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     return False
 
 
-# 发送消息到 QQ
 async def send_msg_to_qq(bot: Bot, recv_msg):
+    """发送消息到 QQ"""
     json_msg = json.loads(recv_msg)
     msg = json_msg['message']['data']
     if get_mc_qq_display_server_name():
@@ -62,8 +64,8 @@ async def send_msg_to_qq(bot: Bot, recv_msg):
                         )
 
 
-# 获取昵称
 async def get_member_nickname(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent], user_id):
+    """获取昵称"""
     # 判断从 群/频道 获取成员信息
     if event.message_type == "group":
         group_member_info = await bot.get_group_member_info(
@@ -79,8 +81,8 @@ async def get_member_nickname(bot: Bot, event: Union[GroupMessageEvent, GuildMes
             user_id=user_id))['nickname']
 
 
-# 消息处理
 async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
+    """消息处理"""
     # 获取昵称
     member_nickname = await get_member_nickname(bot, event, event.user_id)
 
@@ -156,80 +158,80 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
     return text_msg, command_msg
 
 
-# 获取群列表
 def get_mc_qq_group_list():
+    """获取群列表"""
     try:
         return list(get_driver().config.mc_qq_group_list)
     except AttributeError:
         return []
 
 
-# 获取频道列表
 def get_mc_qq_guild_list() -> list:
+    """获取频道列表"""
     try:
         return list(get_driver().config.mc_qq_guild_list)
     except AttributeError:
         return []
 
 
-# 获取频道 MC_QQ 管理身份组
 def get_mc_qq_mcrcon_guild_admin_roles() -> list:
+    """获取频道 MC_QQ 管理身份组"""
     try:
         return list(get_driver().config.mc_qq_mcrcon_guild_admin_roles)
     except AttributeError:
         return ["频道主", "管理员"]
 
 
-# 获取 IP
 def get_mc_qq_ip():
+    """获取 IP"""
     try:
         return str(get_driver().config.mc_qq_ip)
     except AttributeError:
         return "127.0.0.1"
 
 
-# 获取 WebSocket 端口
 def get_mc_qq_ws_port():
+    """获取 WebSocket 端口"""
     try:
         return int(get_driver().config.mc_qq_ws_port)
     except AttributeError:
         return 8765
 
 
-# 获取 MCRcon 密码
 def get_mc_qq_mcrcon_password():
+    """获取 MCRcon 密码"""
     try:
         return str(get_driver().config.mc_qq_mcrcon_password)
     except AttributeError:
         return ""
 
 
-# 获取 服务器列表
 def get_mc_qq_servers_list() -> list:
+    """获取 服务器列表"""
     try:
         return list(get_driver().config.mc_qq_servers_list)
     except AttributeError:
         return []
 
 
-# 获取 是否显示服务器名称
 def get_mc_qq_display_server_name() -> bool:
+    """获取 是否显示服务器名称"""
     try:
         return bool(get_driver().config.MC_QQ_DISPLAY_SERVER_NAME)
     except AttributeError:
         return False
 
 
-# 获取 是否发送群聊名称
 def get_mc_qq_send_group_name() -> bool:
+    """获取 是否发送群聊名称"""
     try:
         return bool(get_driver().config.MC_QQ_SEND_GROUP_NAME)
     except AttributeError:
         return False
 
 
-# 获取 获取Rcon列表
 def get_mc_qq_mcrcon_rcon_list() -> dict:
+    """获取 获取Rcon列表"""
     try:
         return dict(get_driver().config.mc_qq_mcrcon_rcon_list)
     except AttributeError:

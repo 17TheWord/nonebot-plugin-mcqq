@@ -21,6 +21,7 @@ CLIENTS = []
 
 
 async def ws_client(websocket):
+    """WebSocket"""
     msg = {}
     try:
         async for message in websocket:
@@ -47,26 +48,21 @@ async def ws_client(websocket):
         logger.error(f"[MC_QQ_Rcon]丨[Server:{msg['server_name']}] 的 WebSocket、Rcon 连接已断开")
 
 
-# 启动 WebSocket 服务器
 async def start_ws_server():
+    """启动 WebSocket 服务器"""
     global ws
     ws = await websockets.serve(ws_client, get_mc_qq_ip(), get_mc_qq_ws_port())
     logger.success("[MC_QQ_Rcon]丨WebSocket 服务器已开启")
 
 
-# 关闭 WebSocket 服务器
 async def stop_ws_server():
+    """关闭 WebSocket 服务器"""
     global ws
     ws.close()
 
 
-# 关闭 MCRcon 连接
-async def mcrcon_disconnect(mcrcon_connect: mcrcon.MCRcon):
-    mcrcon_connect.disconnect()
-
-
-# 发送消息到 Minecraft
 async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
+    """发送消息到 Minecraft"""
     text_msg, command_msg = await msg_process(bot=bot, event=event)
     client = await get_client(event=event)
     if client and client['mcrcon_connect']:
@@ -74,8 +70,8 @@ async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageE
         logger.success(f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
 
 
-# 发送命令到 Minecraft
 async def send_command_to_mc(event: Union[GroupMessageEvent, GuildMessageEvent]):
+    """发送命令到 Minecraft"""
     client = await get_client(event=event)
     if client and client['mcrcon_connect']:
         client['mcrcon_connect'].command(event.raw_message.strip("/mcc"))
@@ -83,8 +79,8 @@ async def send_command_to_mc(event: Union[GroupMessageEvent, GuildMessageEvent])
             f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\"")
 
 
-# 获取 服务器名、ws客户端、Rcon连接
 async def get_client(event: Union[GroupMessageEvent, GuildMessageEvent]):
+    """获取 服务器名、ws客户端、Rcon连接"""
     for per_client in CLIENTS:
         try:
             for per_server in get_mc_qq_servers_list():
