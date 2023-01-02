@@ -4,7 +4,12 @@ from nonebot import get_driver, on_command, on_message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP_OWNER, GROUP_ADMIN
 from nonebot.permission import SUPERUSER
 
-from .data_source import send_msg_to_mc, send_command_to_mc, on_mcrcon_connect, on_connect, dis_mcrcon_connect
+from .data_source import (
+    send_msg_to_mc,
+    send_command_to_mc,
+    start_ws_server,
+    stop_ws_server
+)
 from .utils import msg_rule, GUILD_ADMIN, GuildMessageEvent
 
 mc_qq_mcrcon = on_message(priority=5, rule=msg_rule, block=False)
@@ -22,18 +27,16 @@ driver = get_driver()
 
 # Bot 连接时
 @driver.on_bot_connect
-async def on_start(bot: Bot):
-    while True:
-        on_mcrcon_connect(bot=bot)
-        await on_connect(bot=bot)
-        if not OSError:
-            break
+async def on_start():
+    # 启动 WebSocket 服务器
+    await start_ws_server()
 
 
-# 断开连接时
-@driver.on_shutdown
-async def on_stop():
-    dis_mcrcon_connect()
+# Bot 断开连接时
+@driver.on_bot_disconnect
+async def on_close():
+    # 关闭 WebSocket 服务器
+    await stop_ws_server()
 
 
 # 收到 群/频道 消息时
@@ -44,8 +47,5 @@ async def handle_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMe
 
 # 收到 群/频道 命令时
 @mc_qq_mcrcon_command.handle()
-async def handle_first_receive(
-        bot: Bot,
-        event: Union[GroupMessageEvent, GuildMessageEvent],
-):
-    await send_command_to_mc(bot=bot, event=event)
+async def handle_first_receive(event: Union[GroupMessageEvent, GuildMessageEvent]):
+    await send_command_to_mc(event=event)
