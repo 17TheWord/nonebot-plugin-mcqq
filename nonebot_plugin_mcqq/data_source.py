@@ -7,6 +7,9 @@ from nonebot_plugin_guild_patch import GuildMessageEvent
 
 from .utils import get_mc_qq_ip, get_mc_qq_ws_port, msg_process, send_msg_to_qq, get_mc_qq_servers_list
 
+from typing import Union
+
+
 CLIENTS = []
 
 
@@ -41,7 +44,7 @@ async def stop_ws_server():
 
 
 # 发送消息到 MC
-async def send_msg_to_mc(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
+async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     # 处理来自QQ的消息
     text_msg, msgJson = await msg_process(bot=bot, event=event)
     for per_client in CLIENTS:
