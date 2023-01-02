@@ -1,4 +1,5 @@
 import time
+
 import mcrcon
 import websockets
 import nonebot
@@ -45,7 +46,7 @@ def dis_mcrcon_connect():
 
 
 # 发送消息到 Minecraft
-async def send_msg_to_mc(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
+async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     global mcr
     text_msg, command_msg = await msg_process(bot=bot, event=event)
     try:

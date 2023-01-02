@@ -1,3 +1,5 @@
+from typing import Union
+
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.internal.permission import Permission
 from nonebot_plugin_guild_patch import GuildMessageEvent
@@ -19,7 +21,7 @@ GUILD_ADMIN: Permission = Permission(_guild_admin)
 
 
 # Rule
-async def msg_rule(bot: Bot, event: GroupMessageEvent | GuildMessageEvent) -> bool:
+async def msg_rule(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     if event.message_type == "group":
         if event.group_id in get_mc_qq_group_list(bot):
             return True
@@ -51,7 +53,7 @@ async def send_msg_to_qq(bot: Bot, recv_msg):
 
 
 # 获取昵称
-async def get_member_nickname(bot: Bot, event: GroupMessageEvent | GuildMessageEvent, user_id):
+async def get_member_nickname(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent], user_id):
     # 判断从 群 或者 频道 获取成员信息
     if event.message_type == "group":
         if event.sender.card == "":
@@ -76,7 +78,7 @@ async def get_member_nickname(bot: Bot, event: GroupMessageEvent | GuildMessageE
 
 
 # 消息处理
-async def msg_process(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
+async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     # 获取昵称
     member_nickname = await get_member_nickname(bot, event, event.user_id)
     # 命令信息起始
