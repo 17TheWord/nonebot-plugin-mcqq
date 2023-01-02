@@ -1,0 +1,5 @@
+com\scareye\mcqq\MC_QQ.class
+com\scareye\mcqq\ConfigReader.class
+com\scareye\mcqq\Utils.class
+com\scareye\mcqq\EventProcessor.class
+com\scareye\mcqq\WSClient.class
