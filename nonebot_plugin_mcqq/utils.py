@@ -4,9 +4,12 @@ from nonebot import get_driver, logger
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
+from typing import Union
+
+
 
 # Rule
-async def msg_rule(event: GroupMessageEvent | GuildMessageEvent) -> bool:
+async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     for per_server in get_mc_qq_servers_list():
         if event.message_type == "group":
             if event.group_id in per_server[1]:
@@ -47,7 +50,7 @@ async def send_msg_to_qq(bot: Bot, recv_msg):
 
 
 # 获取昵称
-async def get_member_nickname(bot: Bot, event: GroupMessageEvent | GuildMessageEvent, user_id):
+async def get_member_nickname(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent], user_id):
     # 判断从 群/频道 获取成员信息
     if event.message_type == "group":
         group_member_info = await bot.get_group_member_info(
@@ -64,7 +67,7 @@ async def get_member_nickname(bot: Bot, event: GroupMessageEvent | GuildMessageE
 
 
 # 消息处理
-async def msg_process(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
+async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     # 获取昵称
     member_nickname = await get_member_nickname(bot, event, event.user_id)
 
@@ -130,7 +133,6 @@ async def msg_process(bot: Bot, event: GroupMessageEvent | GuildMessageEvent):
         per_msg['msgData'] = msgData
         messageList.append(per_msg)
     msgDict['message'] = messageList
-    print(msgDict)
     return text_msg, str(msgDict)
 
 
