@@ -57,7 +57,7 @@ async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageE
     client = await get_client(event=event)
     if client and client['ws_client']:
         try:
-            client['ws_client'].send(msgJson)
+            await client['ws_client'].send(msgJson)
             logger.success(f"[MC_QQ]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
         except websockets.WebSocketException:
             logger.error(f"[MC_QQ]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
