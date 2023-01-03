@@ -29,7 +29,7 @@ async def ws_client(websocket):
                 logger.success(f"[MC_QQ]丨[Server:{msg['server_name']}] 已连接至 WebSocket 服务器")
             # 发送消息到QQ
             else:
-                await send_msg_to_qq(bot=get_bot(), recv_msg=message)
+                await send_msg_to_qq(bot=get_bot(), json_msg=msg)
     except websockets.WebSocketException:
         # 移除当前客户端
         CLIENTS.remove({"server_name": msg['server_name'], "ws_client": websocket})

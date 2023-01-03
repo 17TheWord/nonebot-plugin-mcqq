@@ -216,7 +216,7 @@ def get_mc_qq_servers_list() -> list:
 def get_mc_qq_display_server_name() -> bool:
     """获取 是否显示服务器名称"""
     try:
-        return bool(get_driver().config.MC_QQ_DISPLAY_SERVER_NAME)
+        return bool(get_driver().config.mc_qq_display_server_name)
     except AttributeError:
         return False
 
@@ -224,7 +224,7 @@ def get_mc_qq_display_server_name() -> bool:
 def get_mc_qq_send_group_name() -> bool:
     """获取 是否发送群聊名称"""
     try:
-        return bool(get_driver().config.MC_QQ_SEND_GROUP_NAME)
+        return bool(get_driver().config.mc_qq_send_group_name)
     except AttributeError:
         return False
 
