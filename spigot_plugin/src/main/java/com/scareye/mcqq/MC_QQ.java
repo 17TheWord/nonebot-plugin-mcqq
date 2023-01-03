@@ -2,7 +2,6 @@ package com.scareye.mcqq;
 
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.URISyntaxException;
@@ -15,8 +14,11 @@ public final class MC_QQ extends JavaPlugin {
     // 静态变量 instance
     static JavaPlugin instance;
 
+    // 连接次数
     static int connectTime;
-    static boolean serverClose = true;
+
+    // 服务器是否关闭
+    static boolean serverOpen = true;
 
     @Override
     public void onLoad() {
@@ -29,7 +31,7 @@ public final class MC_QQ extends JavaPlugin {
         // 赋值插件实例
         instance = this;
 
-        serverClose = true;
+        serverOpen = true;
 
         connectTime = 0;
 
@@ -48,18 +50,9 @@ public final class MC_QQ extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        serverClose = false;
+        serverOpen = false;
         if (wsClient.isOpen()) {
             wsClient.close();
         }
-    }
-
-    /**
-     * 定义方法 Say()
-     * 向服务器后台发送信息
-     */
-    static void say(String msg) {
-        CommandSender sender = Bukkit.getConsoleSender();
-        sender.sendMessage("[MC_QQ] " + msg);
     }
 }

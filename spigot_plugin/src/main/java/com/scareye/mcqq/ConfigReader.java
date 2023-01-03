@@ -78,8 +78,8 @@ class ConfigReader {
      *
      * @return boolean JoinQuit
      */
-    static boolean getDisplayServerName() {
-        return getEnable() && config.getBoolean("display_servername", false);
+    static boolean getDisplayGroupName() {
+        return getEnable() && config.getBoolean("display_groupname", false);
     }
 
 }

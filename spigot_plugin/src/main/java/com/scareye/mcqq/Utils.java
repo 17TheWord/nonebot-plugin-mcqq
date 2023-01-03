@@ -7,6 +7,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -16,9 +18,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Objects;
 
-import static com.scareye.mcqq.MC_QQ.say;
 
 public class Utils {
+
+    /**
+     * 定义方法 Say()
+     * 向服务器后台发送信息
+     */
+    static void say(String msg) {
+        CommandSender sender = Bukkit.getConsoleSender();
+        sender.sendMessage("[MC_QQ] " + msg);
+    }
 
     /**
      * 来自 NoneBot 的 JSON 消息的处理
@@ -28,10 +38,10 @@ public class Utils {
         // 组合消息
         TextComponent component = new TextComponent("[MC_QQ] ");
         component.setColor(ChatColor.YELLOW);
-        StringBuilder msgText = new StringBuilder("[MC_QQ]丨");
+        StringBuilder msgText = new StringBuilder();
 
         // 判断是否启用群聊名称前缀
-        if (ConfigReader.getDisplayServerName()) {
+        if (ConfigReader.getDisplayGroupName()) {
             // 获取 信息类型
             JSONObject messageType = msgJson.getJSONObject("message_type");
             TextComponent messageFrom = new TextComponent();
@@ -50,7 +60,7 @@ public class Utils {
         }
 
         // 发送人信息
-        TextComponent senderName = new TextComponent("丨" + msgJson.getString("senderName"));
+        TextComponent senderName = new TextComponent(msgJson.getString("senderName"));
         senderName.setColor(ChatColor.AQUA);
         // 将 发送者 添加至 组合消息
         component.addExtra(senderName);
