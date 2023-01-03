@@ -47,15 +47,15 @@ public class Utils {
             TextComponent messageFrom = new TextComponent();
             switch (messageType.getString("type")) {
                 case "group":
-                    messageFrom.setText(messageType.getString("group_name"));
-                    msgText.append(messageType.getString("group_name"));
+                    messageFrom.setText(messageType.getString("group_name") + " ");
+                    msgText.append(messageType.getString("group_name")).append(" ");
                     break;
                 case "guild":
-                    messageFrom.setText(messageType.getString("guild_name") + "/" + messageType.getString("channel_name"));
-                    msgText.append(messageType.getString("guild_name")).append("/").append(messageType.getString("channel_name"));
+                    messageFrom.setText(messageType.getString("guild_name") + "丨" + messageType.getString("channel_name") + " ");
+                    msgText.append(messageType.getString("guild_name")).append("丨").append(messageType.getString("channel_name")).append(" ");
                     break;
             }
-            messageFrom.setColor(ChatColor.AQUA);
+            messageFrom.setColor(ChatColor.GOLD);
             component.addExtra(messageFrom);
         }
 
@@ -65,7 +65,7 @@ public class Utils {
         // 将 发送者 添加至 组合消息
         component.addExtra(senderName);
         // 将 发送者 添加至 msgText
-        msgText.append("丨").append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
+        msgText.append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
 
         TextComponent sayWay = new TextComponent(ConfigReader.getSayWay());
         sayWay.setColor(ChatColor.WHITE);
