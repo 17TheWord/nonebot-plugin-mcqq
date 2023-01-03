@@ -28,6 +28,7 @@ async def ws_client(websocket):
         async for message in websocket:
             msg = json.loads(message)
             if msg['event_name'] == "ConnectEvent":
+                logger.success(f"[MC_QQ_Rcon]丨[Server:{msg['server_name']}] 已连接至 WebSocket 服务器")
                 mcrcon_connect = mcrcon.MCRcon(
                     websocket.remote_address[0],
                     get_mc_qq_mcrcon_password(),
@@ -38,12 +39,14 @@ async def ws_client(websocket):
                 CLIENTS.append(
                     {"server_name": msg['server_name'], "ws_client": websocket, "mcrcon_connect": mcrcon_connect}
                 )
-                logger.success(f"[MC_QQ_Rcon]丨[Server:{msg['server_name']}] 已连接至 WebSocket 服务器")
             # 发送消息到QQ
             else:
-                await send_msg_to_qq(bot=get_bot(), recv_msg=message)
+                await send_msg_to_qq(bot=get_bot(), json_msg=msg)
     except websockets.WebSocketException:
         CLIENTS.remove({"server_name": msg['server_name'], "ws_client": websocket, "mcrcon_connect": mcrcon_connect})
+    except ConnectionRefusedError:
+        logger.error(f"[MC_QQ_Rcon]丨[Server:{msg['server_name']}] 的 Rcon 未开启或连接信息错误")
+        logger.error(f"[MC_QQ_Rcon]丨[Server:{msg['server_name']}] 的 WebSocket 连接已断开")
     if websocket.closed:
         mcrcon_connect.disconnect()
         logger.error(f"[MC_QQ_Rcon]丨[Server:{msg['server_name']}] 的 WebSocket、Rcon 连接已断开")

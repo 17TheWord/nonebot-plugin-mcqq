@@ -35,9 +35,8 @@ async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     return False
 
 
-async def send_msg_to_qq(bot: Bot, recv_msg):
+async def send_msg_to_qq(bot: Bot, json_msg):
     """发送消息到 QQ"""
-    json_msg = json.loads(recv_msg)
     msg = json_msg['message']['data']
     if get_mc_qq_display_server_name():
         msg = f"[{json_msg['server_name']}] {json_msg['message']['data']}"
