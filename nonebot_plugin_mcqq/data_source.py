@@ -7,7 +7,7 @@ from nonebot_plugin_guild_patch import GuildMessageEvent
 
 from typing import Union
 from .utils import (
-    get_mc_qq_ip,
+    get_mc_qq_ws_ip,
     get_mc_qq_ws_port,
     msg_process,
     send_msg_to_qq,
@@ -40,7 +40,7 @@ async def ws_client(websocket):
 async def start_ws_server():
     """启动 WebSocket 服务器"""
     global ws
-    ws = await websockets.serve(ws_client, get_mc_qq_ip(), get_mc_qq_ws_port())
+    ws = await websockets.serve(ws_client, get_mc_qq_ws_ip(), get_mc_qq_ws_port())
     logger.success("[MC_QQ]丨WebSocket 服务器已开启")
 
 
@@ -69,11 +69,11 @@ async def get_client(event: Union[GroupMessageEvent, GuildMessageEvent]):
     for per_client in CLIENTS:
         for per_server in get_mc_qq_servers_list():
             # 如果 服务器名 == ws客户端中记录的服务器名，且ws客户端存在
-            if per_server[0] == per_client['server_name'] and per_client['ws_client']:
-                if event.message_type == "group":
-                    if event.group_id in per_server[1]:
+            if per_server['server_name'] == per_client['server_name'] and per_client['ws_client']:
+                if isinstance(event, GroupMessageEvent):
+                    if event.group_id in per_server['group_list']:
                         return per_client
-                if event.message_type == "guild":
-                    if [event.guild_id, event.channel_id] in per_server[2]:
+                if isinstance(event, GuildMessageEvent):
+                    if {"guild_id": event.guild_id, "channel_id": event.channel_id} in per_server['guild_list']:
                         return per_client
     return None

@@ -1,20 +1,36 @@
 import json
-
+from typing import Union
 from nonebot import get_driver, logger
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.internal.permission import Permission
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
-from typing import Union
+
+async def _guild_admin(bot: Bot, event: GuildMessageEvent):
+    """检测是否为频道管理员"""
+    roles = set(
+        role["role_name"]
+        for role in (
+            await bot.get_guild_member_profile(
+                guild_id=event.guild_id, user_id=event.user_id
+            )
+        )["roles"]
+    )
+    return bool(roles & set(get_mc_qq_mcrcon_guild_admin_roles()))
+
+
+GUILD_ADMIN: Permission = Permission(_guild_admin)
+"""频道管理员权限"""
 
 
 async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     """Rule 消息规则"""
     for per_server in get_mc_qq_servers_list():
-        if event.message_type == "group":
-            if event.group_id in per_server[1]:
+        if isinstance(event, GroupMessageEvent):
+            if event.group_id in per_server['group_list']:
                 return True
-        elif event.message_type == "guild":
-            if [event.guild_id, event.channel_id] in per_server[2]:
+        elif isinstance(event, GuildMessageEvent):
+            if {"guild_id": event.guild_id, "channel_id": event.channel_id} in per_server['guild_list']:
                 return True
     return False
 
@@ -27,22 +43,25 @@ async def send_msg_to_qq(bot: Bot, json_msg):
     # 循环服务器列表并发送消息
     if get_mc_qq_servers_list():
         for per_server in get_mc_qq_servers_list():
-            if per_server[0] == json_msg['server_name']:
-                if per_server[1]:
-                    for per_group in per_server[1]:
+            # 如果服务器名相同
+            if per_server['server_name'] == json_msg['server_name']:
+                # 如果群列表存在
+                if per_server['group_list']:
+                    for per_group in per_server['group_list']:
                         logger.success(
                             f"[MC_QQ]丨from [{json_msg['server_name']}] to [群:{per_group}] \"{msg}\"")
                         await bot.send_group_msg(
                             group_id=per_group,
                             message=msg
                         )
-                if per_server[2]:
-                    for per_guild in per_server[2]:
+                # 如果频道列表存在
+                if per_server['guild_list']:
+                    for per_guild in per_server['guild_list']:
                         logger.success(
-                            f"[MC_QQ]丨from [{json_msg['server_name']}] to [频道:{per_guild[0]}/{per_guild[1]}] \"{msg}\"")
+                            f"[MC_QQ]丨from [{json_msg['server_name']}] to [频道:{per_guild['guild_id']}/{per_guild['channel_id']}] \"{msg}\"")
                         await bot.send_guild_channel_msg(
-                            guild_id=per_guild[0],
-                            channel_id=per_guild[1],
+                            guild_id=per_guild['guild_id'],
+                            channel_id=per_guild['channel_id'],
                             message=msg
                         )
 
@@ -50,18 +69,30 @@ async def send_msg_to_qq(bot: Bot, json_msg):
 async def get_member_nickname(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent], user_id):
     """获取昵称"""
     # 判断从 群/频道 获取成员信息
-    if event.message_type == "group":
-        group_member_info = await bot.get_group_member_info(
-            group_id=event.group_id,
-            user_id=user_id,
-            no_cache=True)
-        if group_member_info['card'] == "":
-            return group_member_info['nickname']
-    else:
+    if isinstance(event, GroupMessageEvent):
+        # 如果获取发送者的昵称
+        if event.user_id == int(user_id):
+            # 如果群名片为空，则发送昵称
+            if event.sender.card == "":
+                return event.sender.nickname
+            # 如果群名片不为空，发送群名片
+            else:
+                return event.sender.card
+        # 如果获取其他人的昵称
+        else:
+            return (await bot.get_group_member_info(
+                group_id=event.group_id,
+                user_id=user_id,
+                no_cache=True
+            ))['nickname']
+    elif isinstance(event, GuildMessageEvent):
         # 返回频道成员昵称
-        return (await bot.get_guild_member_profile(
-            guild_id=event.guild_id,
-            user_id=user_id))['nickname']
+        if event.user_id == user_id:
+            return event.sender.nickname
+        else:
+            return (await bot.get_guild_member_profile(
+                guild_id=event.guild_id,
+                user_id=user_id))['nickname']
 
 
 async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
@@ -69,85 +100,108 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
     # 获取昵称
     member_nickname = await get_member_nickname(bot, event, event.user_id)
 
-    # 初始化消息
-    text_msg = member_nickname + "说："
-    # 初始化消息字典
-    msgDict = {"senderName": member_nickname}
+    # 初始化日志消息
+    text_msg = member_nickname + " 说："
 
-    # 发送群聊名称
-    message_type = {}
+    command_msg = "tellraw @p "
+
+    message_list = [
+        {"text": "[MC_QQ] ", "color": "yellow"},
+    ]
     if get_mc_qq_send_group_name():
-        if event.message_type == "group":
-            message_type['type'] = "group"
-            message_type['group_name'] = (await bot.get_group_info(group_id=event.group_id))['group_name']
-        elif event.message_type == "guild":
-            message_type['type'] = "guild"
-            message_type['guild_name'] = (await bot.get_guild_meta_by_guest(guild_id=event.guild_id))['guild_name']
+        if isinstance(event, GroupMessageEvent):
+            message_list.append(
+                {"text": (await bot.get_group_info(group_id=event.group_id))['group_name'] + " ", "color": "aqua"})
+        elif isinstance(event, GuildMessageEvent):
+            guild_name = (await bot.get_guild_meta_by_guest(guild_id=event.guild_id))['guild_name']
             for per_channel in (await bot.get_guild_channel_list(guild_id=event.guild_id, no_cache=True)):
                 if str(event.channel_id) == per_channel['channel_id']:
-                    message_type['channel_name'] = per_channel['channel_name']
+                    message_list.append({"text": guild_name + "丨" + per_channel['channel_name'] + " ", "color": "aqua"})
                     break
-    else:
-        message_type['type'] = "group"
-        message_type['group_name'] = ""
-    # 将消息类型以及群聊名称加入消息字典
-    msgDict['message_type'] = message_type
-
-    # 初始化消息列表
-    messageList = []
+    message_list.append({"text": member_nickname, "color": "aqua"})
+    message_list.append({"text": " 说：", "color": "yellow"})
 
     for msg in event.message:
-        per_msg = {'msgType': msg.type}
         # 文本
         if msg.type == "text":
-            msgData = msg.data['text'].replace("\r\n", " ").replace(" ", "") + " "
+            msg_dict = {"text": msg.data['text'].replace("\r\n", " "), "color": "white"}
+            text_msg += msg.data['text'].replace("\r\n", " ")
         # 图片
         elif msg.type == "image":
-            msgData = msg.data['url']
+            msg_dict = {"text": "[图片] ", "color": "yellow",
+                        "clickEvent": {"action": "open_url", "value": msg.data['url']},
+                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看图片", "color": "gold"}]}}
+            text_msg += '[图片] '
         # 表情
         elif msg.type == "face":
-            msgData = '[表情]'
+            msg_dict = {"text": "[表情]", "color": "gold"}
+            text_msg += '[表情] '
         # 语音
         elif msg.type == "record":
-            msgData = '[语音]'
+            msg_dict = {"text": "[语音]", "color": "light_purple"}
+            text_msg += '[语音] '
         # 视频
         elif msg.type == "video":
-            msgData = msg.data['url']
+            msg_dict = {"text": "[视频] ", "color": "light_purple",
+                        "clickEvent": {"action": "open_url", "value": msg.data['url']},
+                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看视频", "color": "dark_purple"}]}}
+            text_msg += '[视频] '
         # @
         elif msg.type == "at":
             # 获取被@ 群/频道 昵称
-            msgData = '@' + (await get_member_nickname(bot, event, msg.data['qq']))
+            at_member_nickname = await get_member_nickname(bot, event, msg.data['qq'])
+            msg_dict = {"text": "@" + at_member_nickname + " ", "color": "green"}
+            text_msg += f"@{at_member_nickname} "
         # share
         elif msg.type == "share":
-            msgData = msg.data['url']
+            msg_dict = {"text": "[分享：" + msg.data['title'] + "] ", "color": "yellow",
+                        "clickEvent": {"action": "open_url", "value": msg.data['url']},
+                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看图片", "color": "gold"}]}}
+            text_msg += '[分享：' + msg.data['title'] + '] '
         # forward
         elif msg.type == "forward":
             # TODO 将合并转发消息拼接为字符串
             # 获取合并转发 await bot.get_forward_msg(message_id=event.message_id)
-            msgData = '[合并转发]'
+            msg_dict = {"text": "[合并转发] ", "color": "white"}
+            text_msg += '[合并转发] '
         else:
-            msgData = msg.type
-        text_msg += msgData
-        per_msg['msgData'] = msgData
-        messageList.append(per_msg)
-    msgDict['message'] = messageList
-    return text_msg, str(msgDict)
+            msg_dict = {"text": "[ " + msg.type + "] ", "color": "white"}
+            text_msg += '[' + msg.type + '] '
+        message_list.append(msg_dict)
+    command_msg += json.dumps(message_list)
+    return text_msg, command_msg
 
 
-def get_mc_qq_ip() -> str:
-    """获取 IP"""
+def get_mc_qq_ws_ip():
+    """获取 WebSocket IP"""
     try:
-        return str(get_driver().config.mc_qq_ip)
+        return str(get_driver().config.mc_qq_ws_ip)
     except AttributeError:
-        return "localhost"
+        return "127.0.0.1"
 
 
-def get_mc_qq_ws_port() -> int:
+def get_mc_qq_ws_port():
     """获取 WebSocket 端口"""
     try:
         return int(get_driver().config.mc_qq_ws_port)
     except AttributeError:
         return 8765
+
+
+def get_mc_qq_send_group_name() -> bool:
+    """获取 是否发送群聊名称"""
+    try:
+        return bool(get_driver().config.MC_QQ_SEND_GROUP_NAME)
+    except AttributeError:
+        return False
+
+
+def get_mc_qq_display_server_name() -> bool:
+    """获取 是否显示服务器名称"""
+    try:
+        return bool(get_driver().config.MC_QQ_DISPLAY_SERVER_NAME)
+    except AttributeError:
+        return False
 
 
 def get_mc_qq_servers_list() -> list:
@@ -158,17 +212,25 @@ def get_mc_qq_servers_list() -> list:
         return []
 
 
-def get_mc_qq_display_server_name() -> bool:
-    """获取 是否显示服务器名称"""
+def get_mc_qq_mcrcon_password():
+    """获取 MCRcon 密码"""
     try:
-        return bool(get_driver().config.mc_qq_display_server_name)
+        return str(get_driver().config.mc_qq_mcrcon_password)
     except AttributeError:
-        return False
+        return ""
 
 
-def get_mc_qq_send_group_name() -> bool:
-    """获取 是否发送群聊名称"""
+def get_mc_qq_mcrcon_rcon_list() -> dict:
+    """获取 获取Rcon列表"""
     try:
-        return bool(get_driver().config.mc_qq_send_group_name)
+        return dict(get_driver().config.mc_qq_mcrcon_rcon_list)
     except AttributeError:
-        return False
+        return {}
+
+
+def get_mc_qq_mcrcon_guild_admin_roles() -> list:
+    """获取频道 MC_QQ 管理身份组"""
+    try:
+        return list(get_driver().config.mc_qq_mcrcon_guild_admin_roles)
+    except AttributeError:
+        return ["频道主", "管理员"]
