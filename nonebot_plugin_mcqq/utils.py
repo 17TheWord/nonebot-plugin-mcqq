@@ -110,36 +110,52 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
         per_msg = {'msgType': msg.type}
         # 文本
         if msg.type == "text":
-            msgData = msg.data['text'].replace("\r\n", " ").replace(" ", "") + " "
+            msgData = msg.data['text'].replace("\r", "").replace("\n", "\n * ")
+            text_msg += msgData
         # 图片
         elif msg.type == "image":
             msgData = msg.data['url']
+            text_msg += '[图片]'
         # 表情
         elif msg.type == "face":
             msgData = '[表情]'
+            text_msg += '[表情]'
         # 语音
         elif msg.type == "record":
             msgData = '[语音]'
+            text_msg += '[语音]'
         # 视频
         elif msg.type == "video":
             msgData = msg.data['url']
+            text_msg += '[视频]'
         # @
         elif msg.type == "at":
             # 获取被@ 群/频道 昵称
-            msgData = '@' + (await get_member_nickname(bot, event, msg.data['qq']))
+            at_member_nickname = await get_member_nickname(bot, event, msg.data['qq'])
+            msgData = f"@{at_member_nickname}"
+            text_msg += msgData
         # share
         elif msg.type == "share":
             msgData = msg.data['url']
+            text_msg += '[分享：' + msg.data['title'] + ']'
         # forward
         elif msg.type == "forward":
             # TODO 将合并转发消息拼接为字符串
             # 获取合并转发 await bot.get_forward_msg(message_id=event.message_id)
             msgData = '[合并转发]'
+            text_msg = msgData
         else:
             msgData = msg.type
-        text_msg += msgData
+            text_msg += '[' + msg.type + '] '
+
+        text_msg += " "
+
+        # 装入消息数据
         per_msg['msgData'] = msgData
+        # 放入消息列表
         messageList.append(per_msg)
+
+    # 消息列表添加至总消息
     msgDict['message'] = messageList
     return text_msg, str(msgDict)
 

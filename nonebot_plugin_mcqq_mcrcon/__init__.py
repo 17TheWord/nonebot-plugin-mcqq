@@ -47,5 +47,5 @@ async def handle_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMe
 
 # 收到 群/频道 命令时
 @mc_qq_mcrcon_command.handle()
-async def handle_first_receive(event: Union[GroupMessageEvent, GuildMessageEvent]):
-    await send_command_to_mc(event=event)
+async def handle_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
+    await send_command_to_mc(bot=bot, event=event)

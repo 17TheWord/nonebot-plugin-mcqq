@@ -16,8 +16,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Objects;
-
 
 public class Utils {
 
@@ -38,7 +36,7 @@ public class Utils {
         // 组合消息
         TextComponent component = new TextComponent("[MC_QQ] ");
         component.setColor(ChatColor.YELLOW);
-        StringBuilder msgText = new StringBuilder();
+        StringBuilder msgLogText = new StringBuilder();
 
         // 判断是否启用群聊名称前缀
         if (ConfigReader.getDisplayGroupName()) {
@@ -48,11 +46,11 @@ public class Utils {
             switch (messageType.getString("type")) {
                 case "group":
                     messageFrom.setText(messageType.getString("group_name") + " ");
-                    msgText.append(messageType.getString("group_name")).append(" ");
+                    msgLogText.append(messageType.getString("group_name")).append(" ");
                     break;
                 case "guild":
                     messageFrom.setText(messageType.getString("guild_name") + "丨" + messageType.getString("channel_name") + " ");
-                    msgText.append(messageType.getString("guild_name")).append("丨").append(messageType.getString("channel_name")).append(" ");
+                    msgLogText.append(messageType.getString("guild_name")).append("丨").append(messageType.getString("channel_name")).append(" ");
                     break;
             }
             messageFrom.setColor(ChatColor.GOLD);
@@ -64,8 +62,8 @@ public class Utils {
         senderName.setColor(ChatColor.AQUA);
         // 将 发送者 添加至 组合消息
         component.addExtra(senderName);
-        // 将 发送者 添加至 msgText
-        msgText.append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
+        // 将 发送者 添加至 msgLogText
+        msgLogText.append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
 
         TextComponent sayWay = new TextComponent(ConfigReader.getSayWay());
         sayWay.setColor(ChatColor.WHITE);
@@ -75,91 +73,101 @@ public class Utils {
             String msgData = JSONObject.parseObject(String.valueOf(jsonArray)).getString("msgData");
 
             TextComponent msgComponent = new TextComponent();
+            String textContent;
+            ChatColor color;
             switch (msgType) {
                 case "text":
-                    msgComponent.setText(msgData + " ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = msgData;
+                    color = ChatColor.WHITE;
                     break;
                 case "face":
-                    msgComponent.setText("[表情] ");
-                    msgComponent.setColor(ChatColor.GOLD);
+                    textContent = "[表情]";
+                    color = ChatColor.GOLD;
                     break;
                 case "record":
-                    msgComponent.setText("[语音] ");
-                    msgComponent.setColor(ChatColor.LIGHT_PURPLE);
+                    textContent = "[语音]";
+                    color = ChatColor.LIGHT_PURPLE;
                     break;
                 case "video":
-                    msgComponent.setText("[视频] ");
-                    msgComponent.setColor(ChatColor.LIGHT_PURPLE);
+                    textContent = "[视频]";
+                    color = ChatColor.LIGHT_PURPLE;
                     msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
                     msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看视频")));
                     break;
                 case "rps":
-                    msgComponent.setText("[猜拳] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[猜拳]";
+                    color = ChatColor.WHITE;
                     break;
                 case "dice":
-                    msgComponent.setText("[骰子] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[骰子]";
+                    color = ChatColor.WHITE;
                     break;
                 case "anonymous":
-                    msgComponent.setText("[匿名消息] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[匿名消息]";
+                    color = ChatColor.WHITE;
                     break;
                 case "share":
-                    msgComponent.setText("[分享] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[分享]";
+                    color = ChatColor.WHITE;
                     break;
                 case "contact":
-                    msgComponent.setText("[推荐] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[推荐]";
+                    color = ChatColor.WHITE;
                     break;
                 case "location":
-                    msgComponent.setText("[位置] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[位置]";
+                    color = ChatColor.WHITE;
+                    break;
                 case "music":
-                    msgComponent.setText("[音乐] ");
-                    msgComponent.setColor(ChatColor.YELLOW);
+                    textContent = "[音乐]";
+                    color = ChatColor.YELLOW;
                     msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
                     msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看音乐")));
                     break;
                 case "image":
-                    msgComponent.setText("[图片] ");
-                    msgComponent.setColor(ChatColor.AQUA);
+                    textContent = "[图片]";
+                    color = ChatColor.AQUA;
                     msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
                     msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看图片")));
                     break;
                 case "redbag":
-                    msgComponent.setText("[红包] ");
-                    msgComponent.setColor(ChatColor.RED);
+                    textContent = "[红包]";
+                    color = ChatColor.RED;
                     break;
                 case "poke":
-                    msgComponent.setText("[戳一戳] ");
-                    msgComponent.setColor(ChatColor.GOLD);
+                    textContent = "[戳一戳]";
+                    color = ChatColor.GOLD;
                     break;
                 case "gift":
-                    msgComponent.setText("[礼物] ");
-                    msgComponent.setColor(ChatColor.YELLOW);
+                    textContent = "[礼物]";
+                    color = ChatColor.YELLOW;
                     break;
                 case "forward":
-                    msgComponent.setText("[合并转发] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[合并转发]";
+                    color = ChatColor.WHITE;
                     break;
                 case "at":
-                    msgComponent.setText(msgData.replace(" ", "") + " ");
-                    msgComponent.setColor(ChatColor.GREEN);
+                    textContent = msgData.replace(" ", "");
+                    color = ChatColor.GREEN;
                     break;
                 default:
-                    msgComponent.setText("[" + msgType + "] ");
-                    msgComponent.setColor(ChatColor.WHITE);
+                    textContent = "[" + msgType + "]";
+                    color = ChatColor.WHITE;
                     break;
             }
-            msgText.append(msgData);
+            textContent += " ";
+            // 为消息设置 文本
+            msgComponent.setText(textContent);
+            // 为消息设置 颜色
+            msgComponent.setColor(color);
+            // 将消息装入 日志文本队列
+            msgLogText.append(textContent);
+            // 将消息装入 消息队列
             component.addExtra(msgComponent);
 
         }
         // 后台打印文本
-        say(String.valueOf(msgText));
+        say(String.valueOf(msgLogText));
         return component;
     }
 

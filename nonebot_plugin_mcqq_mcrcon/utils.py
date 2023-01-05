@@ -124,50 +124,57 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
     for msg in event.message:
         # 文本
         if msg.type == "text":
-            msg_dict = {"text": msg.data['text'].replace("\r\n", " "), "color": "white"}
-            text_msg += msg.data['text'].replace("\r\n", " ")
+            msg_dict = {"text": msg.data['text'].replace("\r", "").replace("\n", "\n * ") + " ", "color": "white"}
+            text_msg += msg.data['text'].replace("\r", "").replace("\n", "\n * ")
         # 图片
         elif msg.type == "image":
             msg_dict = {"text": "[图片] ", "color": "yellow",
                         "clickEvent": {"action": "open_url", "value": msg.data['url']},
-                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看图片", "color": "gold"}]}}
-            text_msg += '[图片] '
+                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看图片", "color": "gold"}]}
+                        }
+            text_msg += '[图片]'
         # 表情
         elif msg.type == "face":
-            msg_dict = {"text": "[表情]", "color": "gold"}
-            text_msg += '[表情] '
+            msg_dict = {"text": "[表情] ", "color": "gold"}
+            text_msg += '[表情]'
         # 语音
         elif msg.type == "record":
-            msg_dict = {"text": "[语音]", "color": "light_purple"}
-            text_msg += '[语音] '
+            msg_dict = {"text": "[语音] ", "color": "light_purple"}
+            text_msg += '[语音]'
         # 视频
         elif msg.type == "video":
             msg_dict = {"text": "[视频] ", "color": "light_purple",
                         "clickEvent": {"action": "open_url", "value": msg.data['url']},
-                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看视频", "color": "dark_purple"}]}}
-            text_msg += '[视频] '
+                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看视频", "color": "dark_purple"}]}
+                        }
+            text_msg += '[视频]'
         # @
         elif msg.type == "at":
             # 获取被@ 群/频道 昵称
             at_member_nickname = await get_member_nickname(bot, event, msg.data['qq'])
             msg_dict = {"text": "@" + at_member_nickname + " ", "color": "green"}
-            text_msg += f"@{at_member_nickname} "
+            text_msg += f"@{at_member_nickname}"
         # share
         elif msg.type == "share":
             msg_dict = {"text": "[分享：" + msg.data['title'] + "] ", "color": "yellow",
                         "clickEvent": {"action": "open_url", "value": msg.data['url']},
-                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看图片", "color": "gold"}]}}
-            text_msg += '[分享：' + msg.data['title'] + '] '
+                        "hoverEvent": {"action": "show_text", "contents": [{"text": "查看图片", "color": "gold"}]}
+                        }
+            text_msg += '[分享：' + msg.data['title'] + ']'
         # forward
         elif msg.type == "forward":
             # TODO 将合并转发消息拼接为字符串
             # 获取合并转发 await bot.get_forward_msg(message_id=event.message_id)
             msg_dict = {"text": "[合并转发] ", "color": "white"}
-            text_msg += '[合并转发] '
+            text_msg += '[合并转发]'
         else:
             msg_dict = {"text": "[ " + msg.type + "] ", "color": "white"}
-            text_msg += '[' + msg.type + '] '
+            text_msg += '[' + msg.type + ']'
+
+        # 放入消息列表
         message_list.append(msg_dict)
+
+    # 拼接完整命令
     command_msg += json.dumps(message_list)
     return text_msg, command_msg
 
