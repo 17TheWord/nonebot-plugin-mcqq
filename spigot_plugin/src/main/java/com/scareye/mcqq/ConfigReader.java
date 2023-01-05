@@ -61,7 +61,7 @@ class ConfigReader {
      * @return boolean deathMessage
      */
     static boolean getDeathMessage() {
-        return getEnable() &&config.getBoolean("death_message", true);
+        return getEnable() && config.getBoolean("death_message", true);
     }
 
     /**
@@ -70,7 +70,7 @@ class ConfigReader {
      * @return boolean JoinQuit
      */
     static boolean getJoinQuit() {
-        return getEnable() &&config.getBoolean("join_quit", true);
+        return getEnable() && config.getBoolean("join_quit", true);
     }
 
     /**

@@ -174,36 +174,36 @@ public class Utils {
 
         if (event instanceof AsyncPlayerChatEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 聊天 消息添加至 Json 对象中
              */
             jsonMessage.put("player", getPlayerJson(((AsyncPlayerChatEvent) event).getPlayer()));
             jsonMessage.put("message", getMessageJson("text", ((AsyncPlayerChatEvent) event).getPlayer().getName() + ConfigReader.getSayWay() + ((AsyncPlayerChatEvent) event).getMessage()));
 
         } else if (event instanceof PlayerJoinEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 加入 消息添加至 Json 对象中
              */
             jsonMessage.put("player", getPlayerJson(((PlayerJoinEvent) event).getPlayer()));
             jsonMessage.put("message", getMessageJson("text", ((PlayerJoinEvent) event).getPlayer().getName() + " 加入了服务器"));
 
         } else if (event instanceof PlayerQuitEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 离开 消息添加至 Json 对象中
              */
             jsonMessage.put("player", getPlayerJson(((PlayerQuitEvent) event).getPlayer()));
             jsonMessage.put("message", getMessageJson("text", ((PlayerQuitEvent) event).getPlayer().getName() + " 离开了服务器"));
         } else if (event instanceof PlayerDeathEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 死亡 消息添加至 Json 对象中
              */
-            jsonMessage.put("player", getPlayerJson(Objects.requireNonNull(((PlayerDeathEvent) event).getEntity().getPlayer())));
+            jsonMessage.put("player", getPlayerJson(((PlayerDeathEvent) event).getEntity()));
             jsonMessage.put("message", getMessageJson("text", ((PlayerDeathEvent) event).getDeathMessage()));
-
         }
+
         return jsonMessage.toJSONString();
     }
 

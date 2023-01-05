@@ -28,7 +28,7 @@ class EventProcessor implements Listener {
     @EventHandler
     void onPlayerDeath(PlayerDeathEvent event) {
         if (ConfigReader.getDeathMessage()) {
-            wsClient.sendMessage(event.getDeathMessage());
+            wsClient.sendMessage(processMessageToJson(event));
         }
     }
 
