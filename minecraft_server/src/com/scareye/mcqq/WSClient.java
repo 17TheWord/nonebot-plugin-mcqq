@@ -1,23 +1,22 @@
 package com.scareye.mcqq;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import com.alibaba.fastjson.JSONObject;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
-import static com.scareye.mcqq.MC_QQ.instance;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import static com.scareye.mcqq.MC_QQ.wsClient;
 import static com.scareye.mcqq.MC_QQ.connectTime;
-import static com.scareye.mcqq.MC_QQ.serverOpen;
-import static com.scareye.mcqq.Utils.processJsonMessage;
+import static com.scareye.mcqq.ConfigReader.config;
 import static com.scareye.mcqq.Utils.say;
 
 public class WSClient extends WebSocketClient {
 
 
     public WSClient() throws URISyntaxException {
-        super(new URI("ws://" + ConfigReader.getAddress() + ":" + ConfigReader.getPort()));
+        super(new URI("ws://" + config().get("websocket_hostname") + ":" + config().get("websocket_port")));
     }
 
     /**
@@ -27,7 +26,11 @@ public class WSClient extends WebSocketClient {
      */
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
-        sendMessage("{\"server_name\": \"" + ConfigReader.getServerName() + "\", \"event_name\": \"ConnectEvent\", \"status\": \"" + wsClient.isOpen() + "\"}");
+        JSONObject connectEvent = new JSONObject();
+        connectEvent.put("server_name", config().get("server_name"));
+        connectEvent.put("event_name", "ConnectEvent");
+        connectEvent.put("status", wsClient.isOpen());
+        sendMessage(connectEvent.toJSONString());
         connectTime = 0;
         say("已成功连接 WebSocket 服务器。");
     }
@@ -38,9 +41,6 @@ public class WSClient extends WebSocketClient {
      */
     @Override
     public void onMessage(String message) {
-        if (ConfigReader.getEnable()) {
-            instance.getServer().spigot().broadcast(processJsonMessage(message));
-        }
     }
 
     /**
@@ -52,7 +52,7 @@ public class WSClient extends WebSocketClient {
      */
     @Override
     public void onClose(int i, String s, boolean b) {
-        if (wsClient != null && serverOpen) {
+        if (wsClient != null) {
             wsClient.sendPing();
         }
     }
@@ -64,7 +64,7 @@ public class WSClient extends WebSocketClient {
      */
     @Override
     public void onError(Exception exception) {
-        if (wsClient != null && serverOpen) {
+        if (wsClient != null) {
             connectTime++;
             say("WebSocket 连接已断开,正在第 " + connectTime + " 次重新连接。");
             try {

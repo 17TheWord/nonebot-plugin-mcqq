@@ -7,6 +7,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -16,9 +18,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Objects;
 
-import static com.scareye.mcqq.MC_QQ.say;
 
 public class Utils {
+
+    /**
+     * 定义方法 Say()
+     * 向服务器后台发送信息
+     */
+    static void say(String msg) {
+        CommandSender sender = Bukkit.getConsoleSender();
+        sender.sendMessage("[MC_QQ] " + msg);
+    }
 
     /**
      * 来自 NoneBot 的 JSON 消息的处理
@@ -28,34 +38,34 @@ public class Utils {
         // 组合消息
         TextComponent component = new TextComponent("[MC_QQ] ");
         component.setColor(ChatColor.YELLOW);
-        StringBuilder msgText = new StringBuilder("[MC_QQ]丨");
+        StringBuilder msgText = new StringBuilder();
 
         // 判断是否启用群聊名称前缀
-        if (ConfigReader.getDisplayServerName()) {
+        if (ConfigReader.getDisplayGroupName()) {
             // 获取 信息类型
             JSONObject messageType = msgJson.getJSONObject("message_type");
             TextComponent messageFrom = new TextComponent();
             switch (messageType.getString("type")) {
                 case "group":
-                    messageFrom.setText(messageType.getString("group_name"));
-                    msgText.append(messageType.getString("group_name"));
+                    messageFrom.setText(messageType.getString("group_name") + " ");
+                    msgText.append(messageType.getString("group_name")).append(" ");
                     break;
                 case "guild":
-                    messageFrom.setText(messageType.getString("guild_name") + "/" + messageType.getString("channel_name"));
-                    msgText.append(messageType.getString("guild_name")).append("/").append(messageType.getString("channel_name"));
+                    messageFrom.setText(messageType.getString("guild_name") + "丨" + messageType.getString("channel_name") + " ");
+                    msgText.append(messageType.getString("guild_name")).append("丨").append(messageType.getString("channel_name")).append(" ");
                     break;
             }
-            messageFrom.setColor(ChatColor.AQUA);
+            messageFrom.setColor(ChatColor.GOLD);
             component.addExtra(messageFrom);
         }
 
         // 发送人信息
-        TextComponent senderName = new TextComponent("丨" + msgJson.getString("senderName"));
+        TextComponent senderName = new TextComponent(msgJson.getString("senderName"));
         senderName.setColor(ChatColor.AQUA);
         // 将 发送者 添加至 组合消息
         component.addExtra(senderName);
         // 将 发送者 添加至 msgText
-        msgText.append("丨").append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
+        msgText.append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
 
         TextComponent sayWay = new TextComponent(ConfigReader.getSayWay());
         sayWay.setColor(ChatColor.WHITE);
@@ -164,36 +174,36 @@ public class Utils {
 
         if (event instanceof AsyncPlayerChatEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 聊天 消息添加至 Json 对象中
              */
             jsonMessage.put("player", getPlayerJson(((AsyncPlayerChatEvent) event).getPlayer()));
             jsonMessage.put("message", getMessageJson("text", ((AsyncPlayerChatEvent) event).getPlayer().getName() + ConfigReader.getSayWay() + ((AsyncPlayerChatEvent) event).getMessage()));
 
         } else if (event instanceof PlayerJoinEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 加入 消息添加至 Json 对象中
              */
             jsonMessage.put("player", getPlayerJson(((PlayerJoinEvent) event).getPlayer()));
             jsonMessage.put("message", getMessageJson("text", ((PlayerJoinEvent) event).getPlayer().getName() + " 加入了服务器"));
 
         } else if (event instanceof PlayerQuitEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 离开 消息添加至 Json 对象中
              */
             jsonMessage.put("player", getPlayerJson(((PlayerQuitEvent) event).getPlayer()));
             jsonMessage.put("message", getMessageJson("text", ((PlayerQuitEvent) event).getPlayer().getName() + " 离开了服务器"));
         } else if (event instanceof PlayerDeathEvent) {
             /*
-             将玩家信息添加到 Json 对象中
-             将消息加入 Json 对象中
+             将玩家信息添加至 Json 对象中
+             将 死亡 消息添加至 Json 对象中
              */
-            jsonMessage.put("player", getPlayerJson(Objects.requireNonNull(((PlayerDeathEvent) event).getEntity().getPlayer())));
+            jsonMessage.put("player", getPlayerJson(((PlayerDeathEvent) event).getEntity()));
             jsonMessage.put("message", getMessageJson("text", ((PlayerDeathEvent) event).getDeathMessage()));
-
         }
+
         return jsonMessage.toJSONString();
     }
 

@@ -14,14 +14,18 @@
 # 支持的服务端列表
 
 - Spigot
+  - `MC_QQ_Spigot_XXX.jar` + `nonebot-plugin-mcqq`
+  - `MC_QQ_Spigot_XXX.jar` + `nonebot-plugin-mcqq-mcrcon`
 - MinecraftServer
+  -  `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq-mcrcon`
 - ForgeServer
-- Fabric 暂不支持，希望有位大佬提供一份Fabric服务端相关日志内容
+  -  `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq-mcrcon`
+- Fabric
+  -  `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq-mcrcon`
 
 # 功能
 
 - 推送消息列表
-  - 多个服务器与多个群聊互通：`nonebot-plugin-mcqq` 
   - 服务器 -> QQ
     - [x] 加入 / 离开 服务器消息
     - [x] 玩家聊天信息

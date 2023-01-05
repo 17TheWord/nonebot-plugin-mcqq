@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-import static com.scareye.mcqq.MC_QQ.configReader;
+import static com.scareye.mcqq.MC_QQ.wsClient;
+import static com.scareye.mcqq.ConfigReader.config;
+import static com.scareye.mcqq.Utils.processMessageToJson;
+import static com.scareye.mcqq.Utils.getIfNeedMsg;
 
 /**
  * 监控文件变化
@@ -19,6 +22,12 @@ import static com.scareye.mcqq.MC_QQ.configReader;
  **/
 public class FileWatcher {
 
+    /**
+     * 文件监听
+     *
+     * @param filePath 文件路径
+     * @param fileName 文件名称
+     */
     public static void FileListen(String filePath, String fileName) {
         // 监控的目录
 
@@ -27,6 +36,7 @@ public class FileWatcher {
             try {
                 FileWatcher.watcherLog(filePath, fileName, str -> System.out.println((System.currentTimeMillis() / 1000) + ",监听到: " + str));
             } catch (Exception e) {
+                System.err.println("[MC_QQ] 日志路径错误，无法读取。");
                 e.printStackTrace();
             }
         }).start();
@@ -37,7 +47,7 @@ public class FileWatcher {
 //                int i = 0;
                 while (true) {
                     FileWriter writer = new FileWriter(filePath + fileName, true);
-                    Thread.sleep(1000);
+//                    Thread.sleep(1000);
 //                    writer.append(String.valueOf(i)).append("\n");
                     writer.flush();
                     // 刷完关闭在下次循环重新打开。这样效果好
@@ -45,8 +55,8 @@ public class FileWatcher {
                     writer.close();
 //                    i ++;
                 }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("[MC_QQ] 日志路径错误，无法写入。");
             }
         }).start();
     }
@@ -55,11 +65,11 @@ public class FileWatcher {
      * 文件监控
      * 同步调用会阻塞
      *
-     * @param filePath
-     * @param fileName
-     * @param consumer
-     * @throws IOException
-     * @throws InterruptedException
+     * @param filePath String
+     * @param fileName String
+     * @param consumer consumer<String>
+     * @throws IOException          异常
+     * @throws InterruptedException 异常
      */
     public static void watcherLog(String filePath, String fileName, Consumer<String> consumer) throws IOException, InterruptedException {
         WatchService watchService = FileSystems.getDefault().newWatchService();
@@ -84,51 +94,15 @@ public class FileWatcher {
                 // 消息转为 String
                 String msg = str.toString();
 
-                // 消息处理
-                /*
-                原版服务器聊天内容判定："[Async Chat Thread - "
-                原版服务端加入/离开判定："[Server thread/INFO]:"
-                Forge端聊天内容判定："[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <Yuuuo> ."
-                Forge端加入/离开判定："[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Yuuuo joined the game"
-                 */
-                if ((Boolean) configReader.config().get("enable_mc_qq") && msg.length() < 256) {
-                    // 判定前缀
-                    if (msg.contains("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <")) {
-                        String playerName = msg.substring(msg.indexOf("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <") + "[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: <".length(), msg.indexOf(">"));
-                        String playerMsg = msg.substring(msg.indexOf(playerName + "> ") + (playerName + "> ").length());
-                        MC_QQ.websocket.sendMessage(playerName + configReader.config().get("say_way") + playerMsg);
-                    } else if (msg.contains("[Async Chat Thread - ")) {
-                        String playerName = msg.substring(msg.indexOf("/INFO]: <") + 9, msg.indexOf(">"));
-                        String playerMsg = msg.substring(msg.indexOf(playerName + "> ") + (playerName + "> ").length());
-                        MC_QQ.websocket.sendMessage(playerName + configReader.config().get("say_way") + playerMsg);
-                    }
-                    boolean join_left = msg.contains(" left the game") | msg.contains(" joined the game");
-                    if ((Boolean) configReader.config().get("join_quit")) {
-                        if (msg.contains("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: ") & join_left) {
-                            String join_quit_msg = msg.substring(msg.indexOf("[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: ") + "[Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: ".length());
-                            if (join_quit_msg.contains(" left the game")) {
-                                join_quit_msg = join_quit_msg.replace("left the game", "离开了服务器");
-                            } else {
-                                join_quit_msg = join_quit_msg.replace("joined the game", "加入了服务器");
-                            }
-                            MC_QQ.websocket.sendMessage(join_quit_msg);
-                        }
-                    } else if ((Boolean) configReader.config().get("join_quit")) {
-                        if (msg.contains("[Server thread/INFO]: ") & join_left) {
-                            String join_quit_msg = msg.substring(msg.indexOf("[Server thread/INFO]: ") + "[Server thread/INFO]: ".length());
-                            if (join_quit_msg.contains(" left the game")) {
-                                join_quit_msg = join_quit_msg.replace("left the game", "离开了服务器");
-                            } else {
-                                join_quit_msg = join_quit_msg.replace("joined the game", "加入了服务器");
-                            }
-                            MC_QQ.websocket.sendMessage(join_quit_msg);
-                        }
-                    }
+                // 如果 WS连接、插件开启、消息长度小于256、符合需求
+                if (wsClient.isOpen() && (Boolean) config().get("enable_mc_qq") && msg.length() < 256 && getIfNeedMsg(msg)) {
+                    // 发送处理过的消息
+                    wsClient.sendMessage(processMessageToJson(msg));
                 }
 
-                if (str.length() != 0) {
-                    consumer.accept(str.toString());
-                }
+//                if (str.length() != 0) {
+//                    consumer.accept(str.toString());
+//                }
             });
             key.reset();
         } while (true);
@@ -137,8 +111,8 @@ public class FileWatcher {
     /**
      * beginPointer > configFile 时会从头读取
      *
-     * @param configFile
-     * @param beginPointer
+     * @param configFile   配置文件
+     * @param beginPointer 起点
      * @param str          内容会拼接进去
      * @return 读到了多少字节, -1 读取失败
      */
