@@ -80,12 +80,12 @@ async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageE
             CLIENTS.remove(client)
 
 
-async def send_command_to_mc(event: Union[GroupMessageEvent, GuildMessageEvent]):
+async def send_command_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     """发送命令到 Minecraft"""
     client = await get_client(event=event)
     if client and client['mcrcon_connect']:
         try:
-            client['mcrcon_connect'].command(event.raw_message.strip("/mcc"))
+            await bot.send(event, message=client['mcrcon_connect'].command(event.raw_message.strip("/mcc")))
             logger.success(
                 f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\""
             )
