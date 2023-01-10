@@ -11,11 +11,12 @@ from typing import Union
 import json
 
 mc_qq = on_message(priority=5, rule=msg_rule, block=False)
-set_mcqq_ip=on_command("mcqq 设置ip", priority=7,permission=SUPERUSER)
-set_mcqq_port=on_command("mcqq 设置端口", priority=7,permission=SUPERUSER)
-set_mcqq_send_group_name=on_command("mcqq 设置是否发送群名", priority=7,permission=SUPERUSER)
-set_mcqq_display_server_name=on_command("mcqq 设置是否显示服务器名", priority=7,permission=SUPERUSER)
-
+set_mcqq_ip=on_command("mcqq 设置ip",aliases={"mcqq set_mcqq_ip"}, priority=7,permission=SUPERUSER)
+set_mcqq_port=on_command("mcqq 设置端口",aliases={"mcqq set_mcqq_port"}, priority=7,permission=SUPERUSER)
+set_mcqq_send_group_name=on_command("mcqq 设置是否发送群名",aliases={"set_mcqq_send_group_name"}, priority=7,permission=SUPERUSER)
+set_mcqq_display_server_name=on_command("mcqq 设置是否显示服务器名",aliases={"set_mcqq_display_server_name"}, priority=7,permission=SUPERUSER)
+add_mcqq_server=on_command("mcqq 添加配置",aliases={"add_mcqq_server"}, priority=7,permission=SUPERUSER)
+remove_mcqq_server=on_command("mcqq 删除配置",aliases={"remove_mcqq_server"}, priority=7,permission=SUPERUSER)
 driver = get_driver()
 
 create_config_file()
@@ -76,3 +77,25 @@ async def _(bot: Bot, event: MessageEvent, arg: Message=CommandArg()):
     config_json["mcqq_display_server_name"]=b
     set_config(json.dumps(config_json,indent=4))
     await set_mcqq_display_server_name.finish("完成")
+@add_mcqq_server.handle()
+async def _(bot: Bot,event:GroupMessageEvent,arg:Message=CommandArg()):
+    arg = arg.extract_plain_text()
+    config_json=get_config()
+    servers:list =config_json["mcqq_servers_list"]
+    grouplist=[]
+    group_id=event.group_id
+    grouplist.append(group_id)
+    server={'server_name':arg,'group_list':grouplist,'guild_list':[]}
+    servers.append(server)
+    set_config(json.dumps(config_json,indent=4))
+    await set_mcqq_send_group_name.finish("完成")
+@remove_mcqq_server.handle()
+async def _(bot: Bot,event:MessageEvent,arg:Message=CommandArg()):
+    arg = arg.extract_plain_text()
+    config_json=get_config()
+    servers:list =config_json["mcqq_servers_list"]
+    for i in servers:
+        if i["server_name"]==arg:
+            servers.remove(i)
+    set_config(json.dumps(config_json,indent=4))
+    await set_mcqq_send_group_name.finish("完成")
