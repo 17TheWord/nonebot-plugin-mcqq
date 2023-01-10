@@ -48,7 +48,7 @@ async def stop_ws_server():
     """关闭 WebSocket 服务器"""
     global ws
     ws.close()
-    logger.success("[MC_QQ]丨WebSocket 服务器已关闭")
+    logger.success("[MC_QQ_Rcon]丨WebSocket 服务器已开启")
 
 
 async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
