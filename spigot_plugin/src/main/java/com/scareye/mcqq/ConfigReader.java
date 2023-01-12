@@ -47,6 +47,15 @@ class ConfigReader {
     }
 
     /**
+     * 获取链接
+     *
+     * @return int Port
+     */
+    static String getWsUrl() {
+        return config.getString("websocket_url", "ws://127.0.0.1:8765/spigot/ws");
+    }
+
+    /**
      * 获取聊天修饰
      *
      * @return String SayWay
