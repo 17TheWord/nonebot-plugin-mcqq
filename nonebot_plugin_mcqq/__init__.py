@@ -3,6 +3,8 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageEvent, Me
 from nonebot_plugin_guild_patch import GuildMessageEvent
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
+from nonebot.adapters.onebot.v11.permission import GROUP_OWNER,GROUP_ADMIN
+
 
 from .data_source import send_msg_to_mc, start_ws_server, stop_ws_server
 from .utils import msg_rule,create_config_file,get_config,set_config
@@ -16,8 +18,8 @@ set_mcqq_ip=on_command("mcqq 设置ip",aliases={"mcqq set_mcqq_ip"}, priority=7,
 set_mcqq_port=on_command("mcqq 设置端口",aliases={"mcqq set_mcqq_port"}, priority=7,permission=SUPERUSER)
 set_mcqq_send_group_name=on_command("mcqq 设置是否发送群名",aliases={"mcqq set_mcqq_send_group_name"}, priority=7,permission=SUPERUSER)
 set_mcqq_display_server_name=on_command("mcqq 设置是否显示服务器名",aliases={"mcqq set_mcqq_display_server_name"}, priority=7,permission=SUPERUSER)
-add_mcqq_server=on_command("mcqq 添加服务器",aliases={"mcqq add_mcqq_server"}, priority=7,permission=SUPERUSER)
-remove_mcqq_server=on_command("mcqq 删除服务器",aliases={"mcqq remove_mcqq_server"}, priority=7,permission=SUPERUSER)
+add_mcqq_server=on_command("mcqq 添加服务器",aliases={"mcqq add_mcqq_server"}, priority=7,permission=SUPERUSER|GROUP_OWNER|GROUP_ADMIN)
+remove_mcqq_server=on_command("mcqq 删除服务器",aliases={"mcqq remove_mcqq_server"}, priority=7,permission=SUPERUSER|GROUP_OWNER|GROUP_ADMIN)
 driver = get_driver()
 
 create_config_file()
