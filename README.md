@@ -44,6 +44,19 @@
         - [x] 回复消息（转换成@消息）
     - 未支持的消息已被替换，如： `[图片]`、 `[视频]` 等等
 
+# 命令
+## nonebot_plugin_mcqq：
+
+|命令|权限|功能|
+|-|-|-|
+|mcqq 重启ws|SUPERUSER|重启ws|
+|mcqq 设置ip 0.0.0.0|SUPERUSER|设置ws绑定ip|
+|mcqq 设置端口 8765|SUPERUSER|设置ws监听端口|
+|mcqq 设置是否发送群名 true/false|SUPERUSER||
+|mcqq 设置是否显示服务器名 true/false|SUPERUSER||
+|mcqq 添加服务器 <mc插件配置的服务器名>|SUPERUSER|将本群添加到服务器转发列表|
+|mcqq 删除服务器 <mc插件配置的服务器名>||从服务器转发列表中移除本群|
+
 # 特别感谢
 
 - [@SK-415](https://github.com/SK-415) ：感谢SK佬给予许多优秀的建议和耐心的解答。
