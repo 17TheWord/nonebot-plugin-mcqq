@@ -54,8 +54,8 @@
 |mcqq 设置端口 8765|SUPERUSER|设置ws监听端口|
 |mcqq 设置是否发送群名 true/false|SUPERUSER||
 |mcqq 设置是否显示服务器名 true/false|SUPERUSER||
-|mcqq 添加服务器 <mc插件配置的服务器名>|SUPERUSER|将本群添加到服务器转发列表|
-|mcqq 删除服务器 <mc插件配置的服务器名>||从服务器转发列表中移除本群|
+|mcqq 添加服务器 <mc插件配置的服务器名>|SUPERUSER,GROUP_OWNER,GROUP_ADMIN|将本群添加到服务器转发列表|
+|mcqq 删除服务器 <mc插件配置的服务器名>|SUPERUSER,GROUP_OWNER,GROUP_ADMIN|从服务器转发列表中移除本群|
 
 # 特别感谢
 
