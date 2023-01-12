@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 
 import static com.scareye.mcqq.MC_QQ.wsClient;
 import static com.scareye.mcqq.MC_QQ.connectTime;
+import static com.scareye.mcqq.MC_QQ.httpHeaders;
 import static com.scareye.mcqq.ConfigReader.config;
 import static com.scareye.mcqq.Utils.say;
 
@@ -16,7 +17,7 @@ public class WSClient extends WebSocketClient {
 
 
     public WSClient() throws URISyntaxException {
-        super(new URI("ws://" + config().get("websocket_hostname") + ":" + config().get("websocket_port")));
+        super(new URI("ws://" + config().get("websocket_hostname") + ":" + config().get("websocket_port")), httpHeaders);
     }
 
     /**
@@ -26,11 +27,6 @@ public class WSClient extends WebSocketClient {
      */
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
-        JSONObject connectEvent = new JSONObject();
-        connectEvent.put("server_name", config().get("server_name"));
-        connectEvent.put("event_name", "ConnectEvent");
-        connectEvent.put("status", wsClient.isOpen());
-        sendMessage(connectEvent.toJSONString());
         connectTime = 0;
         say("已成功连接 WebSocket 服务器。");
     }
