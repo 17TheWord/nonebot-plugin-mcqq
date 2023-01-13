@@ -20,21 +20,34 @@ CLIENTS = []
 
 async def ws_client(websocket):
     """WebSocket"""
-    msg = {}
     try:
-        async for message in websocket:
-            msg = json.loads(message)
-            if msg['event_name'] == "ConnectEvent":
-                CLIENTS.append({"server_name": msg['server_name'], "ws_client": websocket})
-                logger.success(f"[MC_QQ]丨[Server:{msg['server_name']}] 已连接至 WebSocket 服务器")
-            # 发送消息到QQ
-            else:
-                await send_msg_to_qq(bot=get_bot(), json_msg=msg)
-    except websockets.WebSocketException:
-        # 移除当前客户端
-        CLIENTS.remove({"server_name": msg['server_name'], "ws_client": websocket})
-    if websocket.closed:
-        logger.error(f"[MC_QQ]丨[Server:{msg['server_name']}] 的 WebSocket 连接已断开")
+        server_name = websocket.request_headers["x-self-name"]
+    except KeyError:
+        server_name = ""
+    # 服务器名为空
+    if not server_name:
+        logger.error("[MC_QQ]丨未获取到该服务器的名称，连接断开")
+        await websocket.close(1008, "[MC_QQ]丨未获取到该服务器的名称，连接断开")
+        return
+    else:
+        for client in CLIENTS:
+            # 重复连接
+            if server_name == client["server_name"]:
+                logger.error(f"[MC_QQ]丨[Server:{server_name}] 已连接至 WebSocket 服务器，无需重复连接")
+                await websocket.close(1008, f"[MC_QQ]丨[Server:{server_name}] 已连接至 WebSocket 服务器，无需重复连接")
+                return
+
+        CLIENTS.append({"server_name": server_name, "ws_client": websocket})
+        logger.success(f"[MC_QQ]丨[Server:{server_name}] 已连接至 WebSocket 服务器")
+        try:
+            async for message in websocket:
+                await send_msg_to_qq(bot=get_bot(), json_msg=json.loads(message))
+        except websockets.WebSocketException:
+            # 移除当前客户端
+            CLIENTS.remove({"server_name": server_name, "ws_client": websocket})
+        if websocket.closed:
+            CLIENTS.remove({"server_name": server_name, "ws_client": websocket})
+            logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 连接已断开")
 
 
 async def start_ws_server():
@@ -48,7 +61,7 @@ async def stop_ws_server():
     """关闭 WebSocket 服务器"""
     global ws
     ws.close()
-    logger.success("[MC_QQ_Rcon]丨WebSocket 服务器已开启")
+    logger.success("[MC_QQ]丨WebSocket 服务器已关闭")
 
 
 async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
