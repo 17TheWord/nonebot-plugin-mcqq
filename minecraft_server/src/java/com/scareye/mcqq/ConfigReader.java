@@ -29,7 +29,7 @@ public class ConfigReader {
             configMap.put("say_way", " 说：");
             configMap.put("death_message", true);
             configMap.put("join_quit", true);
-            configMap.put("server_name", "");
+            configMap.put("server_name", "Server");
             configMap.put("display_groupname", false);
             configMap.put("log_local", ".\\logs\\");
             configMap.put("log_name", "latest.log");

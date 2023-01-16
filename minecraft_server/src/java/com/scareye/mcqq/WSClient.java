@@ -1,6 +1,5 @@
 package com.scareye.mcqq;
 
-import com.alibaba.fastjson.JSONObject;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
