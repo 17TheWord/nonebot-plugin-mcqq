@@ -226,49 +226,69 @@ public class Utils {
         // UUID
         playerObject.put("uuid", player.getUniqueId());
 
-        // 得到一个Address对象,包括这个玩家的IP以及登入端口
-        playerObject.put("address", player.getAddress());
-        // 判断玩家是否能飞起来
-        playerObject.put("allow_flight", player.getAllowFlight());
-        // 获得玩家在聊天信息中的昵称
-        playerObject.put("display_name", player.getDisplayName());
-        // 经验进度百分比
-        playerObject.put("exp", player.getExp());
-        // 得到该玩家飞行速度
-        playerObject.put("fly_speed", player.getFlySpeed());
-
-        // 获取客户端显示的血量的"压缩率"
-        playerObject.put("health_scale", player.getHealthScale());
-        // 得到玩家的等级
-        playerObject.put("level", player.getLevel());
-        // 返回玩家本地语言环境
-        playerObject.put("locale", player.getLocale());
-        // 返回该玩家的玩家名
+        // 玩家名
         playerObject.put("nickname", player.getName());
-        // Ping
-        playerObject.put("ping", player.getPing());
 
-        // 得到玩家显示在tab列表中的名称
+        // 聊天中的昵称
+        playerObject.put("display_name", player.getDisplayName());
+
+        // Tab列表中的名称
         playerObject.put("player_list_name", player.getPlayerListName());
-        // 得到玩家的客户端的当前时间,单位为tick
-        playerObject.put("player_time", player.getPlayerTime());
-        // 返回玩家的客户端的当前时间与玩家当前世界时间的差值
-        playerObject.put("player_time_offset", player.getPlayerTimeOffset());
-        // 得到玩家总共获得了多少经验(等级和经验)
-        playerObject.put("total_exp", player.getTotalExperience());
-        // 得到行走速度
-        playerObject.put("walk_speed", player.getWalkSpeed());
 
-        // 是否飞行
-        playerObject.put("is_flying", player.isFlying());
+        // IP以及登入端口
+        playerObject.put("address", player.getAddress());
+
+
         // 血量是否被 “压缩”
         playerObject.put("is_health_scaled", player.isHealthScaled());
-        // 如果玩家时间于当前世界时间保持了一定的差值则返回true
+
+        // 血量的"压缩率"
+        playerObject.put("health_scale", player.getHealthScale());
+
+        // 经验百分比
+        playerObject.put("exp", player.getExp());
+
+        // 总共获得的经验(等级和经验)
+        playerObject.put("total_exp", player.getTotalExperience());
+
+        // 等级
+        playerObject.put("level", player.getLevel());
+
+
+        // 语言环境
+        playerObject.put("locale", player.getLocale());
+
+        // Ping 1.12不支持，估测自1.14开始支持
+        playerObject.put("ping", player.getPing());
+
+        // 当前时间，单位为tick
+        playerObject.put("player_time", player.getPlayerTime());
+
+        // 玩家时间于当前世界时间保持了一定的差值则返回true
         playerObject.put("is_player_time_relative", player.isPlayerTimeRelative());
-        // 判断玩家是否在潜行中
-        playerObject.put("is_sneaking", player.isSneaking());
-        // 判断玩家是否在疾跑
+
+        // 客户端 与 当前世界 时间的差值
+        playerObject.put("player_time_offset", player.getPlayerTimeOffset());
+
+
+        // 行走速度
+        playerObject.put("walk_speed", player.getWalkSpeed());
+
+        // 飞行速度
+        playerObject.put("fly_speed", player.getFlySpeed());
+
+        // 飞行权限
+        playerObject.put("allow_flight", player.getAllowFlight());
+
+        // 是否在疾跑
         playerObject.put("is_sprinting", player.isSprinting());
+
+        // 是否在潜行
+        playerObject.put("is_sneaking", player.isSneaking());
+
+        // 是否在飞行
+        playerObject.put("is_flying", player.isFlying());
+
         return playerObject;
     }
 
