@@ -2,7 +2,7 @@ package com.scareye.mcqq;
 /*
 正则
     原版服务器 聊天 判定："\[Server thread/INFO]:(.*)<(.*)> (.*)"
-    原版服务端 加入/离开 判定："\[Server thread/INFO] \[net.minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)"
+    原版服务端 加入/离开 判定："\[Server thread/INFO] :(.*) (.*) the game"
     Forge端 聊天 判定："\[Server thread/INFO] \[net.minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)"
     Forge端 加入/离开 判定："\[Server thread/INFO] \[net.minecraft.server.MinecraftServer/]: (.*) (.*) the game"
     Fabric端 与原版日志相同
@@ -25,7 +25,7 @@ public class Utils {
     /**
      * 原版端 加入/离开 服务器 正则
      */
-    static String minecraftJoinQuitRegex = "\\[Server thread/INFO] \\[net.minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)";
+    static String minecraftJoinQuitRegex = "\\[Server thread/INFO]: (.*) (.*) the game";
 
     /**
      * Forge端 聊天 正则

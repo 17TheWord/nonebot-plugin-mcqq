@@ -1,0 +1,2 @@
+Manifest-Version: 1.0.8
+Main-Class: com.scareye.mcqq.MC_QQ
