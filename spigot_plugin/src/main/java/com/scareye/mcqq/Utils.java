@@ -185,31 +185,35 @@ public class Utils {
              将玩家信息添加至 Json 对象中
              将 聊天 消息添加至 Json 对象中
              */
+            jsonMessage.put("post_type", "message");
             jsonMessage.put("player", getPlayerJson(((AsyncPlayerChatEvent) event).getPlayer()));
-            jsonMessage.put("message", getMessageJson("text", ((AsyncPlayerChatEvent) event).getPlayer().getName() + ConfigReader.getSayWay() + ((AsyncPlayerChatEvent) event).getMessage()));
+            jsonMessage.put("message", ((AsyncPlayerChatEvent) event).getMessage());
 
         } else if (event instanceof PlayerJoinEvent) {
             /*
              将玩家信息添加至 Json 对象中
              将 加入 消息添加至 Json 对象中
              */
+            jsonMessage.put("post_type", "notice");
             jsonMessage.put("player", getPlayerJson(((PlayerJoinEvent) event).getPlayer()));
-            jsonMessage.put("message", getMessageJson("text", ((PlayerJoinEvent) event).getPlayer().getName() + " 加入了服务器"));
+            jsonMessage.put("message", ((PlayerJoinEvent) event).getPlayer().getName() + " 加入了服务器");
 
         } else if (event instanceof PlayerQuitEvent) {
             /*
              将玩家信息添加至 Json 对象中
              将 离开 消息添加至 Json 对象中
              */
+            jsonMessage.put("post_type", "notice");
             jsonMessage.put("player", getPlayerJson(((PlayerQuitEvent) event).getPlayer()));
-            jsonMessage.put("message", getMessageJson("text", ((PlayerQuitEvent) event).getPlayer().getName() + " 离开了服务器"));
+            jsonMessage.put("message", ((PlayerQuitEvent) event).getPlayer().getName() + " 离开了服务器");
         } else if (event instanceof PlayerDeathEvent) {
             /*
              将玩家信息添加至 Json 对象中
              将 死亡 消息添加至 Json 对象中
              */
+            jsonMessage.put("post_type", "notice");
             jsonMessage.put("player", getPlayerJson(((PlayerDeathEvent) event).getEntity()));
-            jsonMessage.put("message", getMessageJson("text", ((PlayerDeathEvent) event).getDeathMessage()));
+            jsonMessage.put("message", ((PlayerDeathEvent) event).getDeathMessage());
         }
 
         return jsonMessage.toJSONString();
@@ -304,4 +308,22 @@ public class Utils {
         return messageJson;
     }
 
+    /**
+     * 字符串转为 unicode 编码
+     *
+     * @param string 字符串
+     * @return unicode编码
+     */
+    static String unicodeEncode(String string) {
+        char[] utfBytes = string.toCharArray();
+        String unicodeBytes = "";
+        for (char utfByte : utfBytes) {
+            String hexB = Integer.toHexString(utfByte);
+            if (hexB.length() <= 2) {
+                hexB = "00" + hexB;
+            }
+            unicodeBytes = unicodeBytes + "\\u" + hexB;
+        }
+        return unicodeBytes;
+    }
 }

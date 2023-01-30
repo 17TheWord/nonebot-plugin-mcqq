@@ -19,8 +19,8 @@ public final class MC_QQ extends JavaPlugin {
     // 连接次数
     static int connectTime;
 
-    // 服务器是否关闭
-    static boolean serverOpen = true;
+    // 服务器是否打开
+    static boolean serverOpen;
 
     // WebSocket连接头部信息
     static Map<String, String> httpHeaders;
@@ -44,7 +44,7 @@ public final class MC_QQ extends JavaPlugin {
 
         // WebSocket 头部信息
         httpHeaders = new HashMap<>();
-        httpHeaders.put("x-self-name", ConfigReader.getServerName());
+        httpHeaders.put("x-self-name", Utils.unicodeEncode(ConfigReader.getServerName()));
 
         // new Ws 对象，并将配置文件中 地址 与 端口 写入
         try {
