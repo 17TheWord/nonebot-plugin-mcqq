@@ -13,29 +13,23 @@ body:
     id: run_env
     attributes:
       label: 运行环境
-      description: 如 Ubuntu 20.04 LTS、Python3.10、PaperSpigot-1.19.2 等
-    validations:
-      required: true
-
-  - type: dropdown
-    id: version
-    attributes:
-      label: 插件版本
-      multiple: true
-      options:
-        - nonebot-plugin-mcqq
-        - nonebot-plugin-mcqq-mcrcon
-        - MC_QQ
-        - Minecraft_Server
+      description: Ubuntu 20.04 LTS、Python3.10、PaperSpigot-1.19.2
     validations:
       required: true
 
   - type: input
-    id: version_number
+    id: nb_plugin
     attributes:
-      label: 插件版本号
-      description: 填写当前使用的版本号
-      placeholder: v0.1.4
+      label: NB插件及版本号
+      description: 填写当前使用的NB插件及版本号
+    validations:
+      required: true
+
+  - type: input
+    id: mc_plugin
+    attributes:
+      label: MC插件及版本号
+      description: 填写当前使用的MC插件及版本号
     validations:
       required: true
 
