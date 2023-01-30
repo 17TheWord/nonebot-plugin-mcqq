@@ -92,30 +92,27 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
 
     # 初始化消息
     text_msg = member_nickname + "说："
+
     # 初始化消息字典
-    msgDict = {"senderName": member_nickname}
+    messageList = []
 
     # 发送群聊名称
-    message_type = {}
+    group_name = {}
     if get_mc_qq_send_group_name():
+        group_name['msgType'] = "group_name"
         if isinstance(event, GroupMessageEvent):
-            message_type['type'] = "group"
-            message_type['group_name'] = (await bot.get_group_info(group_id=event.group_id))['group_name']
+            group_name['msgData'] = (await bot.get_group_info(group_id=event.group_id))['group_name']
         elif isinstance(event, GuildMessageEvent):
-            message_type['type'] = "guild"
-            message_type['guild_name'] = (await bot.get_guild_meta_by_guest(guild_id=event.guild_id))['guild_name']
+            guild_name = (await bot.get_guild_meta_by_guest(guild_id=event.guild_id))['guild_name']
             for per_channel in (await bot.get_guild_channel_list(guild_id=event.guild_id, no_cache=True)):
                 if str(event.channel_id) == per_channel['channel_id']:
-                    message_type['channel_name'] = per_channel['channel_name']
+                    channel_name = per_channel['channel_name']
+                    group_name['msgData'] = f"{guild_name}丨{channel_name}"
                     break
-    else:
-        message_type['type'] = "group"
-        message_type['group_name'] = ""
-    # 将消息类型以及群聊名称加入消息字典
-    msgDict['message_type'] = message_type
+        messageList.append(group_name)
 
-    # 初始化消息列表
-    messageList = []
+    # 将群成员昵称装入消息列表
+    messageList.append({"msgType": "senderName", "msgData": member_nickname})
 
     for msg in event.message:
         per_msg = {'msgType': msg.type}
@@ -166,9 +163,7 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
         # 放入消息列表
         messageList.append(per_msg)
 
-    # 消息列表添加至总消息
-    msgDict['message'] = messageList
-    return text_msg, str(msgDict)
+    return text_msg, '{"message": ' + str(messageList) + '}'
 
 
 def get_mc_qq_ws_ip() -> str:
