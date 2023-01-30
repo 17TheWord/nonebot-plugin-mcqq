@@ -18,7 +18,7 @@ public class WSClient extends WebSocketClient {
 
 
     public WSClient() throws URISyntaxException {
-        super(new URI("ws://" + ConfigReader.getAddress() + ":" + ConfigReader.getPort()), httpHeaders);
+        super(new URI(ConfigReader.getWsUrl()), httpHeaders);
     }
 
     /**

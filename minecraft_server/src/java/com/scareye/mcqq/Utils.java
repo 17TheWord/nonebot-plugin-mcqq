@@ -55,13 +55,8 @@ public class Utils {
     static String processMessageToJson(String msg) {
 
         JSONObject jsonMessage = new JSONObject();
-        JSONObject messageJson = new JSONObject();
+        JSONObject playerJson = new JSONObject();
         String text_msg = "";
-
-        // 如果服务器名为设置，则不添加至 text_msg 文本
-        if (!config().get("server_name").equals("")) {
-            text_msg = "[" + config().get("server_name") + "] ";
-        }
 
         // 放入服务器名
         jsonMessage.put("server_name", config().get("server_name"));
@@ -86,14 +81,14 @@ public class Utils {
 
 
             // 放入事件名
+            jsonMessage.put("post_type", "message");
             jsonMessage.put("event_name", "AsyncPlayerChatEvent");
             // 放入玩家
-            jsonMessage.put("player", new JSONObject().put("nickname", playerName));
+            playerJson.put("nickname", playerName);
+            jsonMessage.put("player", playerJson);
 
             // message的Json
-            messageJson.put("type", "text");
-            messageJson.put("data", playerName + config().get("say_way") + playerMsg);
-            jsonMessage.put("message", messageJson);
+            jsonMessage.put("message", playerMsg);
 
             text_msg += playerName + config().get("say_way") + playerMsg;
 
@@ -125,10 +120,12 @@ public class Utils {
                 data = playerName + " 离开了服务器";
             }
 
+            jsonMessage.put("post_type", "notice");
+            // 放入玩家
+            playerJson.put("nickname", playerName);
+            jsonMessage.put("player", playerJson);
             // 写入message
-            messageJson.put("type", "text");
-            messageJson.put("data", data);
-            jsonMessage.put("message", messageJson);
+            jsonMessage.put("message", data);
 
             text_msg += data;
         }
@@ -210,5 +207,22 @@ public class Utils {
         return null;
     }
 
-
+    /**
+     * 字符串转为 unicode 编码
+     *
+     * @param string 字符串
+     * @return unicode编码
+     */
+    static String unicodeEncode(String string) {
+        char[] utfBytes = string.toCharArray();
+        String unicodeBytes = "";
+        for (char utfByte : utfBytes) {
+            String hexB = Integer.toHexString(utfByte);
+            if (hexB.length() <= 2) {
+                hexB = "00" + hexB;
+            }
+            unicodeBytes = unicodeBytes + "\\u" + hexB;
+        }
+        return unicodeBytes;
+    }
 }

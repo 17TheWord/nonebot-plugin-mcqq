@@ -25,25 +25,7 @@ class ConfigReader {
      * @return String serverName
      */
     static String getServerName() {
-        return config.getString("server_name", "");
-    }
-
-    /**
-     * 获取地址
-     *
-     * @return String Address
-     */
-    static String getAddress() {
-        return config.getString("websocket_hostname", "127.0.0.1");
-    }
-
-    /**
-     * 获取端口
-     *
-     * @return int Port
-     */
-    static int getPort() {
-        return config.getInt("websocket_port", Integer.parseInt("8765"));
+        return config.getString("server_name", "Server");
     }
 
     /**
@@ -52,7 +34,7 @@ class ConfigReader {
      * @return int Port
      */
     static String getWsUrl() {
-        return config.getString("websocket_url", "ws://127.0.0.1:8765/spigot/ws");
+        return config.getString("websocket_url", "ws://127.0.0.1:8765");
     }
 
     /**
