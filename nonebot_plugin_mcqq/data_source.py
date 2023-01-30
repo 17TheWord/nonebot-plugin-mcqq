@@ -1,5 +1,4 @@
 import json
-
 import websockets
 from nonebot import get_bot, logger
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
@@ -11,7 +10,7 @@ from .utils import (
     get_mc_qq_ws_port,
     msg_process,
     send_msg_to_qq,
-    get_mc_qq_servers_list
+    mc_qq_servers_list
 )
 
 CLIENTS = []
@@ -21,7 +20,7 @@ CLIENTS = []
 async def ws_client(websocket):
     """WebSocket"""
     try:
-        server_name = websocket.request_headers["x-self-name"]
+        server_name = websocket.request_headers["x-self-name"].encode('utf-8').decode('unicode_escape')
     except KeyError:
         server_name = ""
     # 服务器名为空
@@ -68,24 +67,25 @@ async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageE
     """发送消息到 MC"""
     # 处理来自QQ的消息
     text_msg, msgJson = await msg_process(bot=bot, event=event)
-    clients = await get_clients(event=event)
-    for client in clients:
-        if client and client['ws_client']:
-            try:
-                await client['ws_client'].send(msgJson)
-                logger.success(f"[MC_QQ]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
-            except websockets.WebSocketException:
-                logger.error(f"[MC_QQ]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
-                CLIENTS.remove(client)
-    
+    if client_list := await get_clients(event=event):
+        for client in client_list:
+            if client and client['ws_client']:
+                try:
+                    await client['ws_client'].send(msgJson)
+                    logger.success(f"[MC_QQ]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
+                except websockets.WebSocketException:
+                    logger.error(f"[MC_QQ]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
+                    CLIENTS.remove(client)
+
 
 async def get_clients(event: Union[GroupMessageEvent, GuildMessageEvent]) -> list:
     """获取 服务器名、ws客户端, 返回client列表"""
     res = []
     for per_client in CLIENTS:
-        for per_server in get_mc_qq_servers_list():
+        for per_server in mc_qq_servers_list:
             # 如果 服务器名 == ws客户端中记录的服务器名，且ws客户端存在
-            if per_server['server_name'] == per_client['server_name'] and per_client['ws_client'] and (per_client not in res):
+            if per_server['server_name'] == per_client['server_name'] and per_client['ws_client'] and (
+                    per_client not in res):
                 if isinstance(event, GroupMessageEvent):
                     if event.group_id in per_server['group_list']:
                         res.append(per_client)

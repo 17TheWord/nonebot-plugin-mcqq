@@ -25,7 +25,7 @@ GUILD_ADMIN: Permission = Permission(_guild_admin)
 
 async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     """Rule 消息规则"""
-    for per_server in get_mc_qq_servers_list():
+    for per_server in mc_qq_servers_list:
         if isinstance(event, GroupMessageEvent):
             if event.group_id in per_server['group_list']:
                 return True
@@ -35,14 +35,25 @@ async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     return False
 
 
+async def msg_to_qq_process(json_msg):
+    """处理来自MC的消息，并返回处理后的消息"""
+    message = {
+        "PlayerJoinEvent": f"{json_msg['player']['nickname']} 加入了服务器",
+        "PlayerQuitEvent": f"{json_msg['player']['nickname']} 离开了服务器",
+        "AsyncPlayerChatEvent": f"{json_msg['player']['nickname']} 说：{json_msg['message']}",
+        "PlayerDeathEvent": f"{json_msg['message']}",
+    }
+    return message[json_msg['event_name']]
+
+
 async def send_msg_to_qq(bot: Bot, json_msg):
     """发送消息到 QQ"""
-    msg = json_msg['message']['data']
-    if get_mc_qq_display_server_name():
-        msg = f"[{json_msg['server_name']}] {json_msg['message']['data']}"
+    msg = await msg_to_qq_process(json_msg)
+    if mc_qq_display_server_name:
+        msg = f"[{json_msg['server_name']}] {msg}"
     # 循环服务器列表并发送消息
-    if get_mc_qq_servers_list():
-        for per_server in get_mc_qq_servers_list():
+    if mc_qq_servers_list:
+        for per_server in mc_qq_servers_list:
             # 如果服务器名相同
             if per_server['server_name'] == json_msg['server_name']:
                 # 如果群列表存在
@@ -241,3 +252,8 @@ def get_mc_qq_mcrcon_guild_admin_roles() -> list:
         return list(get_driver().config.mc_qq_mcrcon_guild_admin_roles)
     except AttributeError:
         return ["频道主", "管理员"]
+
+
+mc_qq_display_server_name = get_mc_qq_display_server_name()
+mc_qq_servers_list = get_mc_qq_servers_list()
+mc_qq_mcrcon_rcon_list = get_mc_qq_mcrcon_rcon_list()
