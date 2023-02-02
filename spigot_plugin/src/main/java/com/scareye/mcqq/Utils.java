@@ -38,36 +38,38 @@ public class Utils {
         component.setColor(ChatColor.YELLOW);
         StringBuilder msgLogText = new StringBuilder();
 
-        // 判断是否启用群聊名称前缀
-        if (ConfigReader.getDisplayGroupName()) {
-            // 获取 信息类型
-            JSONObject messageType = msgJson.getJSONObject("message_type");
-            TextComponent messageFrom = new TextComponent();
-            switch (messageType.getString("type")) {
-                case "group":
-                    messageFrom.setText(messageType.getString("group_name") + " ");
-                    msgLogText.append(messageType.getString("group_name")).append(" ");
-                    break;
-                case "guild":
-                    messageFrom.setText(messageType.getString("guild_name") + "丨" + messageType.getString("channel_name") + " ");
-                    msgLogText.append(messageType.getString("guild_name")).append("丨").append(messageType.getString("channel_name")).append(" ");
-                    break;
-            }
-            messageFrom.setColor(ChatColor.GOLD);
-            component.addExtra(messageFrom);
-        }
+//        // 判断是否启用群聊名称前缀
+//        if (ConfigReader.getDisplayGroupName()) {
+//            // 获取 信息类型
+//            JSONObject messageType = msgJson.getJSONObject("message_type");
+//            TextComponent messageFrom = new TextComponent();
+//            switch (messageType.getString("type")) {
+//                case "group":
+//                    messageFrom.setText(messageType.getString("group_name") + " ");
+//                    msgLogText.append(messageType.getString("group_name")).append(" ");
+//                    break;
+//                case "guild":
+//                    messageFrom.setText(messageType.getString("guild_name") + "丨" + messageType.getString("channel_name") + " ");
+//                    msgLogText.append(messageType.getString("guild_name")).append("丨").append(messageType.getString("channel_name")).append(" ");
+//                    break;
+//            }
+//            messageFrom.setColor(ChatColor.GOLD);
+//            component.addExtra(messageFrom);
+//        }
+//
+//        // 发送人信息
+//        TextComponent senderName = new TextComponent(msgJson.getString("senderName"));
+//        senderName.setColor(ChatColor.AQUA);
+//        // 将 发送者 添加至 组合消息
+//        component.addExtra(senderName);
+//        // 将 发送者 添加至 msgLogText
+//        msgLogText.append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
+//
+//        // 说话方式
+//        TextComponent sayWay = new TextComponent(ConfigReader.getSayWay());
+//        sayWay.setColor(ChatColor.WHITE);
+//        component.addExtra(sayWay);
 
-        // 发送人信息
-        TextComponent senderName = new TextComponent(msgJson.getString("senderName"));
-        senderName.setColor(ChatColor.AQUA);
-        // 将 发送者 添加至 组合消息
-        component.addExtra(senderName);
-        // 将 发送者 添加至 msgLogText
-        msgLogText.append(msgJson.getString("senderName")).append(ConfigReader.getSayWay());
-
-        TextComponent sayWay = new TextComponent(ConfigReader.getSayWay());
-        sayWay.setColor(ChatColor.WHITE);
-        component.addExtra(sayWay);
         for (Object jsonArray : msgJson.getJSONArray("message")) {
             String msgType = JSONObject.parseObject(String.valueOf(jsonArray)).getString("msgType");
             String msgData = JSONObject.parseObject(String.valueOf(jsonArray)).getString("msgData");
@@ -76,6 +78,14 @@ public class Utils {
             String textContent;
             ChatColor color;
             switch (msgType) {
+                case "group_name":
+                    textContent = msgData;
+                    color = ChatColor.GOLD;
+                    break;
+                case "senderName":
+                    textContent = msgData;
+                    color = ChatColor.AQUA;
+                    break;
                 case "text":
                     textContent = msgData;
                     color = ChatColor.WHITE;
@@ -155,15 +165,25 @@ public class Utils {
                     color = ChatColor.WHITE;
                     break;
             }
-            textContent += " ";
+//            textContent += " ";
             // 为消息设置 文本
             msgComponent.setText(textContent);
             // 为消息设置 颜色
             msgComponent.setColor(color);
+
             // 将消息装入 日志文本队列
             msgLogText.append(textContent);
             // 将消息装入 消息队列
             component.addExtra(msgComponent);
+
+            if (msgType.equals("senderName")) {
+                // 说话方式
+                TextComponent sayWay = new TextComponent(ConfigReader.getSayWay());
+                sayWay.setColor(ChatColor.WHITE);
+                component.addExtra(sayWay);
+                // 说话方式装入 日志文本队列
+                msgLogText.append(ConfigReader.getSayWay());
+            }
 
         }
         // 后台打印文本
