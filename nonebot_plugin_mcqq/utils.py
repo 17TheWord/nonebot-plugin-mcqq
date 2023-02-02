@@ -97,7 +97,7 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
     messageList = []
 
     # 发送群聊名称
-    if get_mc_qq_send_group_name():
+    if mc_qq_send_group_name:
         group_name = {'msgType': "group_name"}
         if isinstance(event, GroupMessageEvent):
             group_name['msgData'] = (await bot.get_group_info(group_id=event.group_id))['group_name']
@@ -207,3 +207,4 @@ def get_mc_qq_servers_list() -> list:
 
 mc_qq_display_server_name = get_mc_qq_display_server_name()
 mc_qq_servers_list = get_mc_qq_servers_list()
+mc_qq_send_group_name = get_mc_qq_send_group_name()
