@@ -97,9 +97,8 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
     messageList = []
 
     # 发送群聊名称
-    group_name = {}
     if get_mc_qq_send_group_name():
-        group_name['msgType'] = "group_name"
+        group_name = {'msgType': "group_name"}
         if isinstance(event, GroupMessageEvent):
             group_name['msgData'] = (await bot.get_group_info(group_id=event.group_id))['group_name']
         elif isinstance(event, GuildMessageEvent):
@@ -109,7 +108,7 @@ async def msg_process(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEven
                     channel_name = per_channel['channel_name']
                     group_name['msgData'] = f"{guild_name}丨{channel_name}"
                     break
-        messageList.append(group_name)
+        messageList.append({"msgType": "group_name", "msgData": group_name})
 
     # 将群成员昵称装入消息列表
     messageList.append({"msgType": "senderName", "msgData": member_nickname})
