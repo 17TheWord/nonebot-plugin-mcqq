@@ -101,9 +101,10 @@ async def send_command_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMess
         for client in client_list:
             if client and client['mcrcon_connect']:
                 try:
-                    await bot.send(event, message=client['mcrcon_connect'].command(event.raw_message.strip("/mcc")))
+                    await bot.send(event,
+                                   message=client['mcrcon_connect'].command(event.raw_message.strip("/").strip("mcc")))
                     logger.success(
-                        f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\""
+                        f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/').strip('/mcc')}\""
                     )
                 except mcrcon.MCRconException:
                     logger.error(f"[MC_QQ_Rcon]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
