@@ -43,9 +43,9 @@ async def ws_client(websocket):
                 await send_msg_to_qq(bot=get_bot(), json_msg=json.loads(message))
         except websockets.WebSocketException:
             # 移除当前客户端
-            CLIENTS.remove({"server_name": server_name, "ws_client": websocket})
+            await remove_client(server_name=server_name)
         if websocket.closed:
-            CLIENTS.remove({"server_name": server_name, "ws_client": websocket})
+            await remove_client(server_name=server_name)
             logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 连接已断开")
 
 
@@ -93,3 +93,9 @@ async def get_clients(event: Union[GroupMessageEvent, GuildMessageEvent]) -> lis
                     if {"guild_id": event.guild_id, "channel_id": event.channel_id} in per_server['guild_list']:
                         res.append(per_client)
     return res
+
+
+async def remove_client(server_name: str):
+    for client in CLIENTS:
+        if client["server_name"] == server_name:
+            CLIENTS.remove(client)
