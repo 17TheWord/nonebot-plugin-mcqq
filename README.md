@@ -7,6 +7,8 @@
 - 支持QQ群、QQ频道
 - 支持多个服务器与多个群聊的互通
 
+推荐使用功能更为完整的 [`青岚 Bot`](https://github.com/17TheWord/qinglan_bot)
+
 # 文档
 
 - [正在不断更新的文档](https://17theword.github.io/mc_qq/)
