@@ -16,11 +16,11 @@
 - Spigot
     - `MC_QQ_Spigot_XXX.jar` + `nonebot-plugin-mcqq`
 - MinecraftServer
-    - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq-mcrcon`
+    - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq`
 - ForgeServer
-    - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq-mcrcon`
+    - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq`
 - Fabric
-    - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq-mcrcon`
+    - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq`
 
 # 功能
 
