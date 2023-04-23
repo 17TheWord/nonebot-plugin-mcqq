@@ -3,9 +3,15 @@ package com.scareye.mcqq;
 正则
     原版服务器 聊天 判定："\[Server thread/INFO]:(.*)<(.*)> (.*)"
     原版服务端 加入/离开 判定："\[Server thread/INFO] :(.*) (.*) the game"
+
     Forge端 聊天 判定："\[Server thread/INFO] \[net.minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)"
     Forge端 加入/离开 判定："\[Server thread/INFO] \[net.minecraft.server.MinecraftServer/]: (.*) (.*) the game"
+
+    Forge 1.18.2 聊天 判定："\[Server thread/INFO] \[net.minecraft.server.dedicated.DedicatedServer/]:(.*)<(.*)> (.*)"
+    Forge 1.18.2 加入/离开 判定："\[Server thread/INFO] \[net.minecraft.server.dedicated.DedicatedServer/]: (.*) (.*) the game"
+
     Fabric端 与原版日志相同
+
  */
 
 import com.alibaba.fastjson.JSONObject;
@@ -31,11 +37,13 @@ public class Utils {
      * Forge端 聊天 正则
      */
     static String forgeChatRegex = "\\[Server thread/INFO] \\[net.minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)";
+    static String getForgeChatRegex_1182 = "\\[Server thread/INFO] \\[net.minecraft.server.dedicated.DedicatedServer/]:(.*)<(.*)> (.*)";
 
     /**
      * Forge端 加入/离开 服务器 正则
      */
     static String forgeJoinQuitRegex = "\\[Server thread/INFO] \\[net.minecraft.server.MinecraftServer/]: (.*) (.*) the game";
+    static String getForgeJoinQuitRegex_1182 = "\\[Server thread/INFO] \\[net.minecraft.server.dedicated.DedicatedServer/]: (.*) (.*) the game";
 
     /**
      * 向服务器后台发送信息
@@ -64,7 +72,7 @@ public class Utils {
         Matcher serverLog = null;
 
         // 判定前缀
-        if (getIfMinecraftChat(msg) || getIfForgeChat(msg)) {
+        if (getIfMinecraftChat(msg) || getIfForgeChat(msg) || getIfForgeChat_1182(msg)) {
             /*
             聊天
              */
@@ -75,6 +83,8 @@ public class Utils {
                 serverLog = getServerLogMatcher(msg, minecraftChatRegex);
             } else if (getIfForgeChat(msg)) {
                 serverLog = getServerLogMatcher(msg, forgeChatRegex);
+            } else if (getIfForgeChat_1182(msg)) {
+                serverLog = getServerLogMatcher(msg, getForgeChatRegex_1182);
             }
             playerName = serverLog.group(2);
             playerMsg = serverLog.group(3);
@@ -82,7 +92,8 @@ public class Utils {
 
             // 放入事件名
             jsonMessage.put("post_type", "message");
-            jsonMessage.put("event_name", "AsyncPlayerChatEvent");
+            jsonMessage.put("sub_type", "chat");
+            jsonMessage.put("event_name", "MineCraftPlayerChatEvent");
             // 放入玩家
             playerJson.put("nickname", playerName);
             jsonMessage.put("player", playerJson);
@@ -92,7 +103,7 @@ public class Utils {
 
             text_msg += playerName + config().get("say_way") + playerMsg;
 
-        } else if ((Boolean) config().get("join_quit") && (getIfMinecraftJoinQuit(msg) || getIfForgeJoinQuit(msg))) {
+        } else if ((Boolean) config().get("join_quit") && (getIfMinecraftJoinQuit(msg) || getIfForgeJoinQuit(msg)) || getIfForgeJoinQuit_1182(msg)) {
             /*
             加入/离开服务器
              */
@@ -109,15 +120,19 @@ public class Utils {
                 Forge
                  */
                 serverLog = getServerLogMatcher(msg, minecraftJoinQuitRegex);
+            } else if (getIfForgeJoinQuit_1182(msg)) {
+                /*
+                Forge 1.18.2
+                 */
+                serverLog = getServerLogMatcher(msg, getForgeJoinQuitRegex_1182);
             }
             playerName = serverLog.group(1);
             join_quit_msg = serverLog.group(2);
             if (join_quit_msg.equals("joined")) {
-                jsonMessage.put("event_name", "PlayerJoinEvent");
-                data = playerName + " 加入了服务器";
+                jsonMessage.put("event_name", "MineCraftPlayerJoinEvent");
+                jsonMessage.put("sub_type", "join");
             } else if (join_quit_msg.equals("left")) {
-                jsonMessage.put("event_name", "PlayerQuitEvent");
-                data = playerName + " 离开了服务器";
+                jsonMessage.put("sub_type", "quit");
             }
 
             jsonMessage.put("post_type", "notice");
@@ -125,7 +140,6 @@ public class Utils {
             playerJson.put("nickname", playerName);
             jsonMessage.put("player", playerJson);
             // 写入message
-            jsonMessage.put("message", data);
 
             text_msg += data;
         }
@@ -164,9 +178,19 @@ public class Utils {
      * @return boolean
      */
     static boolean getIfForgeChat(String message) {
-        Pattern pattern = Pattern.compile(forgeChatRegex);
-        Matcher matcher = pattern.matcher(message);
+        Matcher matcher = Pattern.compile(forgeChatRegex).matcher(message);
         return matcher.find();
+    }
+
+    /**
+     * 获取 是否为 Forge端 1.18.2 聊天 消息
+     *
+     * @param message String 消息
+     * @return boolean
+     */
+    static boolean getIfForgeChat_1182(String message) {
+        Matcher matcher_1182 = Pattern.compile(getForgeChatRegex_1182).matcher(message);
+        return matcher_1182.find();
     }
 
     /**
@@ -176,9 +200,19 @@ public class Utils {
      * @return boolean
      */
     static boolean getIfForgeJoinQuit(String message) {
-        Pattern pattern = Pattern.compile(forgeJoinQuitRegex);
-        Matcher matcher = pattern.matcher(message);
+        Matcher matcher = Pattern.compile(forgeJoinQuitRegex).matcher(message);
         return matcher.find();
+    }
+
+    /**
+     * 获取 是否为 Forge端 1.18.2 加入/离开 消息
+     *
+     * @param message String 消息
+     * @return boolean
+     */
+    static boolean getIfForgeJoinQuit_1182(String message) {
+        Matcher matcher_1182 = Pattern.compile(getForgeJoinQuitRegex_1182).matcher(message);
+        return matcher_1182.find();
     }
 
     /**
@@ -188,7 +222,7 @@ public class Utils {
      * @return boolean
      */
     static boolean getIfNeedMsg(String message) {
-        return getIfMinecraftChat(message) || getIfMinecraftJoinQuit(message) || getIfForgeChat(message) || getIfForgeJoinQuit(message);
+        return getIfMinecraftChat(message) || getIfMinecraftJoinQuit(message) || getIfForgeChat(message) || getIfForgeJoinQuit(message) || getIfForgeChat_1182(message) || getIfForgeJoinQuit_1182(message);
     }
 
     /**
