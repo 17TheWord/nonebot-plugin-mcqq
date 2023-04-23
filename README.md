@@ -15,7 +15,6 @@
 
 - Spigot
     - `MC_QQ_Spigot_XXX.jar` + `nonebot-plugin-mcqq`
-    - `MC_QQ_Spigot_XXX.jar` + `nonebot-plugin-mcqq-mcrcon`
 - MinecraftServer
     - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq-mcrcon`
 - ForgeServer
@@ -29,9 +28,9 @@
     - 服务器 -> QQ
         - [x] 加入 / 离开 服务器消息
         - [x] 玩家聊天信息
-        - [x] 玩家死亡信息（死亡信息为英文，计划使用翻译解决。非插件服务端不适用。）
+        - [x] 玩家死亡信息（死亡信息为英文，非插件服务端不适用。）
     - QQ -> 服务器
-        - [x] 指令（`nonebot-plugin-mcqq-mcrcon` 可用）
+        - [x] 指令
         - [x] 群员聊天文本
         - [x] 图片、视频等内容转换为 `[图片]`、`[视频]`
 
