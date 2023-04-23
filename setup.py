@@ -5,7 +5,11 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="nonebot-plugin-mcqq",  # 项目名称，保证它的唯一性，不要跟已存在的包名冲突即可
+<<<<<<< HEAD
     version="1.1.5-post5",  # 程序版本
+=======
+    version="1.1.1",  # 程序版本
+>>>>>>> main
     author="17TheWord",  # 项目作者
     author_email="17theword@gmail.com",  # 作者邮件
     description="基于NoneBot的QQ群聊与Minecraft Server消息互通插件",  # 项目的一句话描述
