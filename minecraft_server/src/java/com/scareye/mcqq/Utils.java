@@ -3,9 +3,15 @@ package com.scareye.mcqq;
 正则
     原版服务器 聊天 判定："\[Server thread/INFO]:(.*)<(.*)> (.*)"
     原版服务端 加入/离开 判定："\[Server thread/INFO] :(.*) (.*) the game"
-    Forge端 聊天 判定："\[Server thread/INFO] \[net.minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)"
-    Forge端 加入/离开 判定："\[Server thread/INFO] \[net.minecraft.server.MinecraftServer/]: (.*) (.*) the game"
+
+    Forge端 聊天 判定："\[Server thread/INFO] \[net.Minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)"
+    Forge端 加入/离开 判定："\[Server thread/INFO] \[net.Minecraft.server.MinecraftServer/]: (.*) (.*) the game"
+
+    Forge 1.18.2 聊天 判定："\[Server thread/INFO] \[net.Minecraft.server.dedicated.DedicatedServer/]:(.*)<(.*)> (.*)"
+    Forge 1.18.2 加入/离开 判定："\[Server thread/INFO] \[net.Minecraft.server.dedicated.DedicatedServer/]: (.*) (.*) the game"
+
     Fabric端 与原版日志相同
+
  */
 
 import com.alibaba.fastjson.JSONObject;
@@ -31,11 +37,13 @@ public class Utils {
      * Forge端 聊天 正则
      */
     static String forgeChatRegex = "\\[Server thread/INFO] \\[net.minecraft.server.MinecraftServer/]:(.*)<(.*)> (.*)";
+    static String forgeChatRegex_1182 = "\\[Server thread/INFO] \\[net.minecraft.server.dedicated.DedicatedServer/]:(.*)<(.*)> (.*)";
 
     /**
      * Forge端 加入/离开 服务器 正则
      */
     static String forgeJoinQuitRegex = "\\[Server thread/INFO] \\[net.minecraft.server.MinecraftServer/]: (.*) (.*) the game";
+    static String forgeJoinQuitRegex_1182 = "\\[Server thread/INFO] \\[net.minecraft.server.dedicated.DedicatedServer/]: (.*) (.*) the game";
 
     /**
      * 向服务器后台发送信息
@@ -64,7 +72,7 @@ public class Utils {
         Matcher serverLog = null;
 
         // 判定前缀
-        if (getIfMinecraftChat(msg) || getIfForgeChat(msg)) {
+        if (getIfForgeChat_1182(msg) || getIfMinecraftChat(msg) || getIfForgeChat(msg)) {
             /*
             聊天
              */
@@ -75,6 +83,8 @@ public class Utils {
                 serverLog = getServerLogMatcher(msg, minecraftChatRegex);
             } else if (getIfForgeChat(msg)) {
                 serverLog = getServerLogMatcher(msg, forgeChatRegex);
+            } else if (getIfForgeChat_1182(msg)) {
+                serverLog = getServerLogMatcher(msg, forgeChatRegex_1182);
             }
             playerName = serverLog.group(2);
             playerMsg = serverLog.group(3);
@@ -82,17 +92,18 @@ public class Utils {
 
             // 放入事件名
             jsonMessage.put("post_type", "message");
-            jsonMessage.put("event_name", "AsyncPlayerChatEvent");
+            jsonMessage.put("event_name", "MinecraftPlayerChatEvent");
             // 放入玩家
             playerJson.put("nickname", playerName);
             jsonMessage.put("player", playerJson);
+            jsonMessage.put("sub_type", "chat");
 
             // message的Json
             jsonMessage.put("message", playerMsg);
 
             text_msg += playerName + config().get("say_way") + playerMsg;
 
-        } else if ((Boolean) config().get("join_quit") && (getIfMinecraftJoinQuit(msg) || getIfForgeJoinQuit(msg))) {
+        } else if ((Boolean) config().get("join_quit") && (getIfForgeJoinQuit_1182(msg) || getIfMinecraftJoinQuit(msg) || getIfForgeJoinQuit(msg))) {
             /*
             加入/离开服务器
              */
@@ -104,19 +115,29 @@ public class Utils {
                 原版
                  */
                 serverLog = getServerLogMatcher(msg, minecraftJoinQuitRegex);
+
             } else if (getIfForgeJoinQuit(msg)) {
                 /*
                 Forge
                  */
                 serverLog = getServerLogMatcher(msg, minecraftJoinQuitRegex);
+
+            } else if (getIfForgeJoinQuit_1182(msg)) {
+                /*
+                Forge 1.18.2
+                 */
+                serverLog = getServerLogMatcher(msg, forgeJoinQuitRegex_1182);
+
             }
             playerName = serverLog.group(1);
             join_quit_msg = serverLog.group(2);
             if (join_quit_msg.equals("joined")) {
-                jsonMessage.put("event_name", "PlayerJoinEvent");
+                jsonMessage.put("event_name", "MinecraftPlayerJoinEvent");
+                jsonMessage.put("sub_type", "join");
                 data = playerName + " 加入了服务器";
             } else if (join_quit_msg.equals("left")) {
-                jsonMessage.put("event_name", "PlayerQuitEvent");
+                jsonMessage.put("event_name", "MinecraftPlayerQuitEvent");
+                jsonMessage.put("sub_type", "quit");
                 data = playerName + " 离开了服务器";
             }
 
@@ -131,6 +152,18 @@ public class Utils {
         }
         say(text_msg);
         return jsonMessage.toJSONString();
+    }
+
+    private static boolean getIfForgeJoinQuit_1182(String msg) {
+        Pattern pattern = Pattern.compile(forgeJoinQuitRegex_1182);
+        Matcher matcher = pattern.matcher(msg);
+        return matcher.find();
+    }
+
+    private static boolean getIfForgeChat_1182(String msg) {
+        Pattern pattern = Pattern.compile(forgeChatRegex_1182);
+        Matcher matcher = pattern.matcher(msg);
+        return matcher.find();
     }
 
     /**
@@ -188,7 +221,7 @@ public class Utils {
      * @return boolean
      */
     static boolean getIfNeedMsg(String message) {
-        return getIfMinecraftChat(message) || getIfMinecraftJoinQuit(message) || getIfForgeChat(message) || getIfForgeJoinQuit(message);
+        return getIfForgeChat_1182(message) || getIfForgeJoinQuit_1182(message) || getIfMinecraftChat(message) || getIfMinecraftJoinQuit(message) || getIfForgeChat(message) || getIfForgeJoinQuit(message);
     }
 
     /**
@@ -215,14 +248,14 @@ public class Utils {
      */
     static String unicodeEncode(String string) {
         char[] utfBytes = string.toCharArray();
-        String unicodeBytes = "";
+        StringBuilder unicodeBytes = new StringBuilder();
         for (char utfByte : utfBytes) {
             String hexB = Integer.toHexString(utfByte);
             if (hexB.length() <= 2) {
                 hexB = "00" + hexB;
             }
-            unicodeBytes = unicodeBytes + "\\u" + hexB;
+            unicodeBytes.append("\\u").append(hexB);
         }
-        return unicodeBytes;
+        return unicodeBytes.toString();
     }
 }
