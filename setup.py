@@ -5,15 +5,14 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="nonebot-plugin-mcqq",
-    version="1.2.0",
+    version="1.2.1",
     author="17TheWord",
     author_email="17theword@gmail.com",
     description="基于NoneBot的QQ群聊与Minecraft Server消息互通插件",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/17TheWord/nonebot-plugin-mcqq",
-    py_modules=['nonebot_plugin_mcqq'],
-    packages=[],
+    packages=["nonebot_plugin_mcqq"],
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: GNU Affero General Public License v3",
