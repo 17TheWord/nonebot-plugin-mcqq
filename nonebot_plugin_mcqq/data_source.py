@@ -18,7 +18,7 @@ async def ws_client(websocket: websockets.WebSocketServerProtocol):
         return
     else:
 
-        if CLIENTS.get(server_name):
+        if CLIENTS.get(server_name) is None:
             # 服务器名已存在
             logger.error(f"[MC_QQ]丨已有相同服务器名的连接，连接断开")
             await websocket.close(1008, "[MC_QQ]丨已有相同服务器名的连接")
