@@ -25,15 +25,18 @@ async def ws_client(websocket: websockets.WebSocketServerProtocol):
             return
 
         rcon_client = None
+        bot_id = ""
         for server in plugin_config.mc_qq_server_list:
-            if server_name == server.server_name and server.rcon_enable:
-                rcon_client = aiomcrcon.Client(
-                    websocket.remote_address[0],
-                    plugin_config.mc_qq_rcon_dict[server_name],
-                    plugin_config.mc_qq_rcon_password
-                )
-                await rcon_connect(rcon_client=rcon_client, server_name=server_name)
-                break
+            if server_name == server.server_name:
+                bot_id = str(server.self_id)
+                if server.rcon_enable:
+                    rcon_client = aiomcrcon.Client(
+                        websocket.remote_address[0],
+                        plugin_config.mc_qq_rcon_dict[server_name],
+                        plugin_config.mc_qq_rcon_password
+                    )
+                    await rcon_connect(rcon_client=rcon_client, server_name=server_name)
+                    break
         CLIENTS[server_name] = Client(
             server_name=server_name,
             websocket=websocket,
@@ -43,7 +46,24 @@ async def ws_client(websocket: websockets.WebSocketServerProtocol):
 
         try:
             async for message in websocket:
-                await send_msg_to_qq(bot=get_bot(), message=message)
+                try:
+                    # 获取指定ID Bot
+                    bot = get_bot(bot_id)
+                except KeyError as e:
+                    logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 Bot 未获取，将尝试使用其他Bot发送消息：{e}")
+                    try:
+                        # 获取可用 Bot
+                        bot = get_bot()
+                    except ValueError as e:
+                        logger.error(f"[MC_QQ]丨[Server:{server_name}] 没有可用的 Bot，无法发送消息：{e}")
+                    else:
+                        # 以可用 Bot 发送消息
+                        # 如果 Bot 未在指定群聊，则会报错
+                        await send_msg_to_qq(bot=bot, message=message)
+                else:
+                    # 以指定ID Bot 发送消息
+                    await send_msg_to_qq(bot=bot, message=message)
+
         except websockets.WebSocketException as e:
             logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 出现异常：{e}")
         finally:
