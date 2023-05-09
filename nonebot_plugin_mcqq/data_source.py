@@ -47,17 +47,11 @@ async def ws_client(websocket: websockets.WebSocketServerProtocol):
         except websockets.WebSocketException as e:
             # 移除当前客户端
             await remove_client(server_name=server_name)
-<<<<<<< HEAD
             logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 连接已断开：{e}")
         else:
             if websocket.closed:
                 await remove_client(server_name=server_name)
                 logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 连接已断开")
-=======
-        if websocket.closed:
-            await remove_client(server_name=server_name)
-            logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 连接已断开")
->>>>>>> main
 
 
 async def start_ws_server():
@@ -72,44 +66,3 @@ async def stop_ws_server():
     global ws
     ws.close()
     logger.success("[MC_QQ]丨WebSocket 服务器已关闭")
-<<<<<<< HEAD
-=======
-
-
-async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
-    """发送消息到 MC"""
-    # 处理来自QQ的消息
-    text_msg, msgJson = await msg_process(bot=bot, event=event)
-    if client_list := await get_clients(event=event):
-        for client in client_list:
-            if client and client['ws_client']:
-                try:
-                    await client['ws_client'].send(msgJson)
-                    logger.success(f"[MC_QQ]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
-                except websockets.WebSocketException:
-                    logger.error(f"[MC_QQ]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
-                    CLIENTS.remove(client)
-
-
-async def get_clients(event: Union[GroupMessageEvent, GuildMessageEvent]) -> list:
-    """获取 服务器名、ws客户端, 返回client列表"""
-    res = []
-    for per_client in CLIENTS:
-        for per_server in mc_qq_servers_list:
-            # 如果 服务器名 == ws客户端中记录的服务器名，且ws客户端存在
-            if per_server['server_name'] == per_client['server_name'] and per_client['ws_client'] and (
-                    per_client not in res):
-                if isinstance(event, GroupMessageEvent):
-                    if event.group_id in per_server['group_list']:
-                        res.append(per_client)
-                if isinstance(event, GuildMessageEvent):
-                    if {"guild_id": event.guild_id, "channel_id": event.channel_id} in per_server['guild_list']:
-                        res.append(per_client)
-    return res
-
-
-async def remove_client(server_name: str):
-    for client in CLIENTS:
-        if client["server_name"] == server_name:
-            CLIENTS.remove(client)
->>>>>>> main
