@@ -17,13 +17,13 @@ async def ws_client(websocket: websockets.WebSocketServerProtocol):
         await websocket.close(1008, "[MC_QQ]丨未获取到该服务器的名称，连接断开")
         return
     else:
-        try:
-            CLIENTS.get(server_name)
-        except KeyError as e:
-            # 服务器名不在配置文件中
-            logger.error(f"[MC_QQ]丨[Server:{server_name}] 未在配置文件中配置，连接断开：{e}")
-            await websocket.close(1008, f"[MC_QQ]丨[Server:{server_name}] 未在配置文件中配置，连接断开")
+
+        if CLIENTS.get(server_name):
+            # 服务器名已存在
+            logger.error(f"[MC_QQ]丨已有相同服务器名的连接，连接断开")
+            await websocket.close(1008, "[MC_QQ]丨已有相同服务器名的连接")
             return
+
         rcon_client = None
         for server in plugin_config.mc_qq_server_list:
             if server_name == server.server_name and server.rcon_enable:
@@ -45,20 +45,18 @@ async def ws_client(websocket: websockets.WebSocketServerProtocol):
             async for message in websocket:
                 await send_msg_to_qq(bot=get_bot(), message=message)
         except websockets.WebSocketException as e:
-            # 移除当前客户端
-            await remove_client(server_name=server_name)
-            logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 连接已断开：{e}")
-        else:
+            logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 出现异常：{e}")
+        finally:
             if websocket.closed:
-                await remove_client(server_name=server_name)
                 logger.error(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 连接已断开")
+            await remove_client(server_name=server_name)
 
 
 async def start_ws_server():
     """启动 WebSocket 服务器"""
     global ws
     ws = await websockets.serve(ws_client, plugin_config.mc_qq_ws_ip, plugin_config.mc_qq_ws_port)
-    logger.success("[MC_QQ]丨WebSocket 服务器已开启")
+    logger.success(f"[MC_QQ]丨WebSocket 服务器已在 {plugin_config.mc_qq_ws_ip}:{plugin_config.mc_qq_ws_port} 已开启")
 
 
 async def stop_ws_server():
