@@ -16,10 +16,14 @@ from .utils import msg_rule
 
 __plugin_meta__ = PluginMetadata(
     name="MC_QQ",
-    description="适配 OneBot V11（QQ）与 Minecraft 服务器通信的插件",
+    description="基于NoneBot的与Minecraft Server互通消息的插件",
+    homepage="https://github.com/17TheWord/nonebot-plugin-mcqq",
     usage="在群聊发送消息即可同步至 Minecraft 服务器",
     config=Config,
-    extra={},
+    type="application",
+    supported_adapters=[
+        "nonebot.adapters.onebot.v11"
+    ]
 )
 
 mc_qq = on_message(priority=2, rule=msg_rule)
