@@ -1,5 +1,6 @@
 from typing import Union
 
+from mcqq_tool.config import Config
 from mcqq_tool.common import GUILD_ADMIN
 from mcqq_tool.utils import send_msg_to_mc, send_cmd_to_mc
 from nonebot import on_message, on_command, get_driver
@@ -8,9 +9,18 @@ from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP_ADMIN, GROUP_OWNER
 from nonebot_plugin_guild_patch import GuildMessageEvent
+from nonebot.plugin import PluginMetadata
 
 from .data_source import start_ws_server, stop_ws_server
 from .utils import msg_rule
+
+__plugin_meta__ = PluginMetadata(
+    name="MC_QQ",
+    description="适配 OneBot V11（QQ）与 Minecraft 服务器通信的插件",
+    usage="在群聊发送消息即可同步至 Minecraft 服务器",
+    config=Config,
+    extra={},
+)
 
 mc_qq = on_message(priority=2, rule=msg_rule)
 
