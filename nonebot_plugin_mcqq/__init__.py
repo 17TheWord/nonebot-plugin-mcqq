@@ -21,9 +21,9 @@ __plugin_meta__ = PluginMetadata(
     usage="在群聊发送消息即可同步至 Minecraft 服务器",
     config=Config,
     type="application",
-    supported_adapters=[
+    supported_adapters={
         "nonebot.adapters.onebot.v11"
-    ]
+    }
 )
 
 mc_qq = on_message(priority=2, rule=msg_rule)
