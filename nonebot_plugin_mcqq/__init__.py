@@ -3,13 +3,16 @@ from typing import Union
 from mcqq_tool.config import Config
 from mcqq_tool.common import GUILD_ADMIN
 from mcqq_tool.utils import send_msg_to_mc, send_cmd_to_mc
-from nonebot import on_message, on_command, get_driver
-from nonebot.adapters import Message
+from nonebot import on_message, on_command, get_driver, require
 from nonebot.params import CommandArg
+from nonebot.adapters import Message
+from nonebot.plugin import PluginMetadata
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP_ADMIN, GROUP_OWNER
+
+require("nonebot_plugin_guild_patch")
+
 from nonebot_plugin_guild_patch import GuildMessageEvent
-from nonebot.plugin import PluginMetadata
 
 from .data_source import start_ws_server, stop_ws_server
 from .utils import msg_rule
