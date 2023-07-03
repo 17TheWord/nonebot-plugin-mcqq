@@ -1,21 +1,18 @@
 from typing import Union
 
-from nonebot import on_message, on_command, get_driver, require
-
-require("nonebot_plugin_guild_patch")
-
-from nonebot.params import CommandArg
-from nonebot.adapters import Message
-from nonebot.plugin import PluginMetadata
-from nonebot.permission import SUPERUSER
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP_ADMIN, GROUP_OWNER
-from mcqq_tool.config import Config
 from mcqq_tool.common import GUILD_ADMIN
+from mcqq_tool.config import Config
 from mcqq_tool.utils import send_msg_to_mc, send_cmd_to_mc
 
+from nonebot import on_message, on_command, get_driver, ReverseDriver
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP_ADMIN, GROUP_OWNER
+from nonebot.params import CommandArg
+from nonebot.permission import SUPERUSER
+from nonebot.plugin import PluginMetadata
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
-from .data_source import start_ws_server, stop_ws_server
+from .data_source import set_route
 from .utils import msg_rule
 
 __plugin_meta__ = PluginMetadata(
@@ -38,16 +35,11 @@ driver = get_driver()
 
 
 # bot连接时
-@driver.on_bot_connect
+@driver.on_startup
 async def on_start():
     # 启动 WebSocket 服务器
-    await start_ws_server()
-
-
-@driver.on_bot_disconnect
-async def on_close():
-    # 关闭 WebSocket 服务器
-    await stop_ws_server()
+    if isinstance(driver, ReverseDriver):
+        await set_route(driver=driver)
 
 
 # 收到消息时

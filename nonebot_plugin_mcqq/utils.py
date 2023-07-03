@@ -1,7 +1,7 @@
+from typing import Union
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot_plugin_guild_patch import GuildMessageEvent
-from typing import Union
 
 from mcqq_tool.config import Config
 
