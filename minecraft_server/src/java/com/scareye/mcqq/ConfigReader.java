@@ -24,7 +24,7 @@ public class ConfigReader {
         } catch (IOException e) {
             configMap = new HashMap<>();
             configMap.put("enable_mc_qq", true);
-            configMap.put("websocket_url", "ws://127.0.0.1:8765");
+            configMap.put("websocket_url", "ws://127.0.0.1:8080/onebot/v11/mcqq");
             configMap.put("say_way", " 说：");
             configMap.put("death_message", true);
             configMap.put("join_quit", true);
