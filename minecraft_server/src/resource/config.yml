@@ -7,7 +7,7 @@ enable_mc_qq: true
 #
 # 若使用插件，请填写：ws://127.0.0.1:8080/onebot/v11/mcqq
 #
-# 若使用适配器，请填写：ws://127.0.0.1:8080/spigot/ws
+# 若使用适配器，请填写：ws://127.0.0.1:8080/minecraft/ws
 #
 websocket_url: "ws://127.0.0.1:8080/onebot/v11/mcqq"
 
