@@ -7,9 +7,13 @@ enable_mc_qq: true
 #
 # 若使用插件，请填写：ws://127.0.0.1:8080/onebot/v11/mcqq
 #
-# 若使用适配器，请填写：ws://127.0.0.1:8080/minecraft/ws
+# 若使用适配器，请填写：ws://127.0.0.1:8080/spigot/ws
 #
 websocket_url: "ws://127.0.0.1:8080/onebot/v11/mcqq"
+
+# 是否启用重连提示
+# 默认开启
+enable_reconnect_msg: true
 
 # 发送到群消息中，玩家昵称与消息之间的符号
 # 默认为 “说：”

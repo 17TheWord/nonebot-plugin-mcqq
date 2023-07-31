@@ -36,7 +36,7 @@ public class FileWatcher {
             try {
                 FileWatcher.watcherLog(filePath, fileName, str -> System.out.println((System.currentTimeMillis() / 1000) + ",监听到: " + str));
             } catch (Exception e) {
-                System.err.println("[MC_QQ] 日志路径错误，无法读取。");
+                System.err.println("[MC_QQ] 监听日志错误：" + e);
                 e.printStackTrace();
             }
         }).start();
@@ -56,7 +56,7 @@ public class FileWatcher {
 //                    i ++;
                 }
             } catch (IOException e) {
-                System.err.println("[MC_QQ] 日志路径错误，无法写入。");
+                System.err.println("[MC_QQ] 监听日志错误：" + e);
             }
         }).start();
     }
