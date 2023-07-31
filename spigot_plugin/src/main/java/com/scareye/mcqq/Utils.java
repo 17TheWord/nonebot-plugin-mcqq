@@ -11,7 +11,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -50,10 +49,6 @@ public class Utils {
 
             String msgType = msgJson.get("msgType").getAsString();
             String msgData = msgJson.get("msgData").getAsString();
-
-            if (msgType.equals("command")) {
-                sendCommand(msgData);
-            }
 
             TextComponent msgComponent = new TextComponent();
             String textContent;
@@ -173,17 +168,6 @@ public class Utils {
     }
 
     /**
-     * @param command 命令字符串
-     */
-    static void sendCommand(String command) {
-        try {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        } catch (CommandException e) {
-            say("执行命令时出现错误: " + e.getMessage());
-        }
-    }
-
-    /**
      * @param event 事件
      * @return 事件的 Json 字符串
      */
@@ -191,7 +175,7 @@ public class Utils {
         Gson gson = new Gson();
 
         String server_name = ConfigReader.getServerName();
-        String jsonData = "";
+        String jsonData;
 
         if (event instanceof AsyncPlayerChatEvent) {
             SpigotAsyncPlayerChatEvent spigotAsyncPlayerChatEvent = new SpigotAsyncPlayerChatEvent(
