@@ -1,6 +1,6 @@
 from aiomcrcon import Client as RconClient
 from nonebot import logger, get_bot
-from nonebot.drivers import URL, ReverseDriver, WebSocketServerSetup
+from nonebot.drivers import URL, ASGIMixin, WebSocketServerSetup
 from nonebot.drivers.websockets import WebSocket, WebSocketClosed
 
 from mcqq_tool.common import plugin_config
@@ -68,7 +68,7 @@ async def _ws_handler(websocket: WebSocket):
             await remove_client(server_name=server_name)
 
 
-async def set_route(driver: ReverseDriver):
+async def set_route(driver: ASGIMixin):
     driver.setup_websocket_server(
         WebSocketServerSetup(
             path=URL(plugin_config.mc_qq_ws_url),
