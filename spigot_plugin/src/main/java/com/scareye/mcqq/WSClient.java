@@ -3,6 +3,7 @@ package com.scareye.mcqq;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -39,7 +40,8 @@ public class WSClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         if (ConfigReader.getEnable()) {
-            instance.getServer().spigot().broadcast(processJsonMessage(message));
+            TextComponent textComponent = processJsonMessage(message);
+            instance.getServer().spigot().broadcast(textComponent);
         }
     }
 
@@ -66,7 +68,9 @@ public class WSClient extends WebSocketClient {
     public void onError(Exception exception) {
         if (serverOpen && wsClient != null) {
             connectTime++;
-            say("WebSocket 连接已断开,正在第 " + connectTime + " 次重新连接。");
+            if (ConfigReader.getEnableReconnectMsg()) {
+                say("WebSocket 连接已断开,正在第 " + connectTime + " 次重新连接。");
+            }
             try {
                 wsClient = new WSClient();
                 Thread.sleep(3000);

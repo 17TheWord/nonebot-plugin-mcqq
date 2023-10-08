@@ -4,7 +4,8 @@ from mcqq_tool.common import GUILD_ADMIN
 from mcqq_tool.config import Config
 from mcqq_tool.utils import send_msg_to_mc, send_cmd_to_mc
 
-from nonebot import on_message, on_command, get_driver, ReverseDriver
+from nonebot import on_message, on_command, get_driver
+from nonebot.drivers import ASGIMixin
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP_ADMIN, GROUP_OWNER
 from nonebot.params import CommandArg
@@ -38,7 +39,7 @@ driver = get_driver()
 @driver.on_startup
 async def on_start():
     # 启动 WebSocket 服务器
-    if isinstance(driver, ReverseDriver):
+    if isinstance(driver, ASGIMixin):
         await set_route(driver=driver)
 
 

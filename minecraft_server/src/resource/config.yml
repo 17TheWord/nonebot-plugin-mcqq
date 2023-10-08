@@ -11,6 +11,10 @@ enable_mc_qq: true
 #
 websocket_url: "ws://127.0.0.1:8080/onebot/v11/mcqq"
 
+# 是否启用重连提示
+# 默认开启
+enable_reconnect_msg: true
+
 # 发送到群消息中，玩家昵称与消息之间的符号
 # 默认为 “说：”
 # 例如：

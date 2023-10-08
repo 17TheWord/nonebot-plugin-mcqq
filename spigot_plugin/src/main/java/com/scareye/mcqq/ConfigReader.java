@@ -38,6 +38,15 @@ class ConfigReader {
     }
 
     /**
+     * 获取链接
+     *
+     * @return int Port
+     */
+    static boolean getEnableReconnectMsg() {
+        return config.getBoolean("enable_reconnect_msg", true);
+    }
+
+    /**
      * 获取聊天修饰
      *
      * @return String SayWay

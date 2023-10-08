@@ -2,6 +2,10 @@
 # 默认启用
 enable_mc_qq: true
 
+# 是否启用重连提示
+# 默认开启
+enable_reconnect_msg: true
+
 # 请在冒号后填写 WebSocket 地址。
 # 若不填写，则地址 ws://127.0.0.1:8080/onebot/v11/mcqq
 #
