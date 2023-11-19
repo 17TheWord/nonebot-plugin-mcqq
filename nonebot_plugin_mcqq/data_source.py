@@ -1,11 +1,11 @@
 from aiomcrcon import Client as RconClient
-from nonebot import logger, get_bot
+from mcqq_tool.utils.parse import send_msg_from_mc_common
+from mcqq_tool.config import Client, CLIENTS, plugin_config
+from mcqq_tool.utils import rcon_connect
+from mcqq_tool.utils.send.send_common import remove_client
+from nonebot import logger
 from nonebot.drivers import URL, ASGIMixin, WebSocketServerSetup
 from nonebot.drivers.websockets import WebSocket, WebSocketClosed
-
-from mcqq_tool.common import plugin_config
-from mcqq_tool.config import Client, CLIENTS
-from mcqq_tool.utils import send_msg_to_qq, rcon_connect, remove_client
 
 
 async def _ws_handler(websocket: WebSocket):
@@ -18,7 +18,6 @@ async def _ws_handler(websocket: WebSocket):
         await websocket.close(1008, "[MC_QQ]丨未获取到该服务器的名称，连接断开")
         return
     else:
-
         if CLIENTS.get(server_name):
             # 服务器名已存在
             logger.error(f"[MC_QQ]丨已有相同服务器名的连接，连接断开")
@@ -26,17 +25,15 @@ async def _ws_handler(websocket: WebSocket):
             return
 
         rcon_client = None
-        bot_self_id = None
-        for server in plugin_config.mc_qq_server_list:
-            if server_name == server.server_name:
-                if server.rcon_enable:
+        for per_server_name, server in plugin_config.mc_qq_server_dict.items():
+            if server_name == per_server_name:
+                if server.rcon_msg or server.rcon_cmd:
                     rcon_client = RconClient(
                         websocket.__dict__["websocket"].__dict__["scope"]["client"][0],
-                        plugin_config.mc_qq_rcon_dict[server_name],
-                        plugin_config.mc_qq_rcon_password
+                        server.rcon_port,
+                        server.rcon_password
                     )
                     await rcon_connect(rcon_client=rcon_client, server_name=server_name)
-                    bot_self_id = str(server.self_id) if server.self_id else None
                     break
         CLIENTS[server_name] = Client(
             server_name=server_name,
@@ -50,17 +47,8 @@ async def _ws_handler(websocket: WebSocket):
 
         try:
             while True:
-                try:
-                    message = await websocket.receive()
-                    # 获取指定ID Bot
-                    bot = get_bot(bot_self_id)
-                except KeyError as e:
-                    logger.warning(f"[MC_QQ]丨[Server:{server_name}] 对应 self_id 的 Bot 不存在：{e}")
-                except ValueError as e:
-                    logger.warning(f"[MC_QQ]丨[Server:{server_name}] 未指定Bot，且当前无其他Bot可用：{e}")
-                else:
-                    # 以指定ID Bot 发送消息
-                    await send_msg_to_qq(bot=bot, message=message)
+                message = await websocket.receive()
+                await send_msg_from_mc_common(message=message)
 
         except WebSocketClosed as e:
             logger.warning(f"[MC_QQ]丨[Server:{server_name}] 的 WebSocket 出现异常：{e}")
