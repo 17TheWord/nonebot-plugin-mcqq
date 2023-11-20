@@ -1,10 +1,9 @@
 package com.scareye.mcqq;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.scareye.mcqq.event.*;
+import com.scareye.mcqq.returnBody.MinecraftReturnBody;
+import com.scareye.mcqq.returnBody.MsgItem;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -37,134 +37,72 @@ public class Utils {
      * 来自 NoneBot 的 JSON 消息的处理
      */
     static TextComponent processJsonMessage(String message) {
-
-        JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
         // 组合消息
         TextComponent component = new TextComponent("[MC_QQ] ");
         component.setColor(ChatColor.YELLOW);
         StringBuilder msgLogText = new StringBuilder();
 
-        for (JsonElement element : jsonObject.get("message").getAsJsonArray()) {
-            JsonObject msgJson = element.getAsJsonObject();
+        Gson gson = new Gson();
+        MinecraftReturnBody minecraftReturnBody = gson.fromJson(message, MinecraftReturnBody.class);
+        System.out.println(minecraftReturnBody.toString());
 
-            String msgType = msgJson.get("msgType").getAsString();
-            String msgData = msgJson.get("msgData").getAsString();
-
+        for (MsgItem msgItem : minecraftReturnBody.getMessage()) {
             TextComponent msgComponent = new TextComponent();
-            String textContent;
-            ChatColor color;
-            switch (msgType) {
-                case "group_name" -> {
-                    textContent = msgData;
-                    color = ChatColor.GOLD;
-                }
-                case "senderName" -> {
-                    textContent = msgData;
-                    color = ChatColor.AQUA;
-                }
-                case "text" -> {
-                    textContent = msgData;
-                    color = ChatColor.WHITE;
-                }
-                case "face" -> {
-                    textContent = "[表情]";
-                    color = ChatColor.GOLD;
-                }
-                case "record" -> {
-                    textContent = "[语音]";
-                    color = ChatColor.LIGHT_PURPLE;
-                }
-                case "video" -> {
-                    textContent = "[视频]";
-                    color = ChatColor.LIGHT_PURPLE;
-                    msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
-                    msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看视频")));
-                }
-                case "rps" -> {
-                    textContent = "[猜拳]";
-                    color = ChatColor.WHITE;
-                }
-                case "dice" -> {
-                    textContent = "[骰子]";
-                    color = ChatColor.WHITE;
-                }
-                case "anonymous" -> {
-                    textContent = "[匿名消息]";
-                    color = ChatColor.WHITE;
-                }
-                case "share" -> {
-                    textContent = "[分享]";
-                    color = ChatColor.WHITE;
-                }
-                case "contact" -> {
-                    textContent = "[推荐]";
-                    color = ChatColor.WHITE;
-                }
-                case "location" -> {
-                    textContent = "[位置]";
-                    color = ChatColor.WHITE;
-                }
-                case "music" -> {
-                    textContent = "[音乐]";
-                    color = ChatColor.YELLOW;
-                    msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
-                    msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看音乐")));
-                }
-                case "image" -> {
-                    textContent = "[图片]";
-                    color = ChatColor.AQUA;
-                    msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgData));
-                    msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("查看图片")));
-                }
-                case "redbag" -> {
-                    textContent = "[红包]";
-                    color = ChatColor.RED;
-                }
-                case "poke" -> {
-                    textContent = "[戳一戳]";
-                    color = ChatColor.GOLD;
-                }
-                case "gift" -> {
-                    textContent = "[礼物]";
-                    color = ChatColor.YELLOW;
-                }
-                case "forward" -> {
-                    textContent = "[合并转发]";
-                    color = ChatColor.WHITE;
-                }
-                case "at" -> {
-                    textContent = msgData.replace(" ", "");
-                    color = ChatColor.GREEN;
-                }
-                default -> {
-                    textContent = "[" + msgType + "]";
-                    color = ChatColor.WHITE;
-                }
+            msgComponent.setText(msgItem.getMsgText());
+            msgComponent.setColor(getColor(msgItem.getColor()));
+            if (msgItem.getActionEvent() != null) {
+                msgComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, msgItem.getActionEvent().getClickEventUrl()));
+                msgComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(msgItem.getActionEvent().getHoverEventText())));
             }
-//            textContent += " ";
-            // 为消息设置 文本
-            msgComponent.setText(textContent);
-            // 为消息设置 颜色
-            msgComponent.setColor(color);
-
-            // 将消息装入 日志文本队列
-            msgLogText.append(textContent);
-            // 将消息装入 消息队列
             component.addExtra(msgComponent);
-
-            if (msgType.equals("senderName")) {
-                // 说话方式
-                TextComponent sayWay = new TextComponent(ConfigReader.getSayWay());
-                sayWay.setColor(ChatColor.WHITE);
-                component.addExtra(sayWay);
-                // 说话方式装入 日志文本队列
-                msgLogText.append(ConfigReader.getSayWay());
-            }
-
+            msgLogText.append(msgItem.getMsgText());
         }
-        // 后台打印文本
-        say(String.valueOf(msgLogText));
+        say(msgLogText.toString());
         return component;
+    }
+
+
+    /**
+     * @param color 颜色
+     * @return ChatColor 对象
+     */
+    static ChatColor getColor(String color) {
+        switch (color) {
+            case "black":
+                return ChatColor.BLACK;
+            case "dark_blue":
+                return ChatColor.DARK_BLUE;
+            case "dark_green":
+                return ChatColor.DARK_GREEN;
+            case "dark_aqua":
+                return ChatColor.DARK_AQUA;
+            case "dark_red":
+                return ChatColor.DARK_RED;
+            case "dark_purple":
+                return ChatColor.DARK_PURPLE;
+            case "gold":
+                return ChatColor.GOLD;
+            case "gray":
+                return ChatColor.GRAY;
+            case "dark_gray":
+                return ChatColor.DARK_GRAY;
+            case "blue":
+                return ChatColor.BLUE;
+            case "green":
+                return ChatColor.GREEN;
+            case "aqua":
+                return ChatColor.AQUA;
+            case "red":
+                return ChatColor.RED;
+            case "light_purple":
+                return ChatColor.LIGHT_PURPLE;
+            case "yellow":
+                return ChatColor.YELLOW;
+            case "white":
+            default:
+                return ChatColor.WHITE;
+        }
+
     }
 
     /**
@@ -203,6 +141,13 @@ public class Utils {
                     ((PlayerDeathEvent) event).getDeathMessage()
             );
             jsonData = gson.toJson(spigotPlayerDeathEvent);
+        } else if (event instanceof PlayerCommandPreprocessEvent) {
+            SpigotPlayerCommandPreprocessEvent spigotPlayerCommandPreprocessEvent = new SpigotPlayerCommandPreprocessEvent(
+                    server_name,
+                    getSpigotPlayer(((PlayerCommandPreprocessEvent) event).getPlayer()),
+                    ((PlayerCommandPreprocessEvent) event).getMessage()
+            );
+            jsonData = gson.toJson(spigotPlayerCommandPreprocessEvent);
         } else {
             say("未知事件: " + event.getEventName());
             jsonData = gson.toJson(event);

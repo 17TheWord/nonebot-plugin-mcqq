@@ -40,6 +40,7 @@ public class WSClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         if (ConfigReader.getEnable()) {
+            System.out.println(message);
             TextComponent textComponent = processJsonMessage(message);
             instance.getServer().spigot().broadcast(textComponent);
         }

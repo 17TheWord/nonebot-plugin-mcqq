@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -48,6 +49,13 @@ class EventProcessor implements Listener {
     @EventHandler
     void onPlayerQuit(PlayerQuitEvent event) {
         if (ConfigReader.getJoinQuit()) {
+            wsClient.sendMessage(processMessageToJson(event));
+        }
+    }
+
+    @EventHandler
+    void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        if (ConfigReader.getEnable() && !event.isCancelled() && ConfigReader.getCommandMessage()) {
             wsClient.sendMessage(processMessageToJson(event));
         }
     }

@@ -56,6 +56,15 @@ class ConfigReader {
     }
 
     /**
+     * 获取是否启用命令监听
+     *
+     * @return boolean Command
+     */
+    static boolean getCommandMessage() {
+        return getEnable() && config.getBoolean("command_message", false);
+    }
+
+    /**
      * 获取是否启用 死亡事件 推送
      *
      * @return boolean deathMessage
