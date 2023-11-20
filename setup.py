@@ -19,7 +19,7 @@ setuptools.setup(
         "Operating System :: OS Independent"
     ],
     install_requires=[
-        'mcqq-tool>=2.5.0',
+        'mcqq-tool>=1.0.1',
         'nonebot2>=2.0.0',
         'nonebot2[websockets]',
         'nonebot-adapter-onebot>=2.1.1',
