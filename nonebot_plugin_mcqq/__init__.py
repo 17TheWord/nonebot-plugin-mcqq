@@ -1,16 +1,15 @@
 from typing import Union
 
-from mcqq_tool.permission import QQ_GUILD_ADMIN, ONEBOT_GUILD_ADMIN
 from mcqq_tool.config import Config
-from mcqq_tool.utils import send_msg_to_mc, send_cmd_to_mc
-
+from mcqq_tool.permission import permission_check
+from mcqq_tool.utils import send_msg_to_mc, send_cmd_to_mc, send_send_title_to_mc, send_actionbar_to_mc
 from nonebot import on_message, on_command, get_driver
-from nonebot.drivers import ASGIMixin
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot as OneBot, GroupMessageEvent, GROUP_ADMIN, GROUP_OWNER
+from nonebot.adapters.onebot.v11 import Bot as OneBot, GroupMessageEvent
 from nonebot.adapters.qq import Bot as QQBot, MessageCreateEvent
+from nonebot.drivers import ASGIMixin
+from nonebot.internal.matcher import Matcher
 from nonebot.params import CommandArg
-from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot_plugin_guild_patch import GuildMessageEvent
 
@@ -25,12 +24,28 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     type="application",
     supported_adapters={
-        "nonebot.adapters.onebot.v11"
+        "nonebot.adapters.onebot.v11",
         "nonebot.adapters.qq"
     }
 )
 
 mc_qq = on_message(priority=2, rule=msg_rule)
+
+mc_qq_send_title = on_command(
+    "mc_qq_send_title",
+    aliases={"mcst"},
+    priority=1,
+    rule=msg_rule,
+    block=True
+)
+
+mc_qq_actionbar = on_command(
+    "mc_qq_actionbar",
+    aliases={"mca"},
+    priority=1,
+    rule=msg_rule,
+    block=True
+)
 
 mc_qq_cmd = on_command(
     "minecraft_command",
@@ -64,18 +79,37 @@ async def handle_msg(
 # 收到命令时
 @mc_qq_cmd.handle()
 async def handle_cmd(
+        matcher: Matcher,
         bot: Union[OneBot, QQBot],
         event: Union[GroupMessageEvent, GuildMessageEvent, MessageCreateEvent],
         args: Message = CommandArg()
 ):
-    if isinstance(event, GroupMessageEvent) and isinstance(bot, OneBot):
-        if not await (GROUP_ADMIN | GROUP_OWNER | SUPERUSER)(bot, event):
-            await mc_qq_cmd.finish("你没有权限使用此命令")
-    elif isinstance(event, GuildMessageEvent) and isinstance(bot, OneBot):
-        if not await (ONEBOT_GUILD_ADMIN | SUPERUSER)(bot, event):
-            await mc_qq_cmd.finish("你没有权限使用此命令")
-    elif isinstance(event, MessageCreateEvent) and isinstance(bot, QQBot):
-        if not await (QQ_GUILD_ADMIN | SUPERUSER)(bot, event):
-            await mc_qq_cmd.finish("你没有权限使用此命令")
+    await permission_check(matcher=matcher, bot=bot, event=event)
     if back_msg := await send_cmd_to_mc(event=event, cmd=args.extract_plain_text()):
         await mc_qq_cmd.finish(back_msg)
+
+
+@mc_qq_send_title.handle()
+async def handle_title(
+        matcher: Matcher,
+        bot: Union[OneBot, QQBot],
+        event: Union[GroupMessageEvent, GuildMessageEvent, MessageCreateEvent],
+        args: Message = CommandArg()
+):
+    await permission_check(matcher=matcher, bot=bot, event=event)
+    if arg := args.extract_plain_text():
+        if back_msg := await send_send_title_to_mc(event=event, arg=arg):
+            await mc_qq_send_title.finish(back_msg)
+
+
+@mc_qq_actionbar.handle()
+async def handle_actionbar(
+        matcher: Matcher,
+        bot: Union[OneBot, QQBot],
+        event: Union[GroupMessageEvent, GuildMessageEvent, MessageCreateEvent],
+        args: Message = CommandArg()
+):
+    await permission_check(matcher=matcher, bot=bot, event=event)
+    if arg := args.extract_plain_text():
+        if back_msg := await send_actionbar_to_mc(event=event, arg=arg):
+            await mc_qq_actionbar.finish(back_msg)
