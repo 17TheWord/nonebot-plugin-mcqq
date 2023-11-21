@@ -9,7 +9,7 @@
 
 # 文档
 
-- [正在不断更新的文档](https://17theword.github.io/mc_qq/)
+- [简陋的Wiki](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
 
 # 支持的服务端列表
 
