@@ -3,7 +3,7 @@ from typing import Union
 from mcqq_tool.config import Config
 from mcqq_tool.permission import permission_check
 from mcqq_tool.utils import send_msg_to_mc, send_cmd_to_mc, send_send_title_to_mc, send_actionbar_to_mc
-from nonebot import on_message, on_command, get_driver
+from nonebot import on_message, on_command, get_driver, logger
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot as OneBot, GroupMessageEvent
 from nonebot.adapters.qq import Bot as QQBot, MessageCreateEvent
@@ -64,6 +64,8 @@ async def on_start():
     # 启动 WebSocket 服务器
     if isinstance(driver, ASGIMixin):
         await set_route(driver=driver)
+    else:
+        logger.warning("[MC_QQ]丨当前驱动不支持 WebSocket 服务器，请确保驱动器中包含fastapi、websockets：DRIVER=~fastapi+~websockets")
 
 
 # 收到消息时
