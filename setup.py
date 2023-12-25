@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="nonebot-plugin-mcqq",
-    version="2.5.1",
+    version="2.5.2",
     author="17TheWord",
     author_email="17theword@gmail.com",
     description="基于NoneBot的QQ群聊与Minecraft Server消息互通插件",
@@ -22,6 +22,7 @@ setuptools.setup(
         'mcqq-tool>=1.0.1',
         'nonebot2>=2.0.0',
         'nonebot2[websockets]',
+        'nonebot2[fastapi]',
         'nonebot-adapter-onebot>=2.1.1',
         'nonebot-adapter-qq>=1.1.2',
         'nonebot-plugin-guild-patch>=0.2.0',
