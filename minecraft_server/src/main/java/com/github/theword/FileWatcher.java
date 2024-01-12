@@ -1,4 +1,4 @@
-package com.scareye.mcqq;
+package com.github.theword;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-import static com.scareye.mcqq.MC_QQ.wsClient;
-import static com.scareye.mcqq.ConfigReader.config;
-import static com.scareye.mcqq.Utils.processMessageToJson;
-import static com.scareye.mcqq.Utils.getIfNeedMsg;
+import static com.github.theword.MCQQ.wsClient;
+import static com.github.theword.ConfigReader.config;
+import static com.github.theword.Utils.processEventToJson;
+import static com.github.theword.Utils.say;
 
 /**
  * 监控文件变化
@@ -94,10 +94,25 @@ public class FileWatcher {
                 // 消息转为 String
                 String msg = str.toString();
 
-                // 如果 WS连接、插件开启、消息长度小于256、符合需求
-                if (wsClient.isOpen() && (Boolean) config().get("enable_mc_qq") && msg.length() < 256 && getIfNeedMsg(msg)) {
+
+                if (!msg.equals("") && msg.length() < 320) {
+
+                    if ((Boolean) config().get("log_debug")) {
+                        say("监听到日志变更：" + msg);
+                    }
+
                     // 发送处理过的消息
-                    wsClient.sendMessage(processMessageToJson(msg));
+                    if ((Boolean) config().get("enable_mc_qq")) {
+                        if (processEventToJson(msg) != null) {
+                            String result = processEventToJson(msg);
+
+                            if ((Boolean) config().get("log_debug")) {
+                                say("消息处理结果：" + result);
+                            }
+
+                            wsClient.sendMessage(result);
+                        }
+                    }
                 }
 
 //                if (str.length() != 0) {
@@ -152,5 +167,3 @@ public class FileWatcher {
         }
     }
 }
-
-

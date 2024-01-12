@@ -1,0 +1,52 @@
+# 是否启用插件
+# 默认启用
+enable_mc_qq: true
+
+# 是否启用重连提示
+# 默认开启
+enable_reconnect_msg: true
+
+# 请在冒号后填写 WebSocket 地址。
+# 默认：ws://127.0.0.1:8080/minecraft/ws
+websocket_url: "ws://127.0.0.1:8080/minecraft/ws"
+
+# 是否启用 玩家命令事件监听
+# 开启后，当玩家输入命令时，Bot 会推送命令信息
+# 默认不启用
+command_message: false
+
+# 是否启用 玩家死亡事件监听
+# 开启后，当玩家死亡时，Bot 会推送信息
+# 默认启用
+death_message: true
+
+# 是否启用 加入/离开 服务器监听
+# 开启后，当玩家 加入/离开 服务器时，Bot 会推送信息
+# 默认打开
+# 例如：
+#   17TheWord 加入了服务器
+#   17TheWord 离开了服务器
+join_quit: true
+
+# 服务器名称
+# 当有多个服务器连接到 Bot 时，用于区分。
+# 如果是多个服务器，请务必对各个服务器设置不同的服务器名称。
+# 默认值为：Server
+server_name: "Server"
+
+
+# 日志路径
+# 仅日志读取程序可用
+# Windows 请用 ".\\logs\\"
+# Linux 请用 "./logs/"
+log_local: "./logs/"
+
+# 日志名称
+# 仅日志读取程序可用
+# 若日志名称不同，请手动修改，一般为：latest.log
+log_name: "latest.log"
+
+# 日志Debug模式
+# 仅日志读取程序可用
+# 默认关闭
+log_debug: false

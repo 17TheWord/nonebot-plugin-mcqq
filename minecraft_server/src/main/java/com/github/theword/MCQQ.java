@@ -1,11 +1,14 @@
-package com.scareye.mcqq;
+package com.github.theword;
 
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.theword.Utils.say;
 
-public class MC_QQ {
+public class MCQQ {
     // 静态变量 wsClient
     static WSClient wsClient;
 
@@ -21,6 +24,13 @@ public class MC_QQ {
         httpHeaders.put("x-self-name", Utils.unicodeEncode(String.valueOf(ConfigReader.config().get("server_name"))));
 
         // 监听日志文件
+        Path configMapFilePath = Paths.get((String) ConfigReader.config().get("log_local"), (String) ConfigReader.config().get("log_name"));
+
+        if (!configMapFilePath.toFile().exists()) {
+            say("日志文件不存在，请检查配置文件。");
+            return;
+        }
+
         FileWatcher.FileListen((String) ConfigReader.config().get("log_local"), (String) ConfigReader.config().get("log_name"));
         // 连接次数初始化为 0
         connectTime = 0;
@@ -29,7 +39,7 @@ public class MC_QQ {
             wsClient = new WSClient();
             wsClient.connect();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            say("WebSocket URL 地址非法，请检查配置文件。");
         }
     }
 
