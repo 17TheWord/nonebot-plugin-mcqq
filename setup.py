@@ -12,10 +12,10 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/17TheWord/nonebot-plugin-mcqq",
+    license="MIT",
     packages=["nonebot_plugin_mcqq"],
     classifiers=[
         "Programming Language :: Python :: 3.9",
-        "License :: OSI Approved :: GNU Affero General Public License v3",
         "Operating System :: OS Independent"
     ],
     install_requires=[
