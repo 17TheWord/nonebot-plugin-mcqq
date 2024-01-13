@@ -63,4 +63,4 @@
 
 ## 许可证
 
-本项目使用 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/) 作为开源许可证。
+本项目使用 [MIT](./LICENSE) 作为开源许可证。
