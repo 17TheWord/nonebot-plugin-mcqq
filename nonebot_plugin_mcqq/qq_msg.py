@@ -65,7 +65,7 @@ async def handle_qq_group_cmd(
         args: Message = CommandArg()
 ):
     if cmd := args.extract_plain_text():
-        if cmd not in plugin_config.mc_qq_cmd_whitelist:
+        if cmd not in plugin_config.cmd_whitelist:
             await permission_check(matcher=matcher, bot=bot, event=event)
 
         temp_result = await send_command_to_target_server(matcher=matcher, bot=bot, event=event, command=cmd)

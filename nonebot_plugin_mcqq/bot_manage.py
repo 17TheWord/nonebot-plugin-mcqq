@@ -14,7 +14,7 @@ driver = get_driver()
 
 @driver.on_bot_connect
 async def on_bot_connected(bot: MinecraftBot):
-    if server := plugin_config.mc_qq_server_dict.get(bot.self_id):
+    if server := plugin_config.server_dict.get(bot.self_id):
         for group in server.group_list:
             if group.adapter == "qq":
                 if qq_group := QQ_GROUP_ID_LIST.get(group.group_id):
@@ -46,7 +46,7 @@ async def on_bot_connected(bot: MinecraftBot):
 
 @driver.on_bot_disconnect
 async def on_bot_disconnected(bot: MinecraftBot):
-    if server := plugin_config.mc_qq_server_dict.get(bot.self_id):
+    if server := plugin_config.server_dict.get(bot.self_id):
         for group in server.group_list:
             if group.adapter == "qq":
                 if qq_group := QQ_GROUP_ID_LIST.get(group.group_id):
