@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-mcqq"
-version = "2.5.4"
+version = "2.5.5"
 description = "基于NoneBot的QQ群聊与Minecraft Server消息互通插件"
 authors = ["17TheWord <17theword@gmail.com>"]
 license = "MIT"
