@@ -586,13 +586,13 @@ files = [
 
 [[package]]
 name = "mcqq-tool"
-version = "1.1.5.post2"
+version = "1.1.6"
 description = "MC_QQ工具包"
 optional = false
-python-versions = ">=3.9,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "mcqq_tool-1.1.5.post2-py3-none-any.whl", hash = "sha256:018e76a4e2a5b72d9067998dc8971241a74c65f655b3924272a116f05163cd0c"},
-    {file = "mcqq_tool-1.1.5.post2.tar.gz", hash = "sha256:76f24def92b102fa81302e6974cb6e9d0a1e74673baa87ee7956a9d65ca96579"},
+    {file = "mcqq_tool-1.1.6-py3-none-any.whl", hash = "sha256:a223f79173c316853db17fd0ff695eb6ee0b740bd4ecdc37d0afaa46abbe54e6"},
+    {file = "mcqq_tool-1.1.6.tar.gz", hash = "sha256:eb5024a135ca7f6bcc14772452955026c617d585064e651d54f01ff5f0cd0726"},
 ]
 
 [package.dependencies]
@@ -870,6 +870,21 @@ files = [
 [package.dependencies]
 nonebot-adapter-onebot = ">=2.1.0,<3.0.0"
 nonebot2 = ">=2.0.0-beta.1,<3.0.0"
+
+[[package]]
+name = "nonebot-plugin-guild-patch-remix"
+version = "0.2.4"
+description = "Patch plugin(remix) for NoneBot2 QQ guild (go-cqhttp) support."
+optional = false
+python-versions = "<4.0,>=3.9"
+files = [
+    {file = "nonebot_plugin_guild_patch_remix-0.2.4-py3-none-any.whl", hash = "sha256:5440d799497aed90c58b2f7a5fa3d59352f46c63badad0ad150ec42955bda8c6"},
+    {file = "nonebot_plugin_guild_patch_remix-0.2.4.tar.gz", hash = "sha256:b4846f8671814d501a8d966dd15f2e5c01ab1b1d1bcc5fa24fe6e71c2cdb6edd"},
+]
+
+[package.dependencies]
+nonebot-adapter-onebot = ">=2.4.3,<3.0.0"
+nonebot2 = ">=2.2.1,<3.0.0"
 
 [[package]]
 name = "nonebot2"
@@ -1751,4 +1766,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "50b4d09089a0071ae155bdb711c77d24a7f555732c29c513e2120bd22fc73bb0"
+content-hash = "f30fad9d563251df86fcad61e3032eaf9a2c41b3e94ad3ebff3ac8823feb3500"
