@@ -22,6 +22,7 @@ from mcqq_tool.send_to_mc import (
     send_command_to_target_server,
     send_action_bar_to_target_server
 )
+from nonebot_plugin_guild_patch import GuildMessageEvent as OneBotGuildMessageEvent
 
 on_qq_msg = on_message(priority=5, rule=all_msg_rule)
 
@@ -43,7 +44,7 @@ async def handle_qq_guild_msg(
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
             OneBotGroupMessageEvent,
-            OneBotGroupMessageEvent
+            OneBotGuildMessageEvent
         ]
 ):
     await send_message_to_target_server(matcher=matcher, bot=bot, event=event)
@@ -60,7 +61,7 @@ async def handle_qq_group_cmd(
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
             OneBotGroupMessageEvent,
-            OneBotGroupMessageEvent
+            OneBotGuildMessageEvent
         ],
         args: Message = CommandArg()
 ):
@@ -86,7 +87,7 @@ async def handle_qq_send_title_cmd(
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
             OneBotGroupMessageEvent,
-            OneBotGroupMessageEvent
+            OneBotGuildMessageEvent
         ],
         args: Message = CommandArg()
 ):
@@ -113,7 +114,7 @@ async def handle_qq_send_title_cmd(
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
             OneBotGroupMessageEvent,
-            OneBotGroupMessageEvent
+            OneBotGuildMessageEvent
         ],
         args: Message = CommandArg()
 ):
