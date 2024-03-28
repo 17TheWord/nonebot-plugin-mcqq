@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-mcqq"
-version = "2.5.4"
+version = "2.5.5"
 description = "基于NoneBot的QQ群聊与Minecraft Server消息互通插件"
 authors = ["17TheWord <17theword@gmail.com>"]
 license = "MIT"
@@ -13,8 +13,8 @@ aio-mc-rcon = "^3.2.2"
 nonebot-adapter-qq = "^1.4.2"
 nonebot-adapter-onebot = "^2.4.1"
 nonebot-adapter-minecraft = "^1.0.8.post1"
-nonebot-plugin-guild-patch = "^0.2.3"
-mcqq-tool = "^1.1.5.post2"
+nonebot-plugin-guild-patch-remix = "^0.2.4"
+mcqq-tool = "^1.1.7"
 
 
 [build-system]
