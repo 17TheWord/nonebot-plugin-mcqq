@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 nonebot2 = "^2.2.1"
+mcqq-tool = "^1.1.7"
 aio-mc-rcon = "^3.2.2"
 nonebot-adapter-qq = "^1.4.2"
 nonebot-adapter-onebot = "^2.4.1"
