@@ -1,10 +1,14 @@
 from typing import Union
 
-from nonebot import on_message, on_notice
-from nonebot.adapters.minecraft import BaseChatEvent, BaseJoinEvent, BaseQuitEvent, BaseDeathEvent
-
 from mcqq_tool.rule import mc_msg_rule
+from nonebot import on_notice, on_message
 from mcqq_tool.send_to_qq import send_mc_msg_to_qq
+from nonebot.adapters.minecraft import (
+    BaseChatEvent,
+    BaseJoinEvent,
+    BaseQuitEvent,
+    BaseDeathEvent,
+)
 
 on_mc_msg = on_message(priority=5, rule=mc_msg_rule)
 
