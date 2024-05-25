@@ -692,13 +692,13 @@ files = [
 
 [[package]]
 name = "mcqq-tool"
-version = "1.1.9"
+version = "1.2.0.post1"
 description = "MC_QQ工具包"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "mcqq_tool-1.1.9-py3-none-any.whl", hash = "sha256:5aaf32879a301a98927a1533137066939a46a6174ef410dabcfb4820cb7c427b"},
-    {file = "mcqq_tool-1.1.9.tar.gz", hash = "sha256:85972026714f88884bff2976b308af438e3fb47bf0734c54e3ce90dc3e3e33ab"},
+    {file = "mcqq_tool-1.2.0.post1-py3-none-any.whl", hash = "sha256:537d7c23089ec5a320e21e1771840f64b004c5023186065fcda39b065dc74024"},
+    {file = "mcqq_tool-1.2.0.post1.tar.gz", hash = "sha256:5df700071d2c7f36a8839186b60ff927e2cf7394e698fdb15ef84f57a28f3e34"},
 ]
 
 [package.dependencies]
@@ -2047,4 +2047,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "784f0dff3c3191956eafcfdf06e46950978dccae15565927f3193446fa2a55b0"
+content-hash = "20344ce2de82e3043c85102af2db410a8b146aa38f42c30a70f7c77ae93a176f"
