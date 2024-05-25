@@ -104,7 +104,7 @@ async def handle_qq_send_title_cmd(
 
 
 @on_qq_action_bar_cmd.handle()
-async def handle_qq_send_title_cmd(
+async def handle_qq_action_bar_cmd(
         matcher: Matcher,
         bot: Union[
             QQBot,
