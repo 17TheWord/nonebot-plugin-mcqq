@@ -1,28 +1,23 @@
 from typing import Union
 
-from nonebot import on_message, on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.internal.matcher import Matcher
-from nonebot.adapters.onebot.v11 import (
-    Bot as OneBot,
-    GroupMessageEvent as OneBotGroupMessageEvent,
-)
-from nonebot.adapters.qq import (
-    Bot as QQBot,
-    GuildMessageEvent as QQGuildMessageEvent,
-    GroupAtMessageCreateEvent as QQGroupAtMessageCreateEvent,
-)
-
 from mcqq_tool.config import plugin_config
+from nonebot import on_command, on_message
+from nonebot.adapters.qq import Bot as QQBot
+from nonebot.internal.matcher import Matcher
+from nonebot.adapters.onebot.v11 import Bot as OneBot
 from mcqq_tool.rule import all_msg_rule, permission_check
+from nonebot.adapters.qq import GuildMessageEvent as QQGuildMessageEvent
+from nonebot_plugin_guild_patch import GuildMessageEvent as OneBotGuildMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageEvent
+from nonebot.adapters.qq import GroupAtMessageCreateEvent as QQGroupAtMessageCreateEvent
 from mcqq_tool.send_to_mc import (
     send_title_to_target_server,
-    send_message_to_target_server,
     send_command_to_target_server,
-    send_action_bar_to_target_server
+    send_message_to_target_server,
+    send_action_bar_to_target_server,
 )
-from nonebot_plugin_guild_patch import GuildMessageEvent as OneBotGuildMessageEvent
 
 on_qq_msg = on_message(priority=5, rule=all_msg_rule)
 
@@ -104,7 +99,7 @@ async def handle_qq_send_title_cmd(
 
 
 @on_qq_action_bar_cmd.handle()
-async def handle_qq_send_title_cmd(
+async def handle_qq_action_bar_cmd(
         matcher: Matcher,
         bot: Union[
             QQBot,

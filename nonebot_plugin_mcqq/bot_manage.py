@@ -1,7 +1,6 @@
-from nonebot import get_driver, logger
-from nonebot.adapters.minecraft import Bot as MinecraftBot
-
+from nonebot import logger, get_driver
 from mcqq_tool.config import plugin_config
+from nonebot.adapters.minecraft import Bot as MinecraftBot
 from mcqq_tool.rule import (
     QQ_GROUP_ID_LIST,
     QQ_GUILD_ID_LIST,
