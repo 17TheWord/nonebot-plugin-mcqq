@@ -3,10 +3,9 @@ name: Ruff Lint
 on:
   push:
     branches:
-      - main
+      - "*"
   pull_request:
-    paths:
-      - "nonebot_plugin_mcqq/**"
+    types: [opened, synchronize, reopened]
 
 jobs:
   ruff:
