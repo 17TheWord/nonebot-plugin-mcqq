@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,6 +29,26 @@ jobs:
       - name: Build
         run: poetry build
 
-      - name: Publish
-        if: github.event_name == 'release'
-        run: poetry publish
+  publish:
+    if: github.event_name == 'release' && github.event.action == 'created' && success()
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python -
+          poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Install dependencies
+        run: poetry install --no-root --no-dev
+
+      - name: Build and publish
+        run: poetry publish --build
