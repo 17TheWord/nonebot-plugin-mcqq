@@ -31,4 +31,4 @@ jobs:
 
       - name: Publish
         if: github.event_name == 'release'
-        run: poetry publish --build
+        run: poetry publish
