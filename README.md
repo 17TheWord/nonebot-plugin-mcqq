@@ -18,10 +18,12 @@
 - MinecraftServer
   - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq`
   - MC_QQ_Minecraft_Server 为日志读取程序，代码陈旧、功能极简，位于本仓库往期 [`Release`](https://github.com/17TheWord/nonebot-plugin-mcqq/releases)，可自行寻找
-- ForgeServer
+- Forge API
   - [`Forge Mod`](https://github.com/17TheWord/MC_QQ_Forge) + `nonebot-plugin-mcqq`
-- Fabric
+- Fabric API
   - [`Fabric Mod`](https://github.com/17TheWord/MC_QQ_Fabric) + `nonebot-plugin-mcqq`
+
+> 各端 `插件/模组` 请前往对应仓库的 `Action` 下载
 
 # 功能
 
@@ -60,7 +62,7 @@
 
 # 关于 Minecraft 适配器
 
-- [`nonebot-adapter-minecraft`](https://github.com/17TheWord/nonebot-adapter-minecraft)：本插件基于适配器实现 `Websocket` 与 `Rcon` 通信
+- 本插件基于 [`nonebot-adapter-minecraft`](https://github.com/17TheWord/nonebot-adapter-minecraft) 适配器实现 `Websocket`、`Rcon` 通信
 - 若有自定义一些简单插件的想法，可以一试，例如：
   - 非插件端无权限系统场景下实现普通玩家使用`tp`命令
   - 实现简单的自助领取游戏物品
