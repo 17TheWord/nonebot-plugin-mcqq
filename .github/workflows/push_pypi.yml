@@ -30,7 +30,7 @@ jobs:
         run: poetry build
 
   publish:
-    if: github.event_name == 'release' && github.event.action == 'created' && success()
+    if: github.event_name == 'release'
     needs: build
     runs-on: ubuntu-latest
     steps:
