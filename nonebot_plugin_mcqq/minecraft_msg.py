@@ -18,12 +18,13 @@ on_mc_notice = on_notice(priority=4, rule=mc_msg_rule)
 
 @on_mc_msg.handle()
 async def handle_mc_msg(event: Union[BaseChatEvent, BaseDeathEvent]):
-    if event.message.startswith("!!"):
+    msg_text = str(event.message)
+    if msg_text.startswith("!!"):
         return
     msg_result = (
-        str(event.message)
+        msg_text
         if isinstance(event, BaseDeathEvent)
-        else event.player.nickname + plugin_config.say_way + event.message
+        else event.player.nickname + plugin_config.say_way + msg_text
     )
     await send_mc_msg_to_qq(event.server_name, msg_result)
 
