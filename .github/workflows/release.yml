@@ -1,0 +1,72 @@
+name: Publish to PyPI And Release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python -
+          poetry config pypi-token.pypi ${{ env.PYPI_API_TOKEN }}
+
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(poetry version -s)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: poetry install --no-root --no-dev
+
+      - name: Build and publish
+        if: github.event_name == 'push'
+        run: poetry publish --build
+
+      - name: Check if Release exists
+        id: check-release
+        run: |
+          # Check if the release exists
+          RESPONSE=$(gh release view v${{ env.VERSION }} -R ${{ github.repository }} 2>&1 || true)
+          if echo "$RESPONSE" | grep -q "Not Found"; then
+            echo "Release v${{ env.VERSION }} does not exist. Skipping deletion."
+            echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
+          else
+            echo "Release v${{ env.VERSION }} exists."
+            echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
+          fi
+
+      - name: Delete Release if exists
+        run: |
+          # Try to delete the release and handle errors gracefully
+          set +e
+          gh release delete v${{ env.VERSION }} -R ${{ github.repository }} -y --cleanup-tag
+          if [ $? -eq 0 ]; then
+            echo "Release v${{ env.VERSION }} deleted successfully."
+          else
+            echo "Failed to delete release v${{ env.VERSION }}. It might not exist or there might be another issue."
+          fi
+
+      - name: Create Release with generate note
+        if: github.event_name == 'push'
+        run: gh release create v${{ env.VERSION }} --generate-notes
