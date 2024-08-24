@@ -1,3 +1,4 @@
+import re
 from typing import Union
 
 from nonebot.adapters import Message
@@ -7,7 +8,7 @@ from nonebot import on_command, on_message
 from nonebot.adapters.qq import Bot as QQBot
 from nonebot.internal.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot as OneBot
-from mcqq_tool.rule import all_msg_rule, permission_check
+from mcqq_tool.rule import all_msg_rule, permission_check, all_cmd_rule
 from nonebot.adapters.qq import GuildMessageEvent as QQGuildMessageEvent
 from nonebot_plugin_guild_patch import GuildMessageEvent as OneBotGuildMessageEvent
 from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageEvent
@@ -19,13 +20,13 @@ from mcqq_tool.send_to_mc import (
     send_action_bar_to_target_server,
 )
 
-on_qq_msg = on_message(priority=5, rule=all_msg_rule)
+on_qq_msg = on_message(priority=99, rule=all_msg_rule)
 
-on_qq_cmd = on_command("minecraft_command", rule=all_msg_rule, aliases={"mcc"}, priority=4, block=True)
+on_qq_cmd = on_command("minecraft_command", rule=all_cmd_rule, aliases={"mcc"}, priority=98)
 
-on_qq_send_title_cmd = on_command("send_title", rule=all_msg_rule, aliases={"mcst"}, priority=4, block=True)
+on_qq_send_title_cmd = on_command("send_title", rule=all_cmd_rule, aliases={"mcst"}, priority=98)
 
-on_qq_action_bar_cmd = on_command("action_bar", rule=all_msg_rule, aliases={"mca"}, priority=4, block=True)
+on_qq_action_bar_cmd = on_command("action_bar", rule=all_cmd_rule, aliases={"mca"}, priority=98)
 
 
 @on_qq_msg.handle()
@@ -65,7 +66,7 @@ async def handle_qq_group_cmd(
             await permission_check(matcher=matcher, bot=bot, event=event)
 
         temp_result = await send_command_to_target_server(matcher=matcher, bot=bot, event=event, command=cmd)
-
+        temp_result = re.sub(r'§.', '', temp_result)
         await on_qq_cmd.finish(temp_result)
     else:
         await on_qq_cmd.finish("你没有输入命令")
