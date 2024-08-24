@@ -17,4 +17,4 @@ jobs:
       - name: Run Ruff Lint
         uses: chartboost/ruff-action@v1
         with:
-          args: --fix .
+          args: check --fix .
