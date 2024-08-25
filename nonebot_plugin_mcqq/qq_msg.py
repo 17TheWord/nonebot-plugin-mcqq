@@ -8,7 +8,7 @@ from nonebot import on_command, on_message
 from nonebot.adapters.qq import Bot as QQBot
 from nonebot.internal.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot as OneBot
-from mcqq_tool.rule import all_msg_rule, permission_check, all_cmd_rule
+from mcqq_tool.rule import all_msg_rule, permission_check
 from nonebot.adapters.qq import GuildMessageEvent as QQGuildMessageEvent
 from nonebot_plugin_guild_patch import GuildMessageEvent as OneBotGuildMessageEvent
 from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageEvent
@@ -22,11 +22,11 @@ from mcqq_tool.send_to_mc import (
 
 on_qq_msg = on_message(priority=99, rule=all_msg_rule)
 
-on_qq_cmd = on_command("minecraft_command", rule=all_cmd_rule, aliases={"mcc"}, priority=98)
+on_qq_cmd = on_command("minecraft_command", rule=all_msg_rule, aliases={"mcc"}, priority=98, block=True)
 
-on_qq_send_title_cmd = on_command("send_title", rule=all_cmd_rule, aliases={"mcst"}, priority=98)
+on_qq_send_title_cmd = on_command("send_title", rule=all_msg_rule, aliases={"mcst"}, priority=98, block=True)
 
-on_qq_action_bar_cmd = on_command("action_bar", rule=all_cmd_rule, aliases={"mca"}, priority=98)
+on_qq_action_bar_cmd = on_command("action_bar", rule=all_msg_rule, aliases={"mca"}, priority=98, block=True)
 
 
 @on_qq_msg.handle()
