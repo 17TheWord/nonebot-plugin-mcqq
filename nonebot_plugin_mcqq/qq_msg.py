@@ -1,6 +1,4 @@
-import re
 from typing import Union
-
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from mcqq_tool.config import plugin_config
@@ -17,25 +15,42 @@ from mcqq_tool.send_to_mc import (
     send_title_to_target_server,
     send_command_to_target_server,
     send_message_to_target_server,
-    send_action_bar_to_target_server,
+    send_actionbar_to_target_server,
 )
 
-on_qq_msg = on_message(priority=99, rule=all_msg_rule)
+on_qq_msg = on_message(
+    priority=plugin_config.command_priority + 1,
+    rule=all_msg_rule
+)
 
-on_qq_cmd = on_command("minecraft_command", rule=all_msg_rule, aliases={"mcc"}, priority=98, block=True)
+on_qq_cmd = on_command(
+    "minecraft_command",
+    rule=all_msg_rule,
+    aliases=plugin_config.command_header,
+    priority=plugin_config.command_priority,
+    block=plugin_config.command_block
+)
 
-on_qq_send_title_cmd = on_command("send_title", rule=all_msg_rule, aliases={"mcst"}, priority=98, block=True)
+on_qq_send_title_cmd = on_command(
+    "send_title",
+    rule=all_msg_rule,
+    aliases={"mcst"},
+    priority=plugin_config.command_priority,
+    block=plugin_config.command_block
+)
 
-on_qq_action_bar_cmd = on_command("action_bar", rule=all_msg_rule, aliases={"mca"}, priority=98, block=True)
+on_qq_send_actionbar_cmd = on_command(
+    "action_bar",
+    rule=all_msg_rule,
+    aliases={"mcsa"},
+    priority=plugin_config.command_priority,
+    block=plugin_config.command_block
+)
 
 
 @on_qq_msg.handle()
-async def handle_qq_guild_msg(
-        matcher: Matcher,
-        bot: Union[
-            QQBot,
-            OneBot
-        ],
+async def handle_qq_msg(
+        bot: Union[QQBot, OneBot],
         event: Union[
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
@@ -43,16 +58,13 @@ async def handle_qq_guild_msg(
             OneBotGuildMessageEvent
         ]
 ):
-    await send_message_to_target_server(matcher=matcher, bot=bot, event=event)
+    await send_message_to_target_server(bot=bot, event=event)
 
 
 @on_qq_cmd.handle()
-async def handle_qq_group_cmd(
+async def handle_qq_cmd(
         matcher: Matcher,
-        bot: Union[
-            QQBot,
-            OneBot
-        ],
+        bot: Union[QQBot, OneBot],
         event: Union[
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
@@ -64,21 +76,16 @@ async def handle_qq_group_cmd(
     if cmd := args.extract_plain_text():
         if cmd not in plugin_config.cmd_whitelist:
             await permission_check(matcher=matcher, bot=bot, event=event)
-
-        temp_result = await send_command_to_target_server(matcher=matcher, bot=bot, event=event, command=cmd)
-        temp_result = re.sub(r'§.', '', temp_result)
+        temp_result = await send_command_to_target_server(event=event, command=cmd)
         await on_qq_cmd.finish(temp_result)
     else:
         await on_qq_cmd.finish("你没有输入命令")
 
 
 @on_qq_send_title_cmd.handle()
-async def handle_qq_send_title_cmd(
+async def handle_qq_title_cmd(
         matcher: Matcher,
-        bot: Union[
-            QQBot,
-            OneBot
-        ],
+        bot: Union[QQBot, OneBot],
         event: Union[
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
@@ -88,24 +95,16 @@ async def handle_qq_send_title_cmd(
         args: Message = CommandArg()
 ):
     await permission_check(matcher=matcher, bot=bot, event=event)
-    if arg := args.extract_plain_text():
-        response = await send_title_to_target_server(
-            matcher=matcher,
-            bot=bot,
-            event=event,
-            arg=arg,
-        )
+    if title := args.extract_plain_text():
+        response = await send_title_to_target_server(event=event, title_message=title)
         await on_qq_send_title_cmd.finish(response)
     await on_qq_send_title_cmd.finish("你没有输入任何标题")
 
 
-@on_qq_action_bar_cmd.handle()
-async def handle_qq_action_bar_cmd(
+@on_qq_send_actionbar_cmd.handle()
+async def handle_qq_actionbar_cmd(
         matcher: Matcher,
-        bot: Union[
-            QQBot,
-            OneBot
-        ],
+        bot: Union[QQBot, OneBot],
         event: Union[
             QQGuildMessageEvent,
             QQGroupAtMessageCreateEvent,
@@ -115,12 +114,7 @@ async def handle_qq_action_bar_cmd(
         args: Message = CommandArg()
 ):
     await permission_check(matcher=matcher, bot=bot, event=event)
-    if bar_msg := args.extract_plain_text():
-        response = await send_action_bar_to_target_server(
-            matcher=matcher,
-            bot=bot,
-            event=event,
-            action_bar=bar_msg
-        )
-        await on_qq_action_bar_cmd.finish(response)
-    await on_qq_action_bar_cmd.finish("你没有输入任何ActionBar信息")
+    if actionbar := args.extract_plain_text():
+        response = await send_actionbar_to_target_server(event=event, action_bar=actionbar)
+        await on_qq_send_actionbar_cmd.finish(response)
+    await on_qq_send_actionbar_cmd.finish("你没有输入任何ActionBar信息")
