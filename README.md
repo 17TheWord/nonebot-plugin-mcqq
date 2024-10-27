@@ -67,7 +67,7 @@
 
 # 贡献与支持
 
-觉得好用可以给这个项目点个 `Star` 或者去 [爱发电](https://afdian.net/a/17TheWord) 投喂我。
+觉得好用可以给这个项目点个 `Star` 或者去 [爱发电](https://afdian.com/a/17TheWord) 投喂我。
 
 有意见或者建议也欢迎提交 [Issues](https://github.com/17TheWord/nonebot-plugin-mcqq/issues)
 和 [Pull requests](https://github.com/17TheWord/nonebot-plugin-mcqq/pulls)。
