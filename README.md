@@ -13,17 +13,13 @@
 
 # 支持的服务端列表
 
-- Spigot API
-  - [`Spigot Plugin`](https://github.com/17TheWord/MC_QQ_Spigot) + `nonebot-plugin-mcqq`
-- MinecraftServer
-  - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq`
-  - MC_QQ_Minecraft_Server 为日志读取程序，代码陈旧、功能极简，位于本仓库往期 [`Release`](https://github.com/17TheWord/nonebot-plugin-mcqq/releases)，可自行寻找
-- Forge API
-  - [`Forge Mod`](https://github.com/17TheWord/MC_QQ_Forge) + `nonebot-plugin-mcqq`
-- Fabric API
-  - [`Fabric Mod`](https://github.com/17TheWord/MC_QQ_Fabric) + `nonebot-plugin-mcqq`
+- Spigot
+- Forge
+- Fabric
+- Velocity
+- 原版端
 
-> 各端 `插件/模组` 请前往对应仓库的 `Action` 下载
+配套 **插件/模组** 请前往 [`鹊桥`](https://github.com/17TheWord/QueQiao) 仓库查看详情
 
 # 功能
 
