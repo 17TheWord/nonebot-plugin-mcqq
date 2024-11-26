@@ -9,21 +9,17 @@
 
 # 文档
 
-- [简陋的 Wiki](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
+- [`Wiki`](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
 
 # 支持的服务端列表
 
-- Spigot API
-  - [`Spigot Plugin`](https://github.com/17TheWord/MC_QQ_Spigot) + `nonebot-plugin-mcqq`
-- MinecraftServer
-  - `MC_QQ_Minecraft_Server` + `nonebot-plugin-mcqq`
-  - MC_QQ_Minecraft_Server 为日志读取程序，代码陈旧、功能极简，位于本仓库往期 [`Release`](https://github.com/17TheWord/nonebot-plugin-mcqq/releases)，可自行寻找
-- Forge API
-  - [`Forge Mod`](https://github.com/17TheWord/MC_QQ_Forge) + `nonebot-plugin-mcqq`
-- Fabric API
-  - [`Fabric Mod`](https://github.com/17TheWord/MC_QQ_Fabric) + `nonebot-plugin-mcqq`
+- Spigot
+- Forge
+- Fabric
+- Velocity
+- 原版端
 
-> 各端 `插件/模组` 请前往对应仓库的 `Action` 下载
+配套 **插件/模组** 请前往 [`鹊桥`](https://github.com/17TheWord/QueQiao) 仓库查看详情
 
 # 功能
 
@@ -46,14 +42,13 @@
   - 频道
     - [x] @ 消息
     - [x] 回复消息（转换成@消息）
-  - 未支持的消息已被替换，如： `[msgType]` 等等
+  - 未支持的消息已被替换，如： `[未知消息类型]` 等等
 
 # 特别感谢
 
 - [@SK-415](https://github.com/SK-415)：感谢 SK 佬给予许多优秀的建议和耐心的解答。
 - [@zhz-红石头](https://github.com/zhzhongshi)：感谢红石头在代码上的帮助
 - [NoneBot2](https://github.com/nonebot/nonebot2)：插件使用的开发框架。
-- [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)：稳定完善的 CQHTTP 实现。
 
 # 二创
 
@@ -66,10 +61,12 @@
 - 若有自定义一些简单插件的想法，可以一试，例如：
   - 非插件端无权限系统场景下实现普通玩家使用`tp`命令
   - 实现简单的自助领取游戏物品
+  - 连接直播间，实现弹幕聊天与游戏内聊天互通
+  - ...
 
 # 贡献与支持
 
-觉得好用可以给这个项目点个 `Star` 或者去 [爱发电](https://afdian.net/a/17TheWord) 投喂我。
+觉得好用可以给这个项目点个 `Star` 或者去 [爱发电](https://afdian.com/a/17TheWord) 投喂我。
 
 有意见或者建议也欢迎提交 [Issues](https://github.com/17TheWord/nonebot-plugin-mcqq/issues)
 和 [Pull requests](https://github.com/17TheWord/nonebot-plugin-mcqq/pulls)。
