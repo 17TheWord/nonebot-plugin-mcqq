@@ -9,7 +9,7 @@
 
 # 文档
 
-- [简陋的 Wiki](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
+- [`Wiki`](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
 
 # 支持的服务端列表
 
@@ -42,14 +42,13 @@
   - 频道
     - [x] @ 消息
     - [x] 回复消息（转换成@消息）
-  - 未支持的消息已被替换，如： `[msgType]` 等等
+  - 未支持的消息已被替换，如： `[未知消息类型]` 等等
 
 # 特别感谢
 
 - [@SK-415](https://github.com/SK-415)：感谢 SK 佬给予许多优秀的建议和耐心的解答。
 - [@zhz-红石头](https://github.com/zhzhongshi)：感谢红石头在代码上的帮助
 - [NoneBot2](https://github.com/nonebot/nonebot2)：插件使用的开发框架。
-- [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)：稳定完善的 CQHTTP 实现。
 
 # 二创
 
