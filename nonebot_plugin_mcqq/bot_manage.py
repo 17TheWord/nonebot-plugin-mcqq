@@ -1,12 +1,12 @@
-from nonebot import logger, get_driver
 from mcqq_tool.config import plugin_config
-from nonebot.adapters.minecraft import Bot as MinecraftBot
 from mcqq_tool.rule import (
-    QQ_GROUP_ID_LIST,
-    QQ_GUILD_ID_LIST,
     ONEBOT_GROUP_ID_LIST,
     ONEBOT_GUILD_ID_LIST,
+    QQ_GROUP_ID_LIST,
+    QQ_GUILD_ID_LIST,
 )
+from nonebot import get_driver, logger
+from nonebot.adapters.minecraft import Bot as MinecraftBot
 
 driver = get_driver()
 
@@ -35,12 +35,18 @@ async def on_bot_connected(bot: MinecraftBot):
                     QQ_GUILD_ID_LIST[guild.channel_id] = [bot.self_id]
 
             if guild.adapter == "onebot":
-                if onebot_guild := ONEBOT_GUILD_ID_LIST.get(f"{guild.guild_id}:{guild.channel_id}"):
+                if onebot_guild := ONEBOT_GUILD_ID_LIST.get(
+                    f"{guild.guild_id}:{guild.channel_id}"
+                ):
                     onebot_guild.append(bot.self_id)
                 else:
-                    ONEBOT_GUILD_ID_LIST[f"{guild.guild_id}:{guild.channel_id}"] = [bot.self_id]
+                    ONEBOT_GUILD_ID_LIST[f"{guild.guild_id}:{guild.channel_id}"] = [
+                        bot.self_id
+                    ]
     else:
-        logger.warning(f"[MC_QQ]丨未找到服务器 {bot.self_id} 的配置，将无法配置目标群聊")
+        logger.warning(
+            f"[MC_QQ]丨未找到服务器 {bot.self_id} 的配置，将无法配置目标群聊"
+        )
 
 
 @driver.on_bot_disconnect
@@ -61,5 +67,7 @@ async def on_bot_disconnected(bot: MinecraftBot):
                     qq_guild.remove(bot.self_id)
 
             if guild.adapter == "onebot":
-                if onebot_guild := ONEBOT_GUILD_ID_LIST.get(f"{guild.guild_id}:{guild.channel_id}"):
+                if onebot_guild := ONEBOT_GUILD_ID_LIST.get(
+                    f"{guild.guild_id}:{guild.channel_id}"
+                ):
                     onebot_guild.remove(bot.self_id)
