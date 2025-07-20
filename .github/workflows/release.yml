@@ -37,7 +37,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Install dependencies
-        run: poetry install --no-root --no-dev
+        run: poetry install --only main
 
       - name: Build and publish
         if: github.event_name == 'push'
