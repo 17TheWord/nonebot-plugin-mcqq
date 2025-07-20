@@ -15,7 +15,9 @@ __plugin_meta__ = PluginMetadata(
         "nonebot.adapters.onebot.v11",
         "nonebot.adapters.minecraft",
         "nonebot.adapters.qq",
-    }
+    },
 )
 
-from . import qq_msg, bot_manage, minecraft_msg
+from . import bot_manage as bot_manage
+from . import minecraft_msg as minecraft_msg
+from . import qq_msg as qq_msg

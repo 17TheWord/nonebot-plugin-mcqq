@@ -7,11 +7,11 @@
 - 支持 QQ 群、QQ 频道
 - 支持多个服务器与多个群聊的互通
 
-# 文档
+## 文档
 
 - [`Wiki`](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
 
-# 支持的服务端列表
+## 支持的服务端列表
 
 - Spigot
 - Forge
@@ -21,7 +21,7 @@
 
 配套 **插件/模组** 请前往 [`鹊桥`](https://github.com/17TheWord/QueQiao) 仓库查看详情
 
-# 功能
+## 功能  
 
 - 推送消息列表
 
@@ -44,18 +44,18 @@
     - [x] 回复消息（转换成@消息）
   - 未支持的消息已被替换，如： `[未知消息类型]` 等等
 
-# 特别感谢
+## 特别感谢
 
 - [@SK-415](https://github.com/SK-415)：感谢 SK 佬给予许多优秀的建议和耐心的解答。
 - [@zhz-红石头](https://github.com/zhzhongshi)：感谢红石头在代码上的帮助
 - [NoneBot2](https://github.com/nonebot/nonebot2)：插件使用的开发框架。
 
-# 二创
+## 二创
 
 - [@KarisAya/mcqq 服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server)：采用本地读取 log 信息的方法的 Minecraft Server 互通消息的插件
 - [@CikeyQi/mc-plugin](https://github.com/CikeyQi/mc-plugin)：适用于 `Yunzai` 的互通消息插件
 
-# 关于 Minecraft 适配器
+## 关于 Minecraft 适配器
 
 - 本插件基于 [`nonebot-adapter-minecraft`](https://github.com/17TheWord/nonebot-adapter-minecraft) 适配器实现 `Websocket`、`Rcon` 通信
 - 若有自定义一些简单插件的想法，可以一试，例如：
@@ -64,13 +64,13 @@
   - 连接直播间，实现弹幕聊天与游戏内聊天互通
   - ...
 
-# 贡献与支持
+## 贡献与支持
 
 觉得好用可以给这个项目点个 `Star` 或者去 [爱发电](https://afdian.com/a/17TheWord) 投喂我。
 
 有意见或者建议也欢迎提交 [Issues](https://github.com/17TheWord/nonebot-plugin-mcqq/issues)
 和 [Pull requests](https://github.com/17TheWord/nonebot-plugin-mcqq/pulls)。
 
-# 许可证
+## 许可证
 
 本项目使用 [MIT](./LICENSE) 作为开源许可证。
