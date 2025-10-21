@@ -15,9 +15,7 @@
 
 - Spigot
 - Forge
-- Folia
 - Fabric
-- NeoForge
 - Velocity
 - 原版端
 
