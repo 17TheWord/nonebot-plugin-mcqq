@@ -1,0 +1,23 @@
+name: Setup Python
+description: Setup Python
+
+inputs:
+  python-version:
+    description: Python version
+    required: false
+    default: "3.12"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: astral-sh/setup-uv@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - shell: bash
+      run: |
+        echo "=== Environment Info ==="
+        uv --version
+        python -V
+        echo "========================"
+        uv sync --all-extras --locked
