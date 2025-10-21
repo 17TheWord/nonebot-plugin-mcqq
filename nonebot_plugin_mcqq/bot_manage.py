@@ -1,73 +1,110 @@
-from mcqq_tool.config import plugin_config
-from mcqq_tool.rule import (
-    ONEBOT_GROUP_ID_LIST,
-    ONEBOT_GUILD_ID_LIST,
-    QQ_GROUP_ID_LIST,
-    QQ_GUILD_ID_LIST,
-)
 from nonebot import get_driver, logger
 from nonebot.adapters.minecraft import Bot as MinecraftBot
+from nonebot.adapters.onebot.v11 import Bot as OneBotV11Bot
+from nonebot.adapters.qq import Bot as QQBot
+
+from .config import Server, plugin_config
+from .data_source import (
+    ONEBOT_GROUP_SERVER_DICT,
+    QQ_GROUP_SERVER_DICT,
+    QQ_GUILD_SERVER_DICT,
+)
 
 driver = get_driver()
 
 
 @driver.on_bot_connect
 async def on_bot_connected(bot: MinecraftBot):
-    if server := plugin_config.server_dict.get(bot.self_id):
-        for group in server.group_list:
-            if group.adapter == "qq":
-                if qq_group := QQ_GROUP_ID_LIST.get(group.group_id):
-                    qq_group.append(bot.self_id)
-                else:
-                    QQ_GROUP_ID_LIST[group.group_id] = [bot.self_id]
-
-            if group.adapter == "onebot":
-                if onebot_group := ONEBOT_GROUP_ID_LIST.get(group.group_id):
-                    onebot_group.append(bot.self_id)
-                else:
-                    ONEBOT_GROUP_ID_LIST[group.group_id] = [bot.self_id]
-
-        for guild in server.guild_list:
-            if guild.adapter == "qq":
-                if qq_guild := QQ_GUILD_ID_LIST.get(guild.channel_id):
-                    qq_guild.append(bot.self_id)
-                else:
-                    QQ_GUILD_ID_LIST[guild.channel_id] = [bot.self_id]
-
-            if guild.adapter == "onebot":
-                if onebot_guild := ONEBOT_GUILD_ID_LIST.get(
-                    f"{guild.guild_id}:{guild.channel_id}"
-                ):
-                    onebot_guild.append(bot.self_id)
-                else:
-                    ONEBOT_GUILD_ID_LIST[f"{guild.guild_id}:{guild.channel_id}"] = [
-                        bot.self_id
-                    ]
-    else:
+    """当 Minecraft 服务器连接成功时"""
+    server = plugin_config.server_dict.get(bot.self_id)
+    if not server:
         logger.warning(
             f"[MC_QQ]丨未找到服务器 {bot.self_id} 的配置，将无法配置目标群聊"
         )
+        return
+
+    logger.info(f"[MC_QQ]丨服务器 {bot.self_id} 已成功连接。")
+
+    # 建立映射
+    for group in server.group_list:
+        if group.adapter == "qq":
+            QQ_GROUP_SERVER_DICT[group.group_id].append(bot.self_id)
+        elif group.adapter == "onebot":
+            ONEBOT_GROUP_SERVER_DICT[group.group_id].append(bot.self_id)
+
+    for guild in server.guild_list:
+        if guild.adapter == "qq":
+            QQ_GUILD_SERVER_DICT[guild.channel_id].append(bot.self_id)
+
+    await notify_groups(server, bot.self_id, connected=True)
 
 
 @driver.on_bot_disconnect
 async def on_bot_disconnected(bot: MinecraftBot):
-    if server := plugin_config.server_dict.get(bot.self_id):
-        for group in server.group_list:
-            if group.adapter == "qq":
-                if qq_group := QQ_GROUP_ID_LIST.get(group.group_id):
-                    qq_group.remove(bot.self_id)
+    """当 Minecraft 服务器断开连接时"""
+    server: Server | None = plugin_config.server_dict.get(bot.self_id)
+    if not server:
+        return
 
-            if group.adapter == "onebot":
-                if onebot_group := ONEBOT_GROUP_ID_LIST.get(group.group_id):
-                    onebot_group.remove(bot.self_id)
+    logger.info(f"[MC_QQ]丨服务器 {bot.self_id} 已断开连接。")
 
-        for guild in server.guild_list:
-            if guild.adapter == "qq":
-                if qq_guild := QQ_GUILD_ID_LIST.get(guild.channel_id):
-                    qq_guild.remove(bot.self_id)
+    def remove_mapping(target_dict: dict[str, list[str]], key: str):
+        """安全移除"""
+        if bot.self_id in target_dict[key]:
+            target_dict[key].remove(bot.self_id)
+            if not target_dict[key]:
+                del target_dict[key]
 
-            if guild.adapter == "onebot":
-                if onebot_guild := ONEBOT_GUILD_ID_LIST.get(
-                    f"{guild.guild_id}:{guild.channel_id}"
-                ):
-                    onebot_guild.remove(bot.self_id)
+    for group in server.group_list:
+        if group.adapter == "qq":
+            remove_mapping(QQ_GROUP_SERVER_DICT, group.group_id)
+        elif group.adapter == "onebot":
+            remove_mapping(ONEBOT_GROUP_SERVER_DICT, group.group_id)
+
+    for guild in server.guild_list:
+        if guild.adapter == "qq":
+            remove_mapping(QQ_GUILD_SERVER_DICT, guild.channel_id)
+
+    await notify_groups(server, bot.self_id, connected=False)
+
+
+async def notify_groups(server: Server, server_id: str, connected: bool):
+    """
+    向所有绑定的群聊或频道发送状态通知。
+    :param server: 服务器配置
+    :param server_id: 服务器ID
+    :param connected: 连接状态
+    """
+    msg = (
+        f"✅ 服务器 [{server_id}] 已成功连接！"
+        if connected
+        else f"⚠️ 服务器 [{server_id}] 已断开连接！"
+    )
+
+    for group in server.group_list:
+        bot_id = group.bot_id
+        adapter = group.adapter
+        try:
+            bot = driver.bots.get(bot_id)
+            if adapter == "qq" and isinstance(bot, QQBot):
+                # TODO: 无需实现，QQ 群聊主动消息每个月就4条。等官方支持更多主动消息后再实现
+                # await bot.send_to_c2c(openid=group.group_id, message=msg)
+                logger.debug(
+                    f"[MC_QQ]丨未实现的适配器: {group.adapter}，发送至群聊 {group.group_id}：一个月主动就四条，还是算了吧。"
+                )
+            elif adapter == "onebot" and isinstance(bot, OneBotV11Bot):
+                await bot.call_api(
+                    "send_group_msg", group_id=int(group.group_id), message=msg
+                )
+        except Exception as e:
+            logger.warning(f"[MC_QQ]丨向群 {group.group_id} 发送通知失败: {e}")
+
+    for guild in server.guild_list:
+        bot_id = guild.bot_id
+        adapter = guild.adapter
+        try:
+            bot = driver.bots.get(bot_id)
+            if adapter == "qq" and isinstance(bot, QQBot):
+                await bot.send_to_channel(guild.channel_id, msg)
+        except Exception as e:
+            logger.warning(f"[MC_QQ]丨向频道 {guild.channel_id} 发送通知失败: {e}")

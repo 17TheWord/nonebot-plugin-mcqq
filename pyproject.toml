@@ -1,23 +1,57 @@
-[tool.poetry]
+[project]
 name = "nonebot-plugin-mcqq"
-version = "2.6.4"
+version = "2.7.0"
 description = "基于NoneBot的QQ群聊与Minecraft Server消息互通插件"
-authors = ["17TheWord <17theword@gmail.com>"]
-license = "MIT"
+authors = [{ name = "17TheWord", email = "17theword@gmail.com" }]
+requires-python = ">=3.10,<4"
 readme = "README.md"
+license = "MIT"
+dependencies = [
+    "nonebot-adapter-minecraft>=1.6.0",
+    "nonebot-adapter-onebot>=2.4.6",
+    "nonebot-adapter-qq>=1.6.5",
+    "nonebot2[fastapi,httpx,websockets]>=2.4.3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-mcqq-tool = "^1.3.4.post1"
+[project.optional-dependencies]
+pil = [
+    "pillow>=11.3.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.12.4"
-pre-commit = "^4.2.0"
-nonebot2 = { version = "^2.2.0", extras = ["fastapi"] }
+[dependency-groups]
+dev = [
+    "nb-cli>=1.4.2",
+    "pre-commit>=4.2.0,<5",
+]
+
+lint = ["ruff>=0.12.4,<0.13"]
+
+[tool.nonebot]
+adapters = [
+    { name = "Minecraft", module_name = "nonebot.adapters.minecraft" },
+    { name = "QQ", module_name = "nonebot.adapters.qq" },
+    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" }
+]
+plugins = ["nonebot_plugin_mcqq"]
+plugin_dirs = []
+builtin_plugins = []
+
+[tool.uv]
+default-groups = ["dev", "lint"]
+
+[tool.hatch.build.targets.sdist]
+include = ["nonebot"]
+
+[tool.hatch.build.targets.wheel]
+include = ["nonebot"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
@@ -60,7 +94,3 @@ extra-standard-library = ["typing_extensions"]
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

@@ -1,8 +1,6 @@
-from nonebot import require
-
-require("nonebot_plugin_guild_patch")
-from mcqq_tool.config import Config
 from nonebot.plugin import PluginMetadata
+
+from .config import Config
 
 __plugin_meta__ = PluginMetadata(
     name="MC_QQ",
@@ -19,5 +17,5 @@ __plugin_meta__ = PluginMetadata(
 )
 
 from . import bot_manage as bot_manage
-from . import minecraft_msg as minecraft_msg
-from . import qq_msg as qq_msg
+from . import on_minecraft_msg as on_minecraft_msg
+from . import on_qq_msg as on_qq_msg
