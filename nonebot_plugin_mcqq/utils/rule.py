@@ -1,9 +1,6 @@
 from nonebot.adapters.minecraft import (
     Event as MinecraftEvent,
 )
-from nonebot.adapters.minecraft import (
-    MessageEvent as MinecraftMessageEvent,
-)
 from nonebot.adapters.onebot.v11 import GROUP_ADMIN as ONEBOT_GROUP_ADMIN
 from nonebot.adapters.onebot.v11 import GROUP_OWNER as ONEBOT_GROUP_OWNER
 from nonebot.adapters.onebot.v11 import Bot as OneBot
@@ -28,17 +25,14 @@ from ..data_source import (
 
 
 def mc_msg_rule(event: MinecraftEvent):
-    if isinstance(event, MinecraftMessageEvent):
-        if plugin_config.ignore_word_list:
-            return not any(
-                word in str(event.get_message()) for word in IGNORE_WORD_LIST
-            )
+    if plugin_config.ignore_word_list:
+        return not any(word in str(event.get_message()) for word in IGNORE_WORD_LIST)
     return event.server_name in plugin_config.server_dict.keys()
 
 
 def all_msg_rule(
     event: QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent | QQGuildMessageEvent,
-):
+) -> bool:
     """
     检测是否为 绑定的群聊/频道
     :param event: QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent | QQGuildMessageEvent
