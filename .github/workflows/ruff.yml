@@ -5,16 +5,17 @@ on:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    paths:
+      - "nonebot/**"
+      - "packages/**"
+      - "tests/**"
 
 jobs:
   ruff:
     name: Ruff Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Run Ruff Lint
-        uses: chartboost/ruff-action@v1
-        with:
-          args: check --fix .
+        uses: astral-sh/ruff-action@v3
