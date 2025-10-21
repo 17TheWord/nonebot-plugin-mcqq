@@ -93,9 +93,7 @@ async def __get_group_or_nick_name(
                 channel_name = channel.name
                 QQ_CHANNEL_NAME_CACHE[event.channel_id] = channel.name
 
-            guild_channel_name = f"[{guild_name}/{channel_name}]"
-
-            return guild_channel_name
+            return f"[{guild_name}/{channel_name}]"
 
     elif isinstance(event, QQGroupAtMessageCreateEvent) and isinstance(bot, QQBot):
         # TODO 等待QQ机器人完善API
@@ -128,7 +126,6 @@ def __create_hover_click_events(
 async def __get_common_qq_msg_parsing(
     bot: QQBot | OneBot,
     event: QQGuildMessageEvent | QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent,
-    rcon_mode: bool = False,
 ) -> tuple[Message, str]:
     """
     获取QQ消息解析后的消息列表和日志文本
@@ -279,12 +276,10 @@ async def parse_qq_msg_to_component(
     message_list.append(
         MessageSegment.text(text=plugin_config.say_way, color=Color.white)
     )
-    log_text += " " + plugin_config.say_way
+    log_text += f" {plugin_config.say_way}"
 
     # 消息内容
-    temp_message_list, msg_log_text = await __get_common_qq_msg_parsing(
-        bot, event, rcon_mode
-    )
+    temp_message_list, msg_log_text = await __get_common_qq_msg_parsing(bot, event)
     log_text += msg_log_text
 
     message_list.append(*temp_message_list)
