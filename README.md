@@ -5,21 +5,15 @@
 基于 `NoneBot` 的与 `Minecraft Server` 互通消息插件
 
 - 支持 QQ 群、QQ 频道
-- 支持多个服务器与多个群聊的互通
+- 支持多个服务器与多个群聊的互通[README.md](..%2Fnonebot-adapter-minecraft%2FREADME.md)
 
 ## 文档
 
 - [`Wiki`](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
 
-## 支持的服务端列表
+## 服务端对接
 
-- Spigot
-- Forge
-- Fabric
-- Velocity
-- 原版端
-
-配套 **插件/模组** 请前往 [`鹊桥`](https://github.com/17TheWord/QueQiao) 仓库查看详情
+服务器端插件/Mod：[`鹊桥`](https://github.com/17TheWord/QueQiao)
 
 ## 功能  
 
@@ -57,7 +51,7 @@
 
 ## 关于 Minecraft 适配器
 
-- 本插件基于 [`nonebot-adapter-minecraft`](https://github.com/17TheWord/nonebot-adapter-minecraft) 适配器实现 `Websocket`、`Rcon` 通信
+- 本插件基于 [`nonebot-adapter-minecraft`](https://github.com/17TheWord/nonebot-adapter-minecraft) 适配器实现 `Websocket` 通信
 - 若有自定义一些简单插件的想法，可以一试，例如：
   - 非插件端无权限系统场景下实现普通玩家使用`tp`命令
   - 实现简单的自助领取游戏物品
