@@ -26,7 +26,7 @@ from ..data_source import (
 
 def mc_msg_rule(event: MinecraftEvent):
     if plugin_config.ignore_word_list:
-        return not any(word in str(event.get_message()) for word in IGNORE_WORD_LIST)
+        return all(word not in str(event.get_message()) for word in IGNORE_WORD_LIST)
     return event.server_name in plugin_config.server_dict.keys()
 
 

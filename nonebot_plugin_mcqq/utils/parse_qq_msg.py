@@ -96,7 +96,7 @@ async def __get_group_or_nick_name(
             return f"[{guild_name}/{channel_name}]"
 
     elif isinstance(event, QQGroupAtMessageCreateEvent) and isinstance(bot, QQBot):
-        # TODO 等待QQ机器人完善API
+        # TODO 等待QQ机器人完善API，目前主动消息条数太少，无法测试
         return event.author.member_openid if user_id else event.group_openid
     return "未知名称" if user_id else "[未知群名]"
 
