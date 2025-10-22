@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@fdcc847  # v5.5.0
         with:
           env_vars: OS,PYTHON_VERSION
           files: ./coverage.xml
@@ -51,6 +51,6 @@ jobs:
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
+        uses: codecov/test-results-action@abef2231b7eb85a2c7a44b4a2f26b8b8bde093d8 # v1.1.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
