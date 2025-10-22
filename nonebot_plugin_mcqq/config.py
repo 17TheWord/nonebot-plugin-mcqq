@@ -73,6 +73,9 @@ class MCQQConfig(BaseModel):
     command_block: bool = True
     """命令消息是否阻断后续消息"""
 
+    notice_connected: bool = False
+    """是否在服务器连接状态变化时发送通知"""
+
     rcon_result_to_image: bool = False
     """是否将 Rcon 命令执行结果转换为图片"""
 

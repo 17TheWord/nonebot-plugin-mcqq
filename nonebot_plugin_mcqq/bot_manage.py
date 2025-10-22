@@ -1,4 +1,4 @@
-from nonebot import get_driver, logger
+from nonebot import get_bots, get_driver, logger
 from nonebot.adapters.minecraft import Bot as MinecraftBot
 from nonebot.adapters.onebot.v11 import Bot as OneBotV11Bot
 from nonebot.adapters.qq import Bot as QQBot
@@ -35,8 +35,8 @@ async def on_bot_connected(bot: MinecraftBot):
     for guild in server.guild_list:
         if guild.adapter == "qq":
             QQ_GUILD_SERVER_DICT[guild.channel_id].append(bot.self_id)
-
-    await notify_groups(server, bot.self_id, connected=True)
+    if plugin_config.notice_connected:
+        await notify_groups(server, bot.self_id, connected=True)
 
 
 @driver.on_bot_disconnect
@@ -64,8 +64,8 @@ async def on_bot_disconnected(bot: MinecraftBot):
     for guild in server.guild_list:
         if guild.adapter == "qq":
             remove_mapping(QQ_GUILD_SERVER_DICT, guild.channel_id)
-
-    await notify_groups(server, bot.self_id, connected=False)
+    if plugin_config.notice_connected:
+        await notify_groups(server, bot.self_id, connected=False)
 
 
 async def notify_groups(server: Server, server_id: str, connected: bool):
@@ -84,8 +84,12 @@ async def notify_groups(server: Server, server_id: str, connected: bool):
     for group in server.group_list:
         bot_id = group.bot_id
         adapter = group.adapter
+        if not (bot := get_bots().get(bot_id)):
+            logger.debug(
+                f"[MC_QQ]丨未找到机器人 {bot_id}，跳过发送至群聊 {group.group_id} 的通知。"
+            )
+            continue
         try:
-            bot = driver.bots.get(bot_id)
             if adapter == "qq" and isinstance(bot, QQBot):
                 # TODO: 无需实现，QQ 群聊主动消息每个月就4条。等官方支持更多主动消息后再实现
                 # await bot.send_to_c2c(openid=group.group_id, message=msg)
@@ -103,7 +107,7 @@ async def notify_groups(server: Server, server_id: str, connected: bool):
         bot_id = guild.bot_id
         adapter = guild.adapter
         try:
-            bot = driver.bots.get(bot_id)
+            bot = get_bots().get(bot_id)
             if adapter == "qq" and isinstance(bot, QQBot):
                 await bot.send_to_channel(guild.channel_id, msg)
         except Exception as e:
