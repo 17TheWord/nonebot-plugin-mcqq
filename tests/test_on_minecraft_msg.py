@@ -1,16 +1,14 @@
 import time
 import uuid
 
-from nonebot import get_adapter
+import nonebot
 from nonebot.adapters.minecraft import (
     Adapter as MinecraftAdapter,
 )
 from nonebot.adapters.minecraft import (
     BaseChatEvent,
-    BaseDeathEvent,
     BaseJoinEvent,
     BasePlayer,
-    BasePlayerCommandEvent,
     BaseQuitEvent,
 )
 from nonebot.adapters.minecraft import (
@@ -35,11 +33,11 @@ base_event = {
 
 
 @pytest.mark.asyncio
-async def test_handle_mc_chat_event(app: App):
+async def test_handle_mc_msg(app: App):
     """测试 Minecraft 聊天消息的处理"""
     from nonebot_plugin_mcqq.on_minecraft_msg import on_mc_msg
 
-    mc_adapter = get_adapter(MinecraftAdapter)
+    mc_adapter = nonebot.get_adapter(MinecraftAdapter)
 
     async with app.test_matcher(on_mc_msg) as ctx:
         # 创建 Minecraft Bot
@@ -56,60 +54,24 @@ async def test_handle_mc_chat_event(app: App):
 
         ctx.receive_event(mc_bot, base_chat_event)
 
-
-@pytest.mark.asyncio
-async def test_handle_mc_command_event(app: App):
-    """测试 Minecraft 指令消息的处理"""
-    from nonebot_plugin_mcqq.on_minecraft_msg import on_mc_msg
-
-    mc_adapter = get_adapter(MinecraftAdapter)
-
-    async with app.test_matcher(on_mc_msg) as ctx:
-        # 创建 Minecraft Bot
-        mc_bot = ctx.create_bot(
-            base=MinecraftBot, adapter=mc_adapter, self_id="test_server"
-        )
-
-        base_command_event = BasePlayerCommandEvent(
+        base_chat_event = BaseChatEvent(
             **base_event,
             post_type="message",
-            sub_type="player_command",
-            message=MinecraftMessage("/test command"),
+            sub_type="chat",
+            message=MinecraftMessage("!!This message should be ignored"),
         )
 
-        ctx.receive_event(mc_bot, base_command_event)
+        ctx.receive_event(mc_bot, base_chat_event)
 
 
 @pytest.mark.asyncio
-async def test_handle_mc_death_event(app: App):
-    """测试 Minecraft 死亡消息的处理"""
-    from nonebot_plugin_mcqq.on_minecraft_msg import on_mc_msg
-
-    mc_adapter = get_adapter(MinecraftAdapter)
-
-    async with app.test_matcher(on_mc_msg) as ctx:
-        mc_bot = ctx.create_bot(
-            base=MinecraftBot, adapter=mc_adapter, self_id="test_server"
-        )
-
-        base_death_event = BaseDeathEvent(
-            **base_event,
-            post_type="message",
-            sub_type="death",
-            message=MinecraftMessage("You died!"),
-        )
-
-        ctx.receive_event(mc_bot, base_death_event)
-
-
-@pytest.mark.asyncio
-async def test_handle_mc_join_quit_event(app: App):
+async def test_handle_mc_notice(app: App):
     """测试 Minecraft 加入和离开消息的处理"""
-    from nonebot_plugin_mcqq.on_minecraft_msg import on_mc_msg
+    from nonebot_plugin_mcqq.on_minecraft_msg import on_mc_notice
 
-    mc_adapter = get_adapter(MinecraftAdapter)
+    mc_adapter = nonebot.get_adapter(MinecraftAdapter)
 
-    async with app.test_matcher(on_mc_msg) as ctx:
+    async with app.test_matcher(on_mc_notice) as ctx:
         mc_bot = ctx.create_bot(
             base=MinecraftBot, adapter=mc_adapter, self_id="test_server"
         )

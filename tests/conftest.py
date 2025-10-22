@@ -32,8 +32,23 @@ os.environ["ENVIRONMENT"] = "test"
 
 
 def pytest_configure(config: pytest.Config):
+    """配置 NoneBot 初始化参数
+
+    驱动器：FastAPI + WebSockets + HTTPX
+    适配器配置：Minecraft 访问令牌
+
+    测试服务器名：test_server
+
+    映射群聊：
+    - 适配器：OneBot，机器人 ID：int(123456789)，群号：int(1234567890)
+    - 适配器：QQ，机器人 ID："987654321"，群号："654321"
+
+    映射频道：
+    - 适配器：QQ，机器人 ID："987654321"，子频道号："9876543210"
+    """
     config.stash[NONEBOT_INIT_KWARGS] = {
         "driver": "~fastapi+~websockets+~httpx",
+        "superusers": {"999999999"},
         "minecraft_access_token": "test_access_token",
         "mc_qq": {
             "server_dict": {
@@ -41,13 +56,17 @@ def pytest_configure(config: pytest.Config):
                     "group_list": [
                         {
                             "adapter": "onebot",
-                            "bot_id": "test_onebot",
-                            "group_id": "123456",
+                            "bot_id": "123456789",
+                            "group_id": "1234567890",
                         },
                         {"adapter": "qq", "bot_id": "test_qq", "group_id": "654321"},
                     ],
                     "guild_list": [
-                        {"adapter": "qq", "bot_id": "test_qq", "channel_id": "789012"}
+                        {
+                            "adapter": "qq",
+                            "bot_id": "987654321",
+                            "channel_id": "9876543210",
+                        }
                     ],
                 }
             }
