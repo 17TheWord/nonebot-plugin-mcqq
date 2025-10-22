@@ -14,40 +14,47 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-pil = [
-    "pillow>=11.3.0",
-]
+pil = ["pillow>=11.3.0"]
 
 [dependency-groups]
-dev = [
-    "nb-cli>=1.4.2",
-    "pre-commit>=4.2.0,<5",
-]
+dev = ["nb-cli>=1.4.2", "pre-commit>=4.2.0,<5"]
 
 lint = ["ruff>=0.12.4,<0.13"]
+
+test = [
+    "nonebug>=0.4.3",
+    "pytest-asyncio>=1.2.0",
+    "pytest-cov>=7.0.0",
+]
 
 [tool.nonebot]
 adapters = [
     { name = "Minecraft", module_name = "nonebot.adapters.minecraft" },
     { name = "QQ", module_name = "nonebot.adapters.qq" },
-    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" }
+    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" },
 ]
 plugins = ["nonebot_plugin_mcqq"]
 plugin_dirs = []
 builtin_plugins = []
 
 [tool.uv]
-default-groups = ["dev", "lint"]
+default-groups = ["dev", "test", "lint"]
 
 [tool.hatch.build.targets.sdist]
-include = ["nonebot"]
+include = ["nonebot_plugin_mcqq"]
 
 [tool.hatch.build.targets.wheel]
-include = ["nonebot"]
+include = ["nonebot_plugin_mcqq"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+addopts = "--cov=nonebot_plugin_mcqq --cov-report term-missing"
+filterwarnings = ["ignore:.*overrides.*:DeprecationWarning:nonebot.typing"]
 
 [tool.ruff]
 line-length = 88
@@ -94,3 +101,6 @@ extra-standard-library = ["typing_extensions"]
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
+
+[tool.data.packages]
+my_package = { path = "nonebot_plugin_mcqq" }
