@@ -21,7 +21,12 @@
                 "PKief.material-icon-theme"
             ],
             "settings": {
-                "workbench.iconTheme": "material-icon-theme"
+                "workbench.iconTheme": "material-icon-theme",
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestArgs": [
+                    "tests"
+                ]
             }
         }
     }
