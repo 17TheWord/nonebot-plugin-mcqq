@@ -34,7 +34,7 @@ os.environ["ENVIRONMENT"] = "test"
 def pytest_configure(config: pytest.Config):
     config.stash[NONEBOT_INIT_KWARGS] = {
         "driver": "~fastapi+~websockets+~httpx",
-        "minecraft_access_token": "Bearer test_access_token",
+        "minecraft_access_token": "test_access_token",
         "mc_qq": {
             "server_dict": {
                 "test_server": {
