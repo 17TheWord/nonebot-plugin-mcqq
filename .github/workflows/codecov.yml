@@ -30,6 +30,17 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(uv version | awk '{print $NF}')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Debug print version
+        run: |
+          echo "VERSION (from shell): $VERSION"
+          echo "VERSION (from env context): ${{ env.VERSION }}"
+
       - name: Install test dependencies
         run: uv sync --group test --locked
 
@@ -41,7 +52,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@fdcc8476540edceab3de004e990f80d881c6cc00  # v5.5.0
+        uses: codecov/codecov-action@fdcc8476540edceab3de004e990f80d881c6cc00 # v5.5.0
         with:
           env_vars: OS,PYTHON_VERSION
           files: ./coverage.xml
