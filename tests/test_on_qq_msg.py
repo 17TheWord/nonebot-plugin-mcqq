@@ -4,7 +4,7 @@ import nonebot
 from nonebot.adapters.minecraft import Adapter as MinecraftAdapter
 from nonebot.adapters.minecraft import Bot as MinecraftBot
 from nonebot.adapters.minecraft import MessageSegment as MCMessageSegment
-from nonebot.adapters.minecraft.models import Color
+from nonebot.adapters.minecraft.models import Color, Component
 from nonebot.adapters.onebot.v11 import (
     Adapter as OneBotAdapter,
 )
@@ -88,13 +88,12 @@ async def test_handle_onebot_msg(app: App):
             api="send_msg",
             data={
                 "message": [
-                    MCMessageSegment(
-                        type="text", data={"text": "TestUser", "color": Color.green}
+                    MCMessageSegment.text(text="TestUser", color=Color.green),
+                    MCMessageSegment.text(
+                        text="说：",
+                        color=Color.white,
+                        extra=[Component(text="test message")],
                     ),
-                    MCMessageSegment(
-                        type="text", data={"text": "说：", "color": Color.white}
-                    ),
-                    MCMessageSegment(type="text", data={"text": "test message "}),
                 ]
             },
             adapter=mc_adapter,
@@ -126,13 +125,12 @@ async def test_handle_qq_msg(app: App):
             api="send_msg",
             data={
                 "message": [
-                    MCMessageSegment(
-                        type="text", data={"text": "TestUser", "color": Color.green}
+                    MCMessageSegment.text(text="TestUser", color=Color.green),
+                    MCMessageSegment.text(
+                        text="说：",
+                        color=Color.white,
+                        extra=[Component(text="test message")],
                     ),
-                    MCMessageSegment(
-                        type="text", data={"text": "说：", "color": Color.white}
-                    ),
-                    MCMessageSegment(type="text", data={"text": "test message "}),
                 ]
             },
             adapter=mc_adapter,
