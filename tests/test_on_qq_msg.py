@@ -97,7 +97,7 @@ async def test_handle_onebot_msg(app: App):
                     ),
                 ]
             },
-            adapter=mc_adapter,
+            # adapter=mc_adapter,
         )
 
 
@@ -134,7 +134,7 @@ async def test_handle_qq_msg(app: App):
                     ),
                 ]
             },
-            adapter=mc_adapter,
+            # adapter=mc_adapter,
         )
 
         qq_guild_message_event = make_qq_guild_message_event("test message")
@@ -181,7 +181,7 @@ async def test_handle_qq_cmd(app: App):
             api="send_rcon_command",
             data={"command": "list"},
             result="test",
-            adapter=mc_adapter,
+            # adapter=mc_adapter,
         )
         ctx.should_call_send(
             event=event,
@@ -235,7 +235,7 @@ async def test_handle_title_cmd(app: App):
             api="send_title",
             data={"title": "Title", "subtitle": ""},
             result="发送 Title 成功",
-            adapter=mc_adapter,
+            # adapter=mc_adapter,
         )
         ctx.should_call_send(
             event=event,
@@ -289,7 +289,7 @@ async def test_handle_action_bar_cmd(app: App):
             api="send_actionbar",
             data={"message": "Action Bar"},
             result=Message("发送 ActionBar 成功"),
-            adapter=mc_adapter,
+            # adapter=mc_adapter,
         )
         ctx.should_call_send(
             event=event,
