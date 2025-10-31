@@ -4,7 +4,7 @@
 
 基于 `NoneBot` 的与 `Minecraft Server` 互通消息插件
 
-- 支持 QQ 群、QQ 频道
+- 支持 QQ 群(OneBot V11适配器、QQ适配器)、QQ 频道(QQ适配器)
 - 支持多个服务器与多个群聊的互通[README.md](..%2Fnonebot-adapter-minecraft%2FREADME.md)
 
 ## 文档
@@ -26,16 +26,10 @@
   - QQ -> 服务器
     - [x] 指令
     - [x] 群员聊天文本
+    - [x] 回复消息(悬浮显示被回复内容)
     - [x] 图片、视频等内容转换为可点击在浏览器打开的 `[图片]`、`[视频]`
     - [x] 可选配置，借助 [`@kitUIN/ChatImage`](https://github.com/kitUIN/ChatImage) 直接在游戏内显示图片
 
-- 特殊消息支持
-  - 群聊
-    - [x] @ 消息
-    - [x] 回复消息（转换成@消息）
-  - 频道
-    - [x] @ 消息
-    - [x] 回复消息（转换成@消息）
   - 未支持的消息已被替换，如： `[未知消息类型]` 等等
 
 ## 特别感谢
@@ -46,11 +40,11 @@
 
 ## 其他MCQQ？
 
-- [@KarisAya/mcqq 服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server)：采用本地读取 `log` 信息的方法的 `Minecraft Server` 互通消息的插件
-- [`@CikeyQi/mc-plugin`](https://github.com/CikeyQi/mc-plugin)：云崽插件的 `mcqq` 实现
-- [`@Twiyan0/koishi-plugin-minecraft-sync-msg`](https://github.com/Twiyin0/koishi-plugin-minecraft-sync-msg)：`Koishi` 插件的 `mcqq` 实现
-- [`@17TheWord/zerobot-plugin-mcqq`](https://github.com/17TheWord/zerobot-plugin-mcqq)：`ZeroBot` 插件的 `mcqq` 实现
-- [`@kterna/astrbot_plugin_mcqq`](https://github.com/kterna/astrbot_plugin_mcqq)：提供 `AstrBot` 插件的 `mcqq` 实现
+- [`@KarisAya/mcqq 服主版`](https://github.com/KarisAya/nonebot_plugin_mcqq_server)：采用本地读取 `log` 信息的方法的 `Minecraft Server` 互通消息的插件
+- [`@CikeyQi/mc-plugin`](https://github.com/CikeyQi/mc-plugin)：云崽的 `mcqq` 实现
+- [`@Twiyan0/koishi-plugin-minecraft-sync-msg`](https://github.com/Twiyin0/koishi-plugin-minecraft-sync-msg)：`Koishi` 的 `mcqq` 实现
+- [`@17TheWord/zerobot-plugin-mcqq`](https://github.com/17TheWord/zerobot-plugin-mcqq)：`ZeroBot` 的 `mcqq` 实现
+- [`@kterna/astrbot_plugin_mcqq`](https://github.com/kterna/astrbot_plugin_mcqq)：提供 `AstrBot` 的 `mcqq` 实现
 
 ## 关于 Minecraft 适配器
 
