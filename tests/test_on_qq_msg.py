@@ -27,10 +27,11 @@ from nonebot.adapters.qq import (
 from nonebot.adapters.qq.event import EventType
 from nonebot.adapters.qq.models import User as QQUser
 from nonebug import App
+from nonebug.mixin.process import MatcherContext
 import pytest
 
 
-def make_onebot(ctx):
+def make_onebot(ctx: MatcherContext):
     return ctx.create_bot(
         base=OneBot, adapter=nonebot.get_adapter(OneBotAdapter), self_id="123456789"
     )
@@ -221,13 +222,12 @@ async def test_handle_title_cmd(app: App):
     mc_adapter = nonebot.get_adapter(MinecraftAdapter)
 
     async with app.test_matcher(on_qq_send_title_cmd) as ctx:
+        one_bot = make_onebot(ctx)
         ctx.create_bot(
             base=MinecraftBot,
             adapter=mc_adapter,
             self_id="test_server",
         )
-
-        one_bot = make_onebot(ctx)
 
         event = make_onebot_group_message_event("/mcst Title", True)
         ctx.receive_event(one_bot, event)
