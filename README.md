@@ -44,10 +44,13 @@
 - [@zhz-红石头](https://github.com/zhzhongshi)：感谢红石头在代码上的帮助
 - [NoneBot2](https://github.com/nonebot/nonebot2)：插件使用的开发框架。
 
-## 二创
+## 其他MCQQ？
 
-- [@KarisAya/mcqq 服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server)：采用本地读取 log 信息的方法的 Minecraft Server 互通消息的插件
-- [@CikeyQi/mc-plugin](https://github.com/CikeyQi/mc-plugin)：适用于 `Yunzai` 的互通消息插件
+- [@KarisAya/mcqq 服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server)：采用本地读取 `log` 信息的方法的 `Minecraft Server` 互通消息的插件
+- [`@CikeyQi/mc-plugin`](https://github.com/CikeyQi/mc-plugin)：云崽插件的 `mcqq` 实现
+- [`@Twiyan0/koishi-plugin-minecraft-sync-msg`](https://github.com/Twiyin0/koishi-plugin-minecraft-sync-msg)：`Koishi` 插件的 `mcqq` 实现
+- [`@17TheWord/zerobot-plugin-mcqq`](https://github.com/17TheWord/zerobot-plugin-mcqq)：`ZeroBot` 插件的 `mcqq` 实现
+- [`@kterna/astrbot_plugin_mcqq`](https://github.com/kterna/astrbot_plugin_mcqq)：提供 `AstrBot` 插件的 `mcqq` 实现
 
 ## 关于 Minecraft 适配器
 
