@@ -4,22 +4,16 @@
 
 基于 `NoneBot` 的与 `Minecraft Server` 互通消息插件
 
-- 支持 QQ 群、QQ 频道
-- 支持多个服务器与多个群聊的互通
+- 支持 QQ 群(OneBot V11适配器、QQ适配器)、QQ 频道(QQ适配器)
+- 支持多个服务器与多个群聊的互通[README.md](..%2Fnonebot-adapter-minecraft%2FREADME.md)
 
 ## 文档
 
 - [`Wiki`](https://github.com/17TheWord/nonebot-plugin-mcqq/wiki)
 
-## 支持的服务端列表
+## 服务端对接
 
-- Spigot
-- Forge
-- Fabric
-- Velocity
-- 原版端
-
-配套 **插件/模组** 请前往 [`鹊桥`](https://github.com/17TheWord/QueQiao) 仓库查看详情
+服务器端插件/Mod：[`鹊桥`](https://github.com/17TheWord/QueQiao)
 
 ## 功能  
 
@@ -32,16 +26,10 @@
   - QQ -> 服务器
     - [x] 指令
     - [x] 群员聊天文本
+    - [x] 回复消息(悬浮显示被回复内容)
     - [x] 图片、视频等内容转换为可点击在浏览器打开的 `[图片]`、`[视频]`
     - [x] 可选配置，借助 [`@kitUIN/ChatImage`](https://github.com/kitUIN/ChatImage) 直接在游戏内显示图片
 
-- 特殊消息支持
-  - 群聊
-    - [x] @ 消息
-    - [x] 回复消息（转换成@消息）
-  - 频道
-    - [x] @ 消息
-    - [x] 回复消息（转换成@消息）
   - 未支持的消息已被替换，如： `[未知消息类型]` 等等
 
 ## 特别感谢
@@ -50,14 +38,17 @@
 - [@zhz-红石头](https://github.com/zhzhongshi)：感谢红石头在代码上的帮助
 - [NoneBot2](https://github.com/nonebot/nonebot2)：插件使用的开发框架。
 
-## 二创
+## 其他MCQQ？
 
-- [@KarisAya/mcqq 服主版](https://github.com/KarisAya/nonebot_plugin_mcqq_server)：采用本地读取 log 信息的方法的 Minecraft Server 互通消息的插件
-- [@CikeyQi/mc-plugin](https://github.com/CikeyQi/mc-plugin)：适用于 `Yunzai` 的互通消息插件
+- [`@KarisAya/mcqq 服主版`](https://github.com/KarisAya/nonebot_plugin_mcqq_server)：采用本地读取 `log` 信息的方法的 `Minecraft Server` 互通消息的插件
+- [`@CikeyQi/mc-plugin`](https://github.com/CikeyQi/mc-plugin)：云崽的 `mcqq` 实现
+- [`@Twiyan0/koishi-plugin-minecraft-sync-msg`](https://github.com/Twiyin0/koishi-plugin-minecraft-sync-msg)：`Koishi` 的 `mcqq` 实现
+- [`@17TheWord/zerobot-plugin-mcqq`](https://github.com/17TheWord/zerobot-plugin-mcqq)：`ZeroBot` 的 `mcqq` 实现
+- [`@kterna/astrbot_plugin_mcqq`](https://github.com/kterna/astrbot_plugin_mcqq)：提供 `AstrBot` 的 `mcqq` 实现
 
 ## 关于 Minecraft 适配器
 
-- 本插件基于 [`nonebot-adapter-minecraft`](https://github.com/17TheWord/nonebot-adapter-minecraft) 适配器实现 `Websocket`、`Rcon` 通信
+- 本插件基于 [`nonebot-adapter-minecraft`](https://github.com/17TheWord/nonebot-adapter-minecraft) 适配器实现 `Websocket` 通信
 - 若有自定义一些简单插件的想法，可以一试，例如：
   - 非插件端无权限系统场景下实现普通玩家使用`tp`命令
   - 实现简单的自助领取游戏物品
