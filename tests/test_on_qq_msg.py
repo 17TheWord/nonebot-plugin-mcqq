@@ -91,9 +91,9 @@ async def test_handle_onebot_msg(app: App):
                 "message": [
                     MCMessageSegment.text(text="TestUser", color=Color.green),
                     MCMessageSegment.text(
-                        text="说：",
+                        text="：",
                         color=Color.white,
-                        extra=[Component(text="test message")],
+                        extra=[Component(text="test message", color=Color.white)],
                     ),
                 ]
             },
@@ -128,9 +128,9 @@ async def test_handle_qq_msg(app: App):
                 "message": [
                     MCMessageSegment.text(text="TestUser", color=Color.green),
                     MCMessageSegment.text(
-                        text="说：",
+                        text="：",
                         color=Color.white,
-                        extra=[Component(text="test message")],
+                        extra=[Component(text="test message", color=Color.white)],
                     ),
                 ]
             },

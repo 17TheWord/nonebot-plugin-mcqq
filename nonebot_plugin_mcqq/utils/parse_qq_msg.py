@@ -60,6 +60,7 @@ async def __parse_message_to_mc_message_segment(
         # 处理文本消息
         if msg.type == "text":
             text = str(msg.data["text"]).replace("\r", "").replace("\n", "\n * ")
+            color = Color.white
 
         # 处理图片/附件
         elif msg.type in ["image", "attachment"]:
@@ -165,7 +166,9 @@ async def __process_reply_message(
     reply_mc_message, msg_log_text = await __parse_message_to_mc_message_segment(
         message=reply_message, bot=bot, event=event, reply_mode=True
     )
-    reply_template = f" 回复 @{reply_author_name} 的消息 "
+    reply_template = f"(回复 @{reply_author_name})"
+
+    reply_mc_message.insert(0, Component(text="回复内容：\n", color=Color.gray))
 
     message_segment = MessageSegment.text(
         text=reply_template,
