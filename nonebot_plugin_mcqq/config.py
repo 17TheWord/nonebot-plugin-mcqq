@@ -88,7 +88,7 @@ class MCQQConfig(BaseModel):
     display_server_name: bool = False
     """是否发送服务器名称"""
 
-    say_way: str = "说："
+    say_way: str = "："
     """用户发言修饰"""
 
     server_dict: dict[str, Server] = Field(default_factory=dict)
