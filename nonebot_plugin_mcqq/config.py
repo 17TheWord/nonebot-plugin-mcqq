@@ -103,6 +103,9 @@ class MCQQConfig(BaseModel):
     cmd_whitelist: set[str] = {"list", "tps", "banlist"}
     """命令白名单"""
 
+    auto_whitelist: bool = False
+    """自动发放白名单"""
+
     @classmethod
     def _get_common_set(
         cls, v: Any, configuration_name: str, default_config: set = set()
