@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-mcqq"
-version = "2.7.1"
+version = "2.8.0"
 description = "基于NoneBot的QQ群聊与Minecraft Server消息互通插件"
 authors = [{ name = "17TheWord", email = "17theword@gmail.com" }]
 requires-python = ">=3.10,<4"
