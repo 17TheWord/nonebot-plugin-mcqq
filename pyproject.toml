@@ -1,13 +1,13 @@
 [project]
 name = "nonebot-plugin-mcqq"
-version = "2.7.1"
+version = "2.8.0"
 description = "基于NoneBot的QQ群聊与Minecraft Server消息互通插件"
 authors = [{ name = "17TheWord", email = "17theword@gmail.com" }]
 requires-python = ">=3.10,<4"
 readme = "README.md"
 license = "MIT"
 dependencies = [
-    "nonebot-adapter-minecraft>=1.6.0",
+    "nonebot-adapter-minecraft>=1.7.1",
     "nonebot-adapter-onebot>=2.4.6",
     "nonebot-adapter-qq>=1.6.5",
     "nonebot2[fastapi,httpx,websockets]>=2.4.3",
