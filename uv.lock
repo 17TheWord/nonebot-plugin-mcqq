@@ -1001,15 +1001,15 @@ wheels = [
 
 [[package]]
 name = "nonebot-adapter-minecraft"
-version = "1.6.0"
+version = "1.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nonebot2", extra = ["fastapi", "httpx", "websockets"] },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a7/55/0d5a2bcbf19d19c6f0954f9000724c00b201635af1ae7980e03315f89c75/nonebot_adapter_minecraft-1.6.0.tar.gz", hash = "sha256:16fe571e3206f5ee885702afd1dcc2dde9d5e72e84d4f0b28e7d1e5e2e9b5ac1", size = 17485, upload-time = "2025-10-20T11:10:26.695Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/75/8f/2dcc33a8e6620949a89531c90e45e14389f4d9c73438aabe6661ef23bfac/nonebot_adapter_minecraft-1.7.1.tar.gz", hash = "sha256:9dfc8f2a6138beb499c3b5034d82a7076fa79d9f22e3f07f829156b652498b9e", size = 15812, upload-time = "2025-11-13T15:27:07.734Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/9b/c6594df2157dbb280a251bb69f16d35e722f6905755af75252d8b67ec425/nonebot_adapter_minecraft-1.6.0-py3-none-any.whl", hash = "sha256:6e7e4557d008a4106dd6af7de24df4ce2318ff2c061209f58260a9f9b24df106", size = 24094, upload-time = "2025-10-20T11:10:25.484Z" },
+    { url = "https://files.pythonhosted.org/packages/06/e3/6f6e284bc8405d40b86ece413855c5e9820feb3050a652ee42821e852a8f/nonebot_adapter_minecraft-1.7.1-py3-none-any.whl", hash = "sha256:ab896ac61b496a6daebbc48e4e3f7a24ab0532d805c93616d814326d3b97bb14", size = 19164, upload-time = "2025-11-13T15:27:06.734Z" },
 ]
 
 [[package]]
@@ -1075,7 +1075,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "nonebot-adapter-minecraft", specifier = ">=1.6.0" },
+    { name = "nonebot-adapter-minecraft", specifier = ">=1.7.1" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.4.6" },
     { name = "nonebot-adapter-qq", specifier = ">=1.6.5" },
     { name = "nonebot2", extras = ["fastapi", "httpx", "websockets"], specifier = ">=2.4.3" },

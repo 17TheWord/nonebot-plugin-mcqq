@@ -7,7 +7,7 @@ requires-python = ">=3.10,<4"
 readme = "README.md"
 license = "MIT"
 dependencies = [
-    "nonebot-adapter-minecraft>=1.6.0",
+    "nonebot-adapter-minecraft>=1.7.1",
     "nonebot-adapter-onebot>=2.4.6",
     "nonebot-adapter-qq>=1.6.5",
     "nonebot2[fastapi,httpx,websockets]>=2.4.3",
