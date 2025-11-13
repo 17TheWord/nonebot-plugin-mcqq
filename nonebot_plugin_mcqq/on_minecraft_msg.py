@@ -28,7 +28,7 @@ async def handle_mc_msg(event: PlayerChatEvent):
 async def handle_mc_death(event: PlayerDeathEvent):
     await send_mc_msg_to_qq(
         event.server_name,
-        event.death.text if event.death.text else f"{event.player.nickname} 死亡了",
+        event.death.text or f"{event.player.nickname} 死亡了",
     )
 
 
@@ -47,6 +47,5 @@ async def handle_mc_otherevent(event: PlayerAchievementEvent):
     await send_mc_msg_to_qq(
         event.server_name,
         event.achievement.text
-        if event.achievement.text
-        else f"{event.player.nickname} 获得了成就",
+        or f"{event.player.nickname} 获得了成就({event.achievement.key})",
     )
