@@ -44,8 +44,13 @@ async def handle_mc_quit(event: PlayerQuitEvent):
 
 @on_mc_notice.handle()
 async def handle_mc_otherevent(event: PlayerAchievementEvent):
+    message = (
+        event.achievement.translate.text
+        if event.achievement.translate and event.achievement.translate.text
+        else f"{event.player.nickname} 获得了成就({event.achievement.key})"
+    )
+
     await send_mc_msg_to_qq(
         event.server_name,
-        event.achievement.text
-        or f"{event.player.nickname} 获得了成就({event.achievement.key})",
+        message,
     )
