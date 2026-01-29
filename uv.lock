@@ -1001,15 +1001,15 @@ wheels = [
 
 [[package]]
 name = "nonebot-adapter-minecraft"
-version = "1.7.1"
+version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nonebot2", extra = ["fastapi", "httpx", "websockets"] },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/75/8f/2dcc33a8e6620949a89531c90e45e14389f4d9c73438aabe6661ef23bfac/nonebot_adapter_minecraft-1.7.1.tar.gz", hash = "sha256:9dfc8f2a6138beb499c3b5034d82a7076fa79d9f22e3f07f829156b652498b9e", size = 15812, upload-time = "2025-11-13T15:27:07.734Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/15/8d/5ddfd768958e0dd0ffffab97f0437a427b3f86bfb925ee24591944e03dd1/nonebot_adapter_minecraft-1.8.0.tar.gz", hash = "sha256:b4458de4659229e1aaac6a66434e41bee312438f53282538b0f2393c15d3011e", size = 15897, upload-time = "2026-01-29T12:15:41.017Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/06/e3/6f6e284bc8405d40b86ece413855c5e9820feb3050a652ee42821e852a8f/nonebot_adapter_minecraft-1.7.1-py3-none-any.whl", hash = "sha256:ab896ac61b496a6daebbc48e4e3f7a24ab0532d805c93616d814326d3b97bb14", size = 19164, upload-time = "2025-11-13T15:27:06.734Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/51/6f63c0c233ff60b8b3e2bff41d4c72860438f9537db5d0202029e8d9b3d6/nonebot_adapter_minecraft-1.8.0-py3-none-any.whl", hash = "sha256:bead7ca13b4caf1606dbcec10b22f1dd24f7b5e067e14adb27e9e224ef8219d4", size = 19265, upload-time = "2026-01-29T12:15:40.124Z" },
 ]
 
 [[package]]
@@ -1045,7 +1045,7 @@ wheels = [
 
 [[package]]
 name = "nonebot-plugin-mcqq"
-version = "2.8.0"
+version = "2.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "nonebot-adapter-minecraft" },
@@ -1075,7 +1075,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "nonebot-adapter-minecraft", specifier = ">=1.7.1" },
+    { name = "nonebot-adapter-minecraft", specifier = ">=1.8.0" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.4.6" },
     { name = "nonebot-adapter-qq", specifier = ">=1.6.5" },
     { name = "nonebot2", extras = ["fastapi", "httpx", "websockets"], specifier = ">=2.4.3" },
