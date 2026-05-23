@@ -28,10 +28,11 @@ agent: "agent"
 项目基本信息：
 
 - Python 版本：`>=3.10,<4`
-- 当前版本：`2.9.0`
+- 当前版本：`2.9.1`
 - 构建后端：`hatchling`
-- 核心框架：`nonebot2[fastapi,httpx,websockets]`
-- 可选依赖：`pillow`，用于 RCON 结果转图片。
+- 核心框架：`nonebot2[fastapi,httpx,websockets]>=2.4.3`
+- 主要适配器依赖：`nonebot-adapter-minecraft>=1.8.0`、`nonebot-adapter-onebot>=2.4.6`、`nonebot-adapter-qq>=1.7.1`
+- 可选依赖：`pillow>=11.3.0`，用于 RCON 结果转图片。
 
 ## 主要目录与文件
 
@@ -58,6 +59,9 @@ tests/
   test_bot_manage.py
   test_on_minecraft_msg.py
   test_on_qq_msg.py
+  test_send_to_qq.py
+  test_qq_util.py
+  test_draw_result.py
 ```
 
 ## 核心模块职责
@@ -78,8 +82,11 @@ tests/
 
 - 项目兼容 Pydantic v1/v2，使用 `nonebot.compat.PYDANTIC_V2` 分支导入 validator。
 - `command_header`、`ignore_message_header`、`ignore_word_list` 支持字符串、列表或集合输入，最终转为 `set[str]`。
+- `command_header` 字段默认是 `{"mcc"}`；用户传入非法类型时 validator 回退为 `{"mcqq"}`。
+- `ignore_message_header` 当前只完成配置解析，尚未被消息过滤逻辑实际使用。
 - `command_priority` 限制在 `1..98`。
 - `rcon_result_to_image` 依赖 Pillow，不存在 `PIL` 时会自动关闭。
+- `ttf_path` 字段默认指向 `resource/unifont-15.0.01.ttf`；但 validator 的兜底路径当前少了 `resource` 目录，修改相关逻辑时需注意。
 - 敏感词可来自 `mc_qq.ignore_word_list` 和 `mc_qq.ignore_word_file`。
 
 ### `nonebot_plugin_mcqq/data_source.py`
@@ -126,7 +133,7 @@ QQ 侧事件入口。
 事件类型通常是以下联合类型：
 
 - `OneBotGroupMessageEvent`
-- `QQGroupAtMessageCreateEvent`
+- `QQGroupMessageCreateEvent`
 - `QQGuildMessageEvent`
 
 Bot 类型通常是：
@@ -160,7 +167,7 @@ Minecraft 侧事件入口。
 注意：
 
 - 玩家发言格式由 `plugin_config.say_way` 控制，默认是 `：`。
-- `handle_mc_msg` 中硬编码忽略以 `!!` 开头的消息。
+- `handle_mc_msg` 中存在硬编码忽略 `!!` 前缀消息的意图；但当前代码检查的是拼接昵称后的 `msg_text.startswith("!!")`，玩家消息正文以 `!!` 开头时通常不会被该判断拦截。
 - MC 消息最终通过 `send_mc_msg_to_qq(server_name, msg)` 转发到 QQ。
 
 ### `nonebot_plugin_mcqq/utils/send_to_mc.py`
@@ -195,8 +202,8 @@ Minecraft → QQ 的核心发送层。
 - 会剥离 Minecraft 颜色码，例如 `&a`、`§a`。
 - 如果 `plugin_config.display_server_name` 为 `True`，会在消息前加 `[server_name]`。
 - OneBot 群消息通过 `send_group_msg` 发送。
-- QQ 频道消息通过 `send_to_channel` 发送。
-- QQ 官方群主动消息因平台限制当前未实现，相关代码被注释并记录 debug 日志。
+- QQ 官方群消息通过 `send_to_group` 发送。
+- QQ 频道消息通过 `send_to_channel` 发送，发送时会捕获 `AuditException`，并等待审核结果用于 debug 日志。
 
 ### `nonebot_plugin_mcqq/utils/parse_qq_msg.py`
 
@@ -236,7 +243,7 @@ Minecraft → QQ 的核心发送层。
 
 关键函数和对象：
 
-- `mc_msg_rule(event)`：判断 Minecraft 消息是否来自已配置服务器，并应用敏感词过滤。
+- `mc_msg_rule(event)`：判断 Minecraft 消息是否应处理；当前实现中，如果 `plugin_config.ignore_word_list` 非空则只检查敏感词，否则检查 `event.server_name` 是否在 `server_dict` 中。
 - `all_msg_rule(event)`：判断 QQ/频道事件是否来自已绑定群或频道。
 - `permission_check(matcher, bot, event)`：命令权限检查。
 - `QQ_GUILD_ROLE_ADMIN`：QQ 频道身份组权限。
@@ -285,6 +292,7 @@ Minecraft → QQ 的核心发送层。
    - `guild_list`
 5. 根据适配器类型发送到 QQ：
    - OneBot 群：`send_group_msg`
+   - QQ 官方群：`send_to_group`
    - QQ 频道：`send_to_channel`
 
 ### QQ → Minecraft
@@ -293,7 +301,7 @@ Minecraft → QQ 的核心发送层。
 
 1. QQ/OneBot 产生事件：
    - `OneBotGroupMessageEvent`
-   - `QQGroupAtMessageCreateEvent`
+   - `QQGroupMessageCreateEvent`
    - `QQGuildMessageEvent`
 2. `all_msg_rule(event)` 判断该群/频道是否已绑定 Minecraft server。
 3. `handle_qq_msg` 调用 `send_message_to_target_server(bot, event)`。
@@ -301,7 +309,7 @@ Minecraft → QQ 的核心发送层。
 5. `for_each_server(event, handler)` 遍历目标 server。
 6. `parse_qq_msg_to_component(bot, event)` 将 QQ 消息转换为 MC 消息组件。
 7. 根据 `server.rcon_msg`：
-   - `True`：使用 RCON `tellraw`。
+   - `True`：使用 RCON `tellraw @a "[鹊桥] {log_text}"`。
    - `False`：使用 WebSocket API `send_msg`。
 
 ### QQ 命令 → Minecraft RCON
@@ -335,7 +343,7 @@ Minecraft → QQ 的核心发送层。
 常用字段：
 
 - `command_header`：命令触发词，默认类似 `mcc`。
-- `ignore_message_header`：忽略消息前缀。
+- `ignore_message_header`：忽略消息前缀配置；当前实现仅解析该字段，尚未实际用于过滤。
 - `ignore_word_file`：敏感词文件路径。
 - `ignore_word_list`：敏感词列表。
 - `command_priority`：命令优先级，范围 `1..98`。
@@ -387,7 +395,7 @@ mc_qq:
 
 3. 多适配器逻辑应显式区分类型：
    - `OneBotGroupMessageEvent`
-   - `QQGroupAtMessageCreateEvent`
+   - `QQGroupMessageCreateEvent`
    - `QQGuildMessageEvent`
    - `OneBot`
    - `QQBot`
@@ -405,7 +413,7 @@ mc_qq:
 
 8. 日志建议沿用现有前缀：`[MC_QQ]丨`。
 
-9. 注意 QQ 官方群主动消息限制：`send_to_qq.py` 中 QQ 群主动发送当前未实现，不要误以为该路径已可用。
+9. 注意 QQ 官方群主动消息路径：`send_to_qq.py` 中 QQ 官方群当前通过 `send_to_group` 主动发送，频道通过 `send_to_channel` 发送并处理审核异常。
 
 10. 代码风格遵循 `pyproject.toml` 中 Ruff 配置：
     - 行宽：`88`
@@ -434,6 +442,9 @@ mc_qq:
 - `tests/test_bot_manage.py`
 - `tests/test_on_minecraft_msg.py`
 - `tests/test_on_qq_msg.py`
+- `tests/test_send_to_qq.py`
+- `tests/test_qq_util.py`
+- `tests/test_draw_result.py`
 
 推荐验证命令：
 
