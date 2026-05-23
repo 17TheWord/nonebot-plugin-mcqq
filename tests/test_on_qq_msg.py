@@ -22,9 +22,14 @@ from nonebot.adapters.qq import (
 )
 from nonebot.adapters.qq import Bot as QQBot
 from nonebot.adapters.qq import (
+    GroupMessageCreateEvent as QQGroupMessageCreateEvent,
+)
+from nonebot.adapters.qq import (
     GuildMessageEvent as QQGuildMessageEvent,
 )
+from nonebot.adapters.qq import Message as QQMessage
 from nonebot.adapters.qq.event import EventType
+from nonebot.adapters.qq.models import GroupMemberAuthor
 from nonebot.adapters.qq.models import User as QQUser
 from nonebug import App
 from nonebug.mixin.process import MatcherContext
@@ -57,6 +62,7 @@ def make_onebot_group_message_event(message: str, enable_superuser: bool = False
 
 
 def make_qq_guild_message_event(message: str):
+    qq_message = QQMessage(message)
     return QQGuildMessageEvent(
         id="1",
         channel_id="9876543210",
@@ -64,6 +70,29 @@ def make_qq_guild_message_event(message: str):
         author=QQUser(id="111111", username="TestUser"),
         __type__=EventType.MESSAGE_CREATE,
         content=message,
+        message=qq_message,
+        original_message=qq_message,
+    )
+
+
+def make_qq_group_message_event(message: str, enable_superuser: bool = False):
+    member_openid = "999999999" if enable_superuser else "111111111"
+    qq_message = QQMessage(message)
+    return QQGroupMessageCreateEvent(
+        id="1",
+        group_id="123456",
+        group_openid="654321",
+        author=GroupMemberAuthor(
+            id="111111",
+            bot=False,
+            member_openid=member_openid,
+            username="TestUser",
+        ),
+        __type__=EventType.GROUP_MESSAGE_CREATE,
+        content=message,
+        timestamp=str(int(time.time())),
+        message=qq_message,
+        original_message=qq_message,
     )
 
 
@@ -122,6 +151,9 @@ async def test_handle_qq_msg(app: App):
             self_id="test_server",
         )
 
+        qq_guild_message_event = make_qq_guild_message_event("test message")
+        ctx.receive_event(qq_bot, qq_guild_message_event)
+
         ctx.should_call_api(
             api="send_msg",
             data={
@@ -137,8 +169,44 @@ async def test_handle_qq_msg(app: App):
             # adapter=mc_adapter,
         )
 
-        qq_guild_message_event = make_qq_guild_message_event("test message")
-        ctx.receive_event(qq_bot, qq_guild_message_event)
+
+@pytest.mark.asyncio
+async def test_handle_qq_group_msg(app: App):
+    from nonebot.adapters.qq.config import BotInfo
+
+    from nonebot_plugin_mcqq.on_qq_msg import on_qq_msg
+
+    async with app.test_matcher(on_qq_msg) as ctx:
+        qq_adapter = nonebot.get_adapter(QQAdapter)
+        mc_adapter = nonebot.get_adapter(MinecraftAdapter)
+
+        bot_info = BotInfo(id="test_qq", token="test_token", secret="test_secret")
+        qq_bot = ctx.create_bot(
+            base=QQBot, adapter=qq_adapter, self_id="test_qq", bot_info=bot_info
+        )
+
+        ctx.create_bot(
+            base=MinecraftBot,
+            adapter=mc_adapter,
+            self_id="test_server",
+        )
+
+        qq_group_message_event = make_qq_group_message_event("test message")
+        ctx.receive_event(qq_bot, qq_group_message_event)
+
+        ctx.should_call_api(
+            api="send_msg",
+            data={
+                "message": [
+                    MCMessageSegment.text(text="TestUser", color=Color.green),
+                    MCMessageSegment.text(
+                        text="：",
+                        color=Color.white,
+                        extra=[Component(text="test message", color=Color.white)],
+                    ),
+                ]
+            },
+        )
 
 
 @pytest.mark.asyncio
@@ -187,6 +255,42 @@ async def test_handle_qq_cmd(app: App):
             event=event,
             message=Message(f"[test_server] {api.result}"),
             bot=one_bot,
+        )
+        ctx.should_finished(on_qq_cmd)
+
+
+@pytest.mark.asyncio
+async def test_handle_qq_group_cmd(app: App):
+    from nonebot.adapters.qq.config import BotInfo
+
+    from nonebot_plugin_mcqq.on_qq_msg import on_qq_cmd
+
+    mc_adapter = nonebot.get_adapter(MinecraftAdapter)
+
+    async with app.test_matcher(on_qq_cmd) as ctx:
+        qq_adapter = nonebot.get_adapter(QQAdapter)
+        bot_info = BotInfo(id="test_qq", token="test_token", secret="test_secret")
+        qq_bot = ctx.create_bot(
+            base=QQBot, adapter=qq_adapter, self_id="test_qq", bot_info=bot_info
+        )
+
+        ctx.create_bot(
+            base=MinecraftBot,
+            adapter=mc_adapter,
+            self_id="test_server",
+        )
+
+        event = make_qq_group_message_event("/minecraft_command list")
+        ctx.receive_event(qq_bot, event)
+        api = ctx.should_call_api(
+            api="send_rcon_command",
+            data={"command": "list"},
+            result="test",
+        )
+        ctx.should_call_send(
+            event=event,
+            message=QQMessage(f"[test_server] {api.result}"),
+            bot=qq_bot,
         )
         ctx.should_finished(on_qq_cmd)
 

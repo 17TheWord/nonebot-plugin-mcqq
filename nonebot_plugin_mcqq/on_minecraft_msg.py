@@ -18,9 +18,10 @@ on_mc_notice = on_notice(priority=4, rule=mc_msg_rule)
 
 @on_mc_msg.handle()
 async def handle_mc_msg(event: PlayerChatEvent):
-    msg_text = event.player.nickname + plugin_config.say_way + str(event.message)
-    if msg_text.startswith("!!"):
+    message_text = str(event.message)
+    if message_text.startswith("!!"):
         return
+    msg_text = event.player.nickname + plugin_config.say_way + message_text
     await send_mc_msg_to_qq(event.server_name, msg_text)
 
 

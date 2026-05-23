@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import Bot as OneBot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageEvent
 from nonebot.adapters.onebot.v11 import Message as OneBotMessage
 from nonebot.adapters.qq import Bot as QQBot
-from nonebot.adapters.qq import GroupAtMessageCreateEvent as QQGroupAtMessageCreateEvent
+from nonebot.adapters.qq import GroupMessageCreateEvent as QQGroupMessageCreateEvent
 from nonebot.adapters.qq import GuildMessageEvent as QQGuildMessageEvent
 from nonebot.adapters.qq import Message as QQMessage
 
@@ -36,12 +36,12 @@ def get_mc_bot(server_name: str) -> Bot | None:
 
 
 def get_server_list(
-    event: QQGroupAtMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
+    event: QQGroupMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
 ) -> list[str] | None:
     """
     根据事件获取绑定的服务器列表
     """
-    if isinstance(event, QQGroupAtMessageCreateEvent):
+    if isinstance(event, QQGroupMessageCreateEvent):
         return QQ_GROUP_SERVER_DICT.get(event.group_openid)
     elif isinstance(event, QQGuildMessageEvent):
         return QQ_GUILD_SERVER_DICT.get(event.channel_id)
@@ -51,7 +51,7 @@ def get_server_list(
 
 
 async def for_each_server(
-    event: QQGroupAtMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
+    event: QQGroupMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
     handler: Callable,
 ):
     """
@@ -78,7 +78,7 @@ async def for_each_server(
 
 # 具体的发送逻辑
 async def send_actionbar_to_target_server(
-    event: QQGroupAtMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
+    event: QQGroupMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
     action_bar: str,
 ):
     """
@@ -108,7 +108,7 @@ async def send_actionbar_to_target_server(
 
 
 async def send_title_to_target_server(
-    event: QQGroupAtMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
+    event: QQGroupMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
     title_message,
 ):
     """
@@ -144,7 +144,7 @@ async def send_title_to_target_server(
 
 async def send_message_to_target_server(
     bot: QQBot | OneBot,
-    event: QQGroupAtMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
+    event: QQGroupMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
 ):
     """
     发送消息到目标服务器
@@ -168,7 +168,7 @@ async def send_message_to_target_server(
 
 
 async def send_command_to_target_server(
-    event: QQGroupAtMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
+    event: QQGroupMessageCreateEvent | QQGuildMessageEvent | OneBotGroupMessageEvent,
     command: str,
 ):
     """

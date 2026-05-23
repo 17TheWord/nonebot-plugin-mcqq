@@ -91,11 +91,7 @@ async def notify_groups(server: Server, server_id: str, connected: bool):
             continue
         try:
             if adapter == "qq" and isinstance(bot, QQBot):
-                # TODO: 无需实现，QQ 群聊主动消息每个月就4条。等官方支持更多主动消息后再实现
-                # await bot.send_to_c2c(openid=group.group_id, message=msg)
-                logger.debug(
-                    f"[MC_QQ]丨未实现的适配器: {group.adapter}，发送至群聊 {group.group_id}：一个月主动就四条，还是算了吧。"
-                )
+                await bot.send_to_group(group_openid=group.group_id, message=msg)
             elif adapter == "onebot" and isinstance(bot, OneBotV11Bot):
                 await bot.call_api(
                     "send_group_msg", group_id=int(group.group_id), message=msg

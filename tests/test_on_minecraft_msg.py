@@ -4,7 +4,6 @@ import uuid
 import nonebot
 from nonebot.adapters.minecraft import (
     AchievementModel,
-    DeathModel,
     DisplayModel,
     Player,
     PlayerAchievementEvent,
@@ -13,6 +12,7 @@ from nonebot.adapters.minecraft import (
     PlayerDeathEvent,
     PlayerJoinEvent,
     PlayerQuitEvent,
+    Translate,
 )
 from nonebot.adapters.minecraft import (
     Adapter as MinecraftAdapter,
@@ -23,6 +23,9 @@ from nonebot.adapters.minecraft import (
 from nonebot.adapters.minecraft import (
     Message as MinecraftMessage,
 )
+from nonebot.adapters.qq import Adapter as QQAdapter
+from nonebot.adapters.qq import Bot as QQBot
+from nonebot.adapters.qq.models import PostGroupMessagesReturn
 from nonebug import App
 import pytest
 
@@ -40,11 +43,18 @@ base_event = {
 @pytest.mark.asyncio
 async def test_handle_mc_msg(app: App):
     """测试 Minecraft 聊天消息的处理"""
+    from nonebot.adapters.qq.config import BotInfo
+
     from nonebot_plugin_mcqq.on_minecraft_msg import on_mc_msg
 
     mc_adapter = nonebot.get_adapter(MinecraftAdapter)
+    qq_adapter = nonebot.get_adapter(QQAdapter)
 
     async with app.test_matcher(on_mc_msg) as ctx:
+        bot_info = BotInfo(id="test_qq", token="test_token", secret="test_secret")
+        ctx.create_bot(
+            base=QQBot, adapter=qq_adapter, self_id="test_qq", bot_info=bot_info
+        )
         # 创建 Minecraft Bot
         mc_bot = ctx.create_bot(
             base=MinecraftBot, adapter=mc_adapter, self_id="test_server"
@@ -58,8 +68,21 @@ async def test_handle_mc_msg(app: App):
             message=MinecraftMessage("Hello from Minecraft!"),
         )
 
+        # 接收聊天事件
         ctx.receive_event(mc_bot, player_chat_event)
 
+        # 同步聊天信息至 QQ适配器群
+        ctx.should_call_api(
+            api="post_group_messages",
+            data={
+                "group_openid": "654321",
+                "msg_type": 0,
+                "content": "test_player：Hello from Minecraft!",
+            },
+            result=PostGroupMessagesReturn(id="1"),
+        )
+
+        # Mock 需要被过滤的消息
         player_chat_event = PlayerChatEvent(
             **base_event,
             event_name="PlayerChatEvent",
@@ -68,8 +91,10 @@ async def test_handle_mc_msg(app: App):
             message=MinecraftMessage("!!This message should be ignored"),
         )
 
+        # 接收被过滤的消息，但不发送
         ctx.receive_event(mc_bot, player_chat_event)
 
+        # Mock 命令事件
         player_command_event = PlayerCommandEvent(
             **base_event,
             event_name="PlayerCommandEvent",
@@ -78,6 +103,7 @@ async def test_handle_mc_msg(app: App):
             command="/say Hello Command!",
         )
 
+        # 接收命令事件
         ctx.receive_event(mc_bot, player_command_event)
 
 
@@ -111,9 +137,9 @@ async def test_handle_mc_notice(app: App):
 
         ctx.receive_event(mc_bot, player_quit_event)
 
-        death = DeathModel(
+        death = Translate(
             key="minecraft:generic",
-            args=["test_player", "Zombie"],
+            args=[Translate(text="test_player"), Translate(text="Zombie")],
             text="test_player was slain by Zombie",
         )
 
@@ -128,15 +154,17 @@ async def test_handle_mc_notice(app: App):
         ctx.receive_event(mc_bot, player_death_event)
 
         display = DisplayModel(
-            title="minecraft:achievement.get_wood",
+            title=Translate(text="minecraft:achievement.get_wood"),
             frame="goal",
-            description="minecraft:achievement.get_wood.desc",
+            description=Translate(text="minecraft:achievement.get_wood.desc"),
         )
 
         achievement = AchievementModel(
             key="minecraft:achievement.get_wood",
             display=display,
-            text="Player has earned the achievement [Getting Wood]",
+            translate=Translate(
+                text="Player has earned the achievement [Getting Wood]"
+            ),
         )
 
         player_achievement_event = PlayerAchievementEvent(

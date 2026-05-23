@@ -8,7 +8,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageE
 from nonebot.adapters.qq import GUILD_ADMIN as QQ_GUILD_ADMIN
 from nonebot.adapters.qq import GUILD_OWNER as QQ_GUILD_OWNER
 from nonebot.adapters.qq import Bot as QQBot
-from nonebot.adapters.qq import GroupAtMessageCreateEvent as QQGroupAtMessageCreateEvent
+from nonebot.adapters.qq import GroupMessageCreateEvent as QQGroupMessageCreateEvent
 from nonebot.adapters.qq import GuildMessageEvent as QQGuildMessageEvent
 from nonebot.adapters.qq.models.guild import GetGuildRolesReturn, Role
 from nonebot.internal.matcher import Matcher
@@ -31,14 +31,14 @@ def mc_msg_rule(event: MinecraftEvent):
 
 
 def all_msg_rule(
-    event: QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent | QQGuildMessageEvent,
+    event: QQGroupMessageCreateEvent | OneBotGroupMessageEvent | QQGuildMessageEvent,
 ) -> bool:
     """
     检测是否为 绑定的群聊/频道
-    :param event: QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent | QQGuildMessageEvent
+    :param event: QQGroupMessageCreateEvent | OneBotGroupMessageEvent | QQGuildMessageEvent
     :return: bool
     """
-    if isinstance(event, QQGroupAtMessageCreateEvent):
+    if isinstance(event, QQGroupMessageCreateEvent):
         return event.group_openid in QQ_GROUP_SERVER_DICT.keys()
     elif isinstance(event, QQGuildMessageEvent):
         return event.channel_id in QQ_GUILD_SERVER_DICT.keys()
@@ -83,13 +83,13 @@ QQ_GUILD_ROLE_ADMIN = Permission(__qq_guild_role_admin)
 async def permission_check(
     matcher: Matcher,
     bot: OneBot | QQBot,
-    event: OneBotGroupMessageEvent | QQGroupAtMessageCreateEvent | QQGuildMessageEvent,
+    event: OneBotGroupMessageEvent | QQGroupMessageCreateEvent | QQGuildMessageEvent,
 ):
     """
     权限检查
     :param matcher: Matcher
     :param bot: OneBot | QQBot
-    :param event: OneBotGroupMessageEvent | QQGroupAtMessageCreateEvent | QQGuildMessageEvent
+    :param event: OneBotGroupMessageEvent | QQGroupMessageCreateEvent | QQGuildMessageEvent
     :return: None
     """
     if (
@@ -118,7 +118,7 @@ async def permission_check(
             )(bot, event)
         )
         or (
-            isinstance(event, QQGroupAtMessageCreateEvent)
+            isinstance(event, QQGroupMessageCreateEvent)
             and isinstance(bot, QQBot)
             and not await SUPERUSER(bot, event)
         )

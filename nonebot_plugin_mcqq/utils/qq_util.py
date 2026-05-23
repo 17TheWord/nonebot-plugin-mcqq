@@ -1,7 +1,7 @@
 from nonebot.adapters.onebot.v11 import Bot as OneBot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageEvent
 from nonebot.adapters.qq import Bot as QQBot
-from nonebot.adapters.qq import GroupAtMessageCreateEvent as QQGroupAtMessageCreateEvent
+from nonebot.adapters.qq import GroupMessageCreateEvent as QQGroupMessageCreateEvent
 from nonebot.adapters.qq import GuildMessageEvent as QQGuildMessageEvent
 from nonebot.adapters.qq import MessageEvent as QQMessageEvent
 
@@ -95,9 +95,12 @@ async def get_group_or_nick_name(
             channel_name = await get_qq_channel_name(bot, event.channel_id)
             return f"[{guild_name}/{channel_name}]"
 
-    elif isinstance(event, QQGroupAtMessageCreateEvent) and isinstance(bot, QQBot):
-        # TODO 等待QQ机器人完善API，目前主动消息条数太少，无法测试
-        return event.author.member_openid if user_id else event.group_openid
+    elif isinstance(event, QQGroupMessageCreateEvent) and isinstance(bot, QQBot):
+        if user_id:
+            if event.author.member_openid == user_id:
+                return event.author.username or event.author.member_openid
+            return user_id
+        return event.group_openid
     return "未知名称" if user_id else "[未知群名]"
 
 
