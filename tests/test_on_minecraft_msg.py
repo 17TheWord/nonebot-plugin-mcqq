@@ -172,7 +172,9 @@ async def test_handle_mc_notice(app: App):
         achievement = AchievementModel(
             key="minecraft:achievement.get_wood",
             display=display,
-            translate=Translate(text="Player has earned the achievement [Getting Wood]"),
+            translate=Translate(
+                text="Player has earned the achievement [Getting Wood]"
+            ),
         )
 
         player_achievement_event = PlayerAchievementEvent(
