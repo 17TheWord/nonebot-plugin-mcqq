@@ -68,6 +68,10 @@ async def test_handle_mc_msg(app: App):
             message=MinecraftMessage("Hello from Minecraft!"),
         )
 
+        # 接收聊天事件
+        ctx.receive_event(mc_bot, player_chat_event)
+
+        # 同步聊天信息至 QQ适配器群
         ctx.should_call_api(
             api="post_group_messages",
             data={
@@ -77,8 +81,8 @@ async def test_handle_mc_msg(app: App):
             },
             result=PostGroupMessagesReturn(id="1"),
         )
-        ctx.receive_event(mc_bot, player_chat_event)
 
+        # Mock 需要被过滤的消息
         player_chat_event = PlayerChatEvent(
             **base_event,
             event_name="PlayerChatEvent",
@@ -87,17 +91,10 @@ async def test_handle_mc_msg(app: App):
             message=MinecraftMessage("!!This message should be ignored"),
         )
 
-        ctx.should_call_api(
-            api="post_group_messages",
-            data={
-                "group_openid": "654321",
-                "msg_type": 0,
-                "content": "test_player：!!This message should be ignored",
-            },
-            result=PostGroupMessagesReturn(id="2"),
-        )
+        # 接收被过滤的消息，但不发送
         ctx.receive_event(mc_bot, player_chat_event)
 
+        # Mock 命令事件
         player_command_event = PlayerCommandEvent(
             **base_event,
             event_name="PlayerCommandEvent",
@@ -106,6 +103,7 @@ async def test_handle_mc_msg(app: App):
             command="/say Hello Command!",
         )
 
+        # 接收命令事件
         ctx.receive_event(mc_bot, player_command_event)
 
 
