@@ -12,7 +12,6 @@ dependencies = [
     "nonebot-adapter-onebot>=2.4.6",
     "nonebot-adapter-qq>=1.7.1",
     "nonebot2[fastapi,httpx,websockets]>=2.4.3",
-    "nonebot-plugin-mcqq>=2.9.0",
 ]
 
 [project.optional-dependencies]

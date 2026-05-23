@@ -1186,7 +1186,6 @@ requires-dist = [
     { name = "nonebot-adapter-minecraft", specifier = ">=1.8.0" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.4.6" },
     { name = "nonebot-adapter-qq", specifier = ">=1.7.1" },
-    { name = "nonebot-plugin-mcqq", specifier = ">=2.9.0" },
     { name = "nonebot2", extras = ["fastapi", "httpx", "websockets"], specifier = ">=2.4.3" },
     { name = "pillow", marker = "extra == 'pil'", specifier = ">=11.3.0" },
 ]
