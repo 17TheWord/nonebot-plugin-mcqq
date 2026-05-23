@@ -58,11 +58,7 @@ async def test_send_mc_msg_to_groups_and_guild(app: App):
             data={
                 "group_openid": "654321",
                 "msg_type": 0,
-                "msg_id": None,
-                "msg_seq": None,
-                "event_id": None,
                 "content": "GreenRed",
-                "media": None,
             },
             result=PostGroupMessagesReturn(id="1"),
         )
@@ -148,11 +144,133 @@ async def test_send_mc_msg_to_qq_handles_guild_audit(monkeypatch, app: App):
             data={
                 "group_openid": "654321",
                 "msg_type": 0,
+                "content": "message",
+            },
+            result=PostGroupMessagesReturn(id="1"),
+        )
+        ctx.should_call_api(
+            api="post_messages",
+            data={
+                "channel_id": "9876543210",
                 "msg_id": None,
-                "msg_seq": None,
                 "event_id": None,
                 "content": "message",
-                "media": None,
+            },
+            exception=FakeAuditException("audit_id"),
+        )
+
+        await send_mc_msg_to_qq("test_server", "message")
+
+
+@pytest.mark.asyncio
+async def test_send_mc_msg_to_qq_continues_when_group_audit_result_fails(app: App):
+    from nonebot_plugin_mcqq.utils.send_to_qq import send_mc_msg_to_qq
+
+    class FakeAuditException(AuditException):
+        async def get_audit_result(self, timeout):
+            assert timeout == 3
+            raise RuntimeError("audit timeout")
+
+    async with app.test_api() as ctx:
+        ctx.create_bot(
+            base=OneBot,
+            adapter=nonebot.get_adapter(OneBotAdapter),
+            self_id="123456789",
+        )
+        bot_info = BotInfo(id="test_qq", token="test_token", secret="test_secret")
+        ctx.create_bot(
+            base=QQBot,
+            adapter=nonebot.get_adapter(QQAdapter),
+            self_id="test_qq",
+            bot_info=bot_info,
+        )
+        guild_bot_info = BotInfo(
+            id="987654321", token="test_token", secret="test_secret"
+        )
+        ctx.create_bot(
+            base=QQBot,
+            adapter=nonebot.get_adapter(QQAdapter),
+            self_id="987654321",
+            bot_info=guild_bot_info,
+        )
+
+        ctx.should_call_api(
+            api="send_group_msg",
+            data={"group_id": 1234567890, "message": "message"},
+            result={"message_id": 1},
+        )
+        ctx.should_call_api(
+            api="post_group_messages",
+            data={
+                "group_openid": "654321",
+                "msg_type": 0,
+                "content": "message",
+            },
+            exception=FakeAuditException("audit_id"),
+        )
+        ctx.should_call_api(
+            api="post_messages",
+            data={
+                "channel_id": "9876543210",
+                "msg_id": None,
+                "event_id": None,
+                "content": "message",
+            },
+            result=QQGuildMessage(
+                id="2",
+                channel_id="9876543210",
+                guild_id="2001",
+                content="message",
+                author=QQUser(id="987654321"),
+            ),
+        )
+
+        await send_mc_msg_to_qq("test_server", "message")
+
+
+@pytest.mark.asyncio
+async def test_send_mc_msg_to_qq_handles_channel_audit_result_failure(app: App):
+    from nonebot_plugin_mcqq.utils.send_to_qq import send_mc_msg_to_qq
+
+    class FakeAuditException(AuditException):
+        async def get_audit_result(self, timeout):
+            assert timeout == 3
+            raise RuntimeError("audit timeout")
+
+    async with app.test_api() as ctx:
+        ctx.create_bot(
+            base=OneBot,
+            adapter=nonebot.get_adapter(OneBotAdapter),
+            self_id="123456789",
+        )
+        bot_info = BotInfo(id="test_qq", token="test_token", secret="test_secret")
+        ctx.create_bot(
+            base=QQBot,
+            adapter=nonebot.get_adapter(QQAdapter),
+            self_id="test_qq",
+            bot_info=bot_info,
+        )
+        guild_bot_info = BotInfo(
+            id="987654321", token="test_token", secret="test_secret"
+        )
+        ctx.create_bot(
+            base=QQBot,
+            adapter=nonebot.get_adapter(QQAdapter),
+            self_id="987654321",
+            bot_info=guild_bot_info,
+        )
+
+        ctx.should_call_api(
+            api="send_group_msg",
+            data={"group_id": 1234567890, "message": "message"},
+            result={"message_id": 1},
+        )
+        ctx.should_call_api(
+            api="post_group_messages",
+            data={
+                "group_openid": "654321",
+                "msg_type": 0,
+                "content": "message",
             },
             result=PostGroupMessagesReturn(id="1"),
         )
@@ -210,11 +328,7 @@ async def test_send_mc_msg_to_qq_includes_server_name_when_enabled(app: App):
             data={
                 "group_openid": "654321",
                 "msg_type": 0,
-                "msg_id": None,
-                "msg_seq": None,
-                "event_id": None,
                 "content": "[test_server] message",
-                "media": None,
             },
             result=PostGroupMessagesReturn(id="1"),
         )

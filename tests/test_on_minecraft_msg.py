@@ -73,11 +73,7 @@ async def test_handle_mc_msg(app: App):
             data={
                 "group_openid": "654321",
                 "msg_type": 0,
-                "msg_id": None,
-                "msg_seq": None,
-                "event_id": None,
                 "content": "test_player：Hello from Minecraft!",
-                "media": None,
             },
             result=PostGroupMessagesReturn(id="1"),
         )
@@ -96,11 +92,7 @@ async def test_handle_mc_msg(app: App):
             data={
                 "group_openid": "654321",
                 "msg_type": 0,
-                "msg_id": None,
-                "msg_seq": None,
-                "event_id": None,
                 "content": "test_player：!!This message should be ignored",
-                "media": None,
             },
             result=PostGroupMessagesReturn(id="2"),
         )

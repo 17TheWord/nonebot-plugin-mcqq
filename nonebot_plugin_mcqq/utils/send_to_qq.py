@@ -23,8 +23,7 @@ async def send_mc_msg_to_qq(server_name: str, result: str):
                         )
                     except Exception as e:
                         logger.error(
-                            f"[MC_QQ]丨发送至 OneBot Group {group.group_id} 的消息：{msg_result} 出现异常：",
-                            e,
+                            f"[MC_QQ]丨发送至 OneBot Group {group.group_id} 的消息：{msg_result} 出现异常：{e!r}"
                         )
                 elif group.adapter == "qq" and isinstance(bot, QQBot):
                     try:
@@ -35,14 +34,18 @@ async def send_mc_msg_to_qq(server_name: str, result: str):
                         logger.debug(
                             f"[MC_QQ]丨发送至 QQ Group {group.group_id} 的消息：{msg_result} 正在审核中"
                         )
-                        audit_result = await e.get_audit_result(3)
-                        logger.debug(
-                            f"[MC_QQ]丨审核结果：{audit_result.get_event_name()}"
-                        )
+                        try:
+                            audit_result = await e.get_audit_result(3)
+                            logger.debug(
+                                f"[MC_QQ]丨审核结果：{audit_result.get_event_name()}"
+                            )
+                        except Exception as audit_error:
+                            logger.error(
+                                f"[MC_QQ]丨获取 QQ Group {group.group_id} 消息审核结果失败：{audit_error!r}"
+                            )
                     except Exception as e:
                         logger.error(
-                            f"[MC_QQ]丨发送至 QQ Group {group.group_id} 的消息：{msg_result} 出现异常：",
-                            e,
+                            f"[MC_QQ]丨发送至 QQ Group {group.group_id} 的消息：{msg_result} 出现异常：{e!r}"
                         )
                 else:
                     logger.error(f"[MC_QQ]丨未知的适配器: {group.adapter}")
@@ -67,14 +70,18 @@ async def send_mc_msg_to_qq(server_name: str, result: str):
                         logger.debug(
                             f"[MC_QQ]丨发送至 QQ Channel {guild.channel_id} 的消息：{msg_result} 正在审核中"
                         )
-                        audit_result = await e.get_audit_result(3)
-                        logger.debug(
-                            f"[MC_QQ]丨发送至 QQ Channel 消息的审核结果：{audit_result.get_event_name()}"
-                        )
+                        try:
+                            audit_result = await e.get_audit_result(3)
+                            logger.debug(
+                                f"[MC_QQ]丨发送至 QQ Channel 消息的审核结果：{audit_result.get_event_name()}"
+                            )
+                        except Exception as audit_error:
+                            logger.error(
+                                f"[MC_QQ]丨获取 QQ Channel {guild.channel_id} 消息审核结果失败：{audit_error!r}"
+                            )
                     except Exception as e:
                         logger.error(
-                            f"[MC_QQ]丨发送至 QQ Channel {guild.channel_id} 的消息：{msg_result} 出现异常：",
-                            e,
+                            f"[MC_QQ]丨发送至 QQ Channel {guild.channel_id} 的消息：{msg_result} 出现异常：{e!r}"
                         )
     else:
         logger.error(f"未知的服务器: {server_name}")
