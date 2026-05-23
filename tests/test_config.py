@@ -1,4 +1,5 @@
 import importlib.util
+from pathlib import Path
 
 import pytest
 
@@ -60,12 +61,12 @@ def test_mcqq_config_disables_rcon_result_image_without_pillow(app, monkeypatch)
     assert config.rcon_result_to_image is False
 
 
-def test_mcqq_config_ttf_path_uses_existing_path(app, tmp_path):
+def test_mcqq_config_ttf_path_uses_existing_path(app, tmp_path: Path):
     from nonebot_plugin_mcqq.config import MCQQConfig
 
-    font_path = tmp_path / "font.ttf"
+    font_path = tmp_path.joinpath("font.ttf")
     font_path.write_bytes(b"font")
 
-    config = MCQQConfig(ttf_path=str(font_path))
+    config = MCQQConfig(ttf_path=font_path)
 
     assert config.ttf_path == font_path
