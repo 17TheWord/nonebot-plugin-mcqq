@@ -1,16 +1,18 @@
 [project]
 name = "nonebot-plugin-mcqq"
-version = "2.9.0"
+version = "2.9.1"
 description = "基于NoneBot的QQ群聊与Minecraft Server消息互通插件"
 authors = [{ name = "17TheWord", email = "17theword@gmail.com" }]
 requires-python = ">=3.10,<4"
 readme = "README.md"
 license = "MIT"
 dependencies = [
+    "nb-cli>=1.7.4",
     "nonebot-adapter-minecraft>=1.8.0",
     "nonebot-adapter-onebot>=2.4.6",
     "nonebot-adapter-qq>=1.7.1",
     "nonebot2[fastapi,httpx,websockets]>=2.4.3",
+    "nonebot-plugin-mcqq>=2.9.0",
 ]
 
 [project.optional-dependencies]
@@ -28,15 +30,18 @@ test = [
 ]
 
 [tool.nonebot]
-adapters = [
-    { name = "Minecraft", module_name = "nonebot.adapters.minecraft" },
-    { name = "QQ", module_name = "nonebot.adapters.qq" },
-    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" },
-]
-plugins = ["nonebot_plugin_mcqq"]
 plugin_dirs = []
 builtin_plugins = []
 
+[tool.nonebot.plugins]
+"@local" = []
+nonebot-plugin-mcqq = ["nonebot_plugin_mcqq"]
+
+[tool.nonebot.adapters]
+"@local" = []
+nonebot-adapter-minecraft = [{name = "Minecraft", module_name = "nonebot.adapters.minecraft"}]
+nonebot-adapter-qq = [{name = "QQ", module_name = "nonebot.adapters.qq"}]
+nonebot-adapter-onebot = [{name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11"}]
 [tool.uv]
 default-groups = ["dev", "test", "lint"]
 
