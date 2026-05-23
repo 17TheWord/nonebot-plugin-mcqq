@@ -12,7 +12,7 @@ from nonebot.adapters.onebot.v11 import Bot as OneBot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageEvent
 from nonebot.adapters.onebot.v11 import Message as OneBotMessage
 from nonebot.adapters.qq import Bot as QQBot
-from nonebot.adapters.qq import GroupAtMessageCreateEvent as QQGroupMessageEvent
+from nonebot.adapters.qq import GroupMessageCreateEvent as QQGroupMessageEvent
 from nonebot.adapters.qq import (
     GuildMessageEvent as QQGuildMessageEvent,
 )

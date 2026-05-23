@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot as OneBot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent as OneBotGroupMessageEvent
 from nonebot.adapters.qq import Bot as QQBot
-from nonebot.adapters.qq import GroupAtMessageCreateEvent as QQGroupAtMessageCreateEvent
+from nonebot.adapters.qq import GroupMessageCreateEvent as QQGroupMessageCreateEvent
 from nonebot.adapters.qq import GuildMessageEvent as QQGuildMessageEvent
 from nonebot.internal.matcher import Matcher
 from nonebot.params import CommandArg
@@ -45,7 +45,7 @@ on_qq_send_actionbar_cmd = on_command(
 @on_qq_msg.handle()
 async def handle_qq_msg(
     bot: QQBot | OneBot,
-    event: QQGuildMessageEvent | QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent,
+    event: QQGuildMessageEvent | QQGroupMessageCreateEvent | OneBotGroupMessageEvent,
 ):
     await send_message_to_target_server(bot=bot, event=event)
 
@@ -54,7 +54,7 @@ async def handle_qq_msg(
 async def handle_qq_cmd(
     matcher: Matcher,
     bot: QQBot | OneBot,
-    event: QQGuildMessageEvent | QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent,
+    event: QQGuildMessageEvent | QQGroupMessageCreateEvent | OneBotGroupMessageEvent,
     args: Message = CommandArg(),
 ):
     if not (cmd := args.extract_plain_text()):
@@ -71,7 +71,7 @@ async def handle_qq_cmd(
 async def handle_qq_title_cmd(
     matcher: Matcher,
     bot: QQBot | OneBot,
-    event: QQGuildMessageEvent | QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent,
+    event: QQGuildMessageEvent | QQGroupMessageCreateEvent | OneBotGroupMessageEvent,
     args: Message = CommandArg(),
 ):
     await permission_check(matcher=matcher, bot=bot, event=event)
@@ -87,7 +87,7 @@ async def handle_qq_title_cmd(
 async def handle_qq_actionbar_cmd(
     matcher: Matcher,
     bot: QQBot | OneBot,
-    event: QQGuildMessageEvent | QQGroupAtMessageCreateEvent | OneBotGroupMessageEvent,
+    event: QQGuildMessageEvent | QQGroupMessageCreateEvent | OneBotGroupMessageEvent,
     args: Message = CommandArg(),
 ):
     await permission_check(matcher=matcher, bot=bot, event=event)
