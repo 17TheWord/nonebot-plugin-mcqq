@@ -151,6 +151,9 @@ async def test_handle_qq_msg(app: App):
             self_id="test_server",
         )
 
+        qq_guild_message_event = make_qq_guild_message_event("test message")
+        ctx.receive_event(qq_bot, qq_guild_message_event)
+
         ctx.should_call_api(
             api="send_msg",
             data={
@@ -165,9 +168,6 @@ async def test_handle_qq_msg(app: App):
             },
             # adapter=mc_adapter,
         )
-
-        qq_guild_message_event = make_qq_guild_message_event("test message")
-        ctx.receive_event(qq_bot, qq_guild_message_event)
 
 
 @pytest.mark.asyncio
@@ -191,6 +191,9 @@ async def test_handle_qq_group_msg(app: App):
             self_id="test_server",
         )
 
+        qq_group_message_event = make_qq_group_message_event("test message")
+        ctx.receive_event(qq_bot, qq_group_message_event)
+
         ctx.should_call_api(
             api="send_msg",
             data={
@@ -204,9 +207,6 @@ async def test_handle_qq_group_msg(app: App):
                 ]
             },
         )
-
-        qq_group_message_event = make_qq_group_message_event("test message")
-        ctx.receive_event(qq_bot, qq_group_message_event)
 
 
 @pytest.mark.asyncio
